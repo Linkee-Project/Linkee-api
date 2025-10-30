@@ -1,5 +1,6 @@
-package com.linkee.linkeeapi.relation.entity;
+package com.linkee.linkeeapi.relation.model.entity;
 
+import com.linkee.linkeeapi.common.model.BaseTimeEntity;
 import com.linkee.linkeeapi.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Relation {
+public class Relation extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +26,6 @@ public class Relation {
     @Enumerated(EnumType.STRING)
     @Column(name = "relation_status", nullable = false, length = 1)
     private RelationStatus relationStatus = RelationStatus.P; // 기본값
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "accepted_at")
     private LocalDateTime acceptedAt;

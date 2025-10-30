@@ -1,4 +1,4 @@
-package com.linkee.linkeeapi.relation.entity;
+package com.linkee.linkeeapi.relation.model.entity;
 
 public enum RelationStatus {
     P,  // (P)pending

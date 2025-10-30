@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/linkee
+    url: jdbc:mariadb://localhost:3306/linkeedb
     username: linkee
     password: linkee
 
@@ -14,3 +14,4 @@ spring:
         show_sql: true
         dialect: org.hibernate.dialect.MariaDBDialect
     open-in-view: false            # 성능상 권장 옵션
+

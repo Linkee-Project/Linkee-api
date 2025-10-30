@@ -1,7 +1,7 @@
-package com.linkee.linkeeapi.usergrade.entity;
+package com.linkee.linkeeapi.usergrade.model.entity;
 
 import com.linkee.linkeeapi.category.model.entity.Category;
-import com.linkee.linkeeapi.grade.entity.Grade;
+import com.linkee.linkeeapi.grade.model.entity.Grade;
 import com.linkee.linkeeapi.user.model.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
