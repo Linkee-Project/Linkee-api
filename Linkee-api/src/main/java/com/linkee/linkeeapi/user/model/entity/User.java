@@ -52,4 +52,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false, columnDefinition = "ENUM('USER','ADMIN') DEFAULT 'USER'")
     private Role userRole = Role.USER;
+
+    public void setEncodedPassword(String encodedPassword) {
+        this.userPw = encodedPassword;
+    }
 }
