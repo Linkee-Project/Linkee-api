@@ -18,4 +18,8 @@ public class AlarmTemplate extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long templateId;
     private String templateContent;
+
+    public void modifyTemplateContent(String content) {
+        this.templateContent = content;
+    }
 }

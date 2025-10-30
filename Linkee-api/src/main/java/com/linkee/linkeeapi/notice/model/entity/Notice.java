@@ -9,7 +9,6 @@ import lombok.*;
 @Entity
 @Table(name = "tb_notice")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -36,4 +35,25 @@ public class Notice extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(name = "FK_notice_admin"))
     private User admin;
+
+    public void assignAdmin(User admin) {
+        if (admin == null) {
+            throw new IllegalArgumentException("관리자는 null일 수 없습니다.");
+        }
+        this.admin = admin;
+    }
+
+    public void updateNotice(String title, String content) {
+        if (title != null && !title.isBlank()) {
+            this.noticeTitle = title;
+        }
+        if (content != null && !content.isBlank()) {
+            this.noticeContent = content;
+        }
+    }
+
+    public void deleteNotice() {
+        this.isDeleted = Status.Y;
+    }
+
 }
