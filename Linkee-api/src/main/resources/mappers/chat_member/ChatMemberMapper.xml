@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.chat_member.query.mapper.ChatMemberMapper">
+
+    <select id="selectAllChatMember" resultType="com.linkee.linkeeapi.chat_member.query.dto.response.ChatMemberResponse">
+        SELECT
+        chat_member_id,
+        joined_at,
+        left_at,
+        chat_room_id,
+        user_id,
+        is_read
+        FROM tb_chat_member
+        WHERE 1=1
+        AND left_at IS NULL
+        <if test="keyword != null and keyword != ''">
+            AND message_content LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="chatRoomId != null and chatRoomId != ''">
+            AND chat_room_id = #{chatRoomId}
+        </if>
+        <if test="userId != null and userId != ''">
+            AND user_id = #{userId}
+        </if>
+        ORDER BY joined_at DESC
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+    </select>
+
+
+    <select id="countChatMember" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_chat_member
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND message_content LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+
+
+
+</mapper>

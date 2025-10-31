@@ -2,13 +2,14 @@ package com.linkee.linkeeapi.alarm_template.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.linkee.linkeeapi.alarm_template.model.dto.request.AlarmTemplateCreateRequest;
-import com.linkee.linkeeapi.alarm_template.model.dto.request.AlarmTemplateSearchRequest;
-import com.linkee.linkeeapi.alarm_template.model.dto.response.AlarmTemplateResponse;
-import com.linkee.linkeeapi.alarm_template.model.entity.AlarmTemplate;
-import com.linkee.linkeeapi.alarm_template.repository.AlarmTemplateRepository;
+import com.linkee.linkeeapi.alarm_template.command.application.dto.request.AlarmTemplateCreateRequest;
+import com.linkee.linkeeapi.alarm_template.query.dto.reqeust.AlarmTemplateSearchRequest;
+import com.linkee.linkeeapi.alarm_template.command.application.service.AlarmTemplateCommandService;
+import com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateResponse;
+import com.linkee.linkeeapi.alarm_template.command.domain.aggregate.entity.AlarmTemplate;
+import com.linkee.linkeeapi.alarm_template.query.service.AlarmTemplateQueryService;
+import com.linkee.linkeeapi.alarm_template.command.infrastructure.repository.AlarmTemplateRepository;
 import com.linkee.linkeeapi.common.model.PageResponse;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AlarmTemplateServiceImplTest {
 
     @Autowired
-    private AlarmTemplateService service;
+    private AlarmTemplateCommandService service;
+    @Autowired
+    private AlarmTemplateQueryService queryService;
 
     @Autowired
     private AlarmTemplateRepository repository;
@@ -59,8 +62,8 @@ class AlarmTemplateServiceImplTest {
         AlarmTemplateSearchRequest searchRequest1 = new AlarmTemplateSearchRequest("사과", 0, 10 ,0);
 
         // when
-        PageResponse<AlarmTemplateResponse> pageResponse = service.selectAllAlarmTemplate(searchRequest);
-        PageResponse<AlarmTemplateResponse> pageResponse1 = service.selectAllAlarmTemplate(searchRequest1);
+        PageResponse<AlarmTemplateResponse> pageResponse = queryService.selectAllAlarmTemplate(searchRequest);
+        PageResponse<AlarmTemplateResponse> pageResponse1 = queryService.selectAllAlarmTemplate(searchRequest1);
 
         // then
         assertThat(pageResponse.getTotalElements()).isEqualTo(3);
@@ -77,7 +80,7 @@ class AlarmTemplateServiceImplTest {
         AlarmTemplate t1 = repository.save(new AlarmTemplate(null, "가나다"));
         repository.save(new AlarmTemplate(null, "가나다라"));
 
-        ResponseEntity<AlarmTemplateResponse> result = service.selectAlarmTemplateByAlarmTemplateId(t1.getTemplateId());
+        ResponseEntity<AlarmTemplateResponse> result = queryService.selectAlarmTemplateByAlarmTemplateId(t1.getTemplateId());
 
         assertThat(result.getBody()).isNotNull();
         assertThat(result.getBody().templateContent()).isEqualTo("가나다");

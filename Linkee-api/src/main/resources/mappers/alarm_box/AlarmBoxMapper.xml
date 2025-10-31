@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.alarm_box.mapper.AlarmBoxMapper">
+<mapper namespace="com.linkee.linkeeapi.alarm_box.query.mapper.AlarmBoxMapper">
 
-    <select id="selectAllAlarmBox" resultType="com.linkee.linkeeapi.alarm_box.model.dto.response.AlarmBoxResponse">
+    <select id="selectAllAlarmBox" resultType="com.linkee.linkeeapi.alarm_box.query.dto.response.AlarmBoxResponse">
         SELECT
         alarm_box_id,
         alarm_box_content,
@@ -38,7 +38,7 @@
 
 
 
-    <select id="selectAlarmBoxByBoxId" resultType="com.linkee.linkeeapi.alarm_box.model.dto.response.AlarmBoxResponse">
+    <select id="selectAlarmBoxByBoxId" resultType="com.linkee.linkeeapi.alarm_box.query.dto.response.AlarmBoxResponse">
         SELECT
             alarm_box_id,
             alarm_box_content,

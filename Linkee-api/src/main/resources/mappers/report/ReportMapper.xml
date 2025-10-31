@@ -3,10 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.report.mapper.ReportMapper">
+<mapper namespace="com.linkee.linkeeapi.report.query.mapper.ReportMapper">
 
     <!-- 전체 신고 목록 조회 (관리자) -->
-    <select id="findAllReports" resultType="com.linkee.linkeeapi.report.model.dto.response.ReportListResponseDto">
+    <select id="findAllReports" resultType="com.linkee.linkeeapi.report.query.dto.response.ReportListResponseDto">
         SELECT
             report_title,
             report_type,
@@ -18,7 +18,7 @@
     </select>
 
     <!-- 유저별 신고 조회 -->
-    <select id="findReportsByUser" resultType="com.linkee.linkeeapi.report.model.dto.response.ReportListResponseDto">
+    <select id="findReportsByUser" resultType="com.linkee.linkeeapi.report.query.dto.response.ReportListResponseDto">
         SELECT
             report_title,
             report_type,
@@ -31,7 +31,7 @@
     </select>
 
     <!-- 관리자: 신고 상세 조회 -->
-    <select id="findReportById" resultType="com.linkee.linkeeapi.report.model.dto.response.ReportDetailResponseDto">
+    <select id="findReportById" resultType="com.linkee.linkeeapi.report.query.dto.response.ReportDetailResponseDto">
         SELECT
             report_title,
             report_content,
@@ -45,7 +45,7 @@
     </select>
 
     <!-- 일반 유저: 본인 신고만 상세 조회 -->
-    <select id="findReportByIdAndReporter" resultType="com.linkee.linkeeapi.report.model.dto.response.ReportDetailResponseDto">
+    <select id="findReportByIdAndReporter" resultType="com.linkee.linkeeapi.report.query.dto.response.ReportDetailResponseDto">
         SELECT
             report_title,
             report_content,

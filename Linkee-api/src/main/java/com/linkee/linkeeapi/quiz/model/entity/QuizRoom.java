@@ -13,7 +13,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tbl_quiz_room")
+@Table(name = "tb_quiz_room")
 @Getter
 @Setter
 @NoArgsConstructor
