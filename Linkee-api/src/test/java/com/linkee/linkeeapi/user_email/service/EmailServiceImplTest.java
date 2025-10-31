@@ -1,13 +1,15 @@
-package com.linkee.linkeeapi.user.service;
+package com.linkee.linkeeapi.user_email.service;
 
-import com.linkee.linkeeapi.user_email.service.EmailService;
+
 import com.linkee.linkeeapi.user_email_verification.model.entity.VerificationCode;
 import com.linkee.linkeeapi.user_email_verification.repository.VerificationCodeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+// MockBean의 빨간 줄은 버전 3.4.0 이상에서 지원 중단이라 생긴 이슈
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -15,19 +17,18 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-class UserCommandServiceTest {
-
-    @Autowired
-    private VerificationCodeRepository verificationCodeRepository;
+@Transactional // 각 테스트가 끝난 후 DB 변경사항을 롤백하여 테스트 격리
+class EmailServiceImplTest {
 
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private VerificationCodeRepository verificationCodeRepository;
 
+    @MockBean // 실제 이메일을 발송하는 대신 가짜(Mock) JavaMailSender를 주입
+    private JavaMailSender javaMailSender;
     @Test
     @DisplayName("성공: 올바른 코드로 인증 시 true를 반환하고 DB의 코드는 '인증됨' 상태가 된다")
     void verifyCode_Success() {

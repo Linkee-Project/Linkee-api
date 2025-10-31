@@ -32,7 +32,7 @@ public class SecurityConfig {
                 // 요청 http method, url 기준으로 인증/인가 필요 여부 설정
                 .authorizeHttpRequests(
                         auth -> auth.requestMatchers(
-                                        HttpMethod.POST, "/user/signup"
+                                        HttpMethod.POST, "/user/signup", "/user/send-verification", "/user/verify-code"
                                 ).permitAll()
                                 .anyRequest().permitAll()
                 );

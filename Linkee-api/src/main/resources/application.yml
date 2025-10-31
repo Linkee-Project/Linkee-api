@@ -15,6 +15,21 @@ spring:
         dialect: org.hibernate.dialect.MariaDBDialect
     open-in-view: false            # 성능상 권장 옵션
 
+  # 이메일 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    #    테스트 진행 시 본인 이메일 작성
+    username:
+    #    테스트 진행 시 본인 이메일 비밀번호(SMTP 16자리) 입력
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
