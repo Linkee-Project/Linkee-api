@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.qna.query.mapper.QnaMapper">
+
+    <select id="findAllByRoomId" parameterType="long" resultType="com.linkee.linkeeapi.qna.query.dto.response.QnaResponseDto">
+        SELECT
+            qna_question AS qnaQuestion,
+            qna_answer AS qnaAnswer
+        FROM tb_qna
+        WHERE chat_room_id = #{roomId}
+        ORDER BY qna_id ASC;
+    </select>
+
+</mapper>

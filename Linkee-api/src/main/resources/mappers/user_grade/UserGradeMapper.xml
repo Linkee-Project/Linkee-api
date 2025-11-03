@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.user_grade.query.mapper.UserGradeMapper">
+
+    <select id="selectAllUserGrades" resultType="com.linkee.linkeeapi.user_grade.query.dto.response.UserGradeResponse">
+        SELECT
+        ug.user_grade_id ,
+        u.user_id,
+        u.user_nickname,
+        g.grade_id,
+        g.grade_name,
+        c.category_id,
+        c.category_name,
+        ug.victory_count
+        FROM tb_user_grade ug
+        JOIN tb_user u ON ug.user_id = u.user_id
+        JOIN tb_grade g ON ug.grade_id = g.grade_id
+        JOIN tb_category c ON ug.category_id = c.category_id
+        WHERE 1=1
+        <if test="userId != null">
+            AND u.user_id = #{userId}
+        </if>
+        <if test="categoryId != null">
+            AND c.category_id = #{categoryId}
+        </if>
+        <if test="gradeId != null">
+            AND g.grade_id = #{gradeId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND u.user_nickname LIKE CONCAT('%', #{keyword}, '%')
+            OR c.category_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY ug.user_grade_id ASC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="countUserGrades" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_user_grade ug
+        JOIN tb_user u
+        JOIN tb_grade g
+        JOIN tb_category c
+        WHERE 1=1
+        <if test="userId != null">
+            AND u.user_id = #{userId}
+        </if>
+        <if test="categoryId != null">
+            AND c.category_id = #{categoryId}
+        </if>
+        <if test="gradeId != null">
+            AND g.grade_id = #{gradeId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND u.user_nickname LIKE CONCAT('%', #{keyword}, '%')
+            OR c.category_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+
+</mapper>

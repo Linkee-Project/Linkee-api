@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.relation.query.mapper.RelationMapper">
+
+    <select id="selectAllRelations" resultType="com.linkee.linkeeapi.relation.query.dto.response.RelationResponse">
+        SELECT
+        r.relation_id,
+        r.requester_id,
+        requester.user_nickname AS requesterNickname,
+        r.receiver_id,
+        receiver.user_nickname AS receiverNickname,
+        r.relation_status,
+        r.accepted_at
+        FROM tb_relation r
+        JOIN tb_user requester ON r.requester_id = requester.user_id
+        JOIN tb_user receiver ON r.receiver_id = receiver.user_id
+        ORDER BY r.relation_id DESC
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+
+    </select>
+
+    <select id="countAllRelations" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_relation r
+    </select>
+
+
+
+
+    <select id="selectRelationsByUserIdAndStatus" resultType="com.linkee.linkeeapi.relation.query.dto.response.RelationResponse">
+        SELECT
+        r.relation_id,
+        r.requester_id,
+        requester.user_nickname AS requesterNickname,
+        r.receiver_id,
+        receiver.user_nickname AS receiverNickname,
+        r.relation_status,
+        r.accepted_at
+        FROM tb_relation r
+        JOIN tb_user requester ON r.requester_id = requester.user_id
+        JOIN tb_user receiver ON r.receiver_id = receiver.user_id
+        WHERE (r.receiver_id = #{userId} OR r.requester_id = #{userId})
+        <if test="relationStatus != null and relationStatus != ''">
+            AND r.relation_status = #{relationStatus}
+        </if>
+        ORDER BY r.relation_id DESC
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countRelationsByUserIdAndStatus"
+            parameterType="com.linkee.linkeeapi.relation.query.dto.request.RelationSearchRequest"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM tb_relation r
+        WHERE (r.receiver_id = #{userId} OR r.requester_id = #{userId})
+        <if test="relationStatus != null and relationStatus != ''">
+            AND r.relation_status = #{relationStatus}
+        </if>
+    </select>
+
+
+
+</mapper>

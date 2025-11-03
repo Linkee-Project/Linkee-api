@@ -1,0 +1,14 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.category.query.mapper.CategoryMapper">
+
+    <select id="findAll" resultType="com.linkee.linkeeapi.category.query.dto.response.CategoryResponse">
+        SELECT
+            c.category_id   AS categoryId,
+            c.category_name AS categoryName
+        FROM tb_category c
+        ORDER BY c.category_name ASC
+    </select>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.bookmark.query.mapper.BookmarkMapper">
+
+    <!-- 전체 북마크 조회 -->
+    <select id="selectAllBookmarks" resultType="com.linkee.linkeeapi.bookmark.query.dto.response.BookmarkResponse">
+        SELECT
+        b.bookmark_id,
+        b.user_id,
+        u.user_nickname,
+        b.question_id,
+        q.question_title
+        FROM tb_bookmark b
+        JOIN tb_user u ON b.user_id = u.user_id
+        JOIN tb_question q ON b.question_id = q.question_id
+        where 1=1
+        <if test="questionId != null and questionId != ''">
+            AND b.question_id = #{questionId}
+        </if>
+        ORDER BY b.bookmark_id DESC
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countAllBookmarks" resultType="int">
+        SELECT COUNT(*) FROM tb_bookmark
+    </select>
+
+    <!-- 특정 유저의 북마크 조회 -->
+    <select id="selectBookmarksByUserId" resultType="com.linkee.linkeeapi.bookmark.query.dto.response.BookmarkResponse">
+        SELECT
+        b.bookmark_id,
+        b.user_id,
+        u.user_nickname,
+        b.question_id,
+        q.question_title
+        FROM tb_bookmark b
+        JOIN tb_user u ON b.user_id = u.user_id
+        JOIN tb_question q ON b.question_id = q.question_id
+        WHERE b.user_id = #{userId}
+        <if test="questionId != null and questionId != ''">
+            AND b.question_id = #{questionId}
+        </if>
+        ORDER BY b.bookmark_id DESC
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countBookmarksByUserId" resultType="int">
+        SELECT COUNT(*) FROM tb_bookmark WHERE user_id = #{userId}
+    </select>
+
+</mapper>

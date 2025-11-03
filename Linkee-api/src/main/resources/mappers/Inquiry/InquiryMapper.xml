@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.inquiry.query.mapper.InquiryMapper">
+
+    <!-- InquiryResponseDto에 맞춘 매핑 -->
+    <resultMap id="InquiryResponseMap" type="com.linkee.linkeeapi.inquiry.query.dto.response.InquiryResponseDto">
+        <result property="inquiryTitle" column="inquiry_title"/>
+        <result property="inquiryContent" column="inquiry_content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="answerStatus" column="answer_status"/>
+        <result property="answerContent" column="answer_content"/> <!-- 추가 -->
+        <result property="userId" column="user_id"/>
+        <result property="adminId" column="admin_id"/> <!-- 추가 -->
+    </resultMap>
+
+    <!-- 관리자 전체 조회 -->
+    <select id="findAll" resultMap="InquiryResponseMap">
+        SELECT i.inquiry_title,
+               i.inquiry_content,
+               i.created_at,
+               i.answer_status,
+               i.answer_content,
+               i.user_id,
+               i.admin_id
+        FROM tb_inquiry i
+        ORDER BY i.created_at DESC
+            LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 일반 유저 본인 문의 조회 -->
+    <select id="findByUserId" resultMap="InquiryResponseMap">
+        SELECT i.inquiry_title,
+               i.inquiry_content,
+               i.created_at,
+               i.answer_status,
+               i.answer_content,
+               i.user_id,
+               i.admin_id
+        FROM tb_inquiry i
+        WHERE i.user_id = #{userId}
+        ORDER BY i.created_at DESC
+            LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 전체 개수 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_inquiry
+    </select>
+
+    <!-- 특정 유저 개수 -->
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_inquiry
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>

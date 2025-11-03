@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.alarm_template.query.mapper.AlarmTemplateMapper">
+
+    <select id="selectAllAlarmTemplate" resultType="com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateResponse">
+        SELECT
+        template_id AS templateId,
+        template_content AS templateContent,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+        FROM tb_alarm_template
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND template_content LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY created_at DESC
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="countAlarmTemplate" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_alarm_template
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND template_content LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+
+    <select id="selectAlarmTemplateById" resultType="com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateResponse">
+        SELECT
+        template_id AS templateId,
+        template_content AS templateContent,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+        FROM tb_alarm_template
+        WHERE template_id = #{templateId}
+    </select>
+
+</mapper>

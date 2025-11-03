@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.linkee'
+version = '0.0.1-SNAPSHOT'
+description = 'Linkee-api'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // jwt 토큰 생성,검증,파싱 해주는 api , 구현체는 따로필요
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.7'
+    // jjwt-api의 구현체 실제 동작을 수행
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.7'
+    // JWT 페이로드(payload)를 JSON으로 직렬화/역직렬화 (jwt데이터를 json으로 변환)
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.7'
+    // 스프링에서 제공하는 시큐리티 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // 시큐리티를 test에서 쉽게 하기 위한 라이브러리 (mock객체를 사용해 가상인증유저생성)
+    //testImplementation 'org.springframework.security:spring-security-test'
+    // 타임리프에 시큐리티 적용시키는 라이브러리
+    //implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.modelmapper:modelmapper:3.1.1'
+
+
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    testImplementation 'com.h2database:h2:2.2.224'
+
+
+
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

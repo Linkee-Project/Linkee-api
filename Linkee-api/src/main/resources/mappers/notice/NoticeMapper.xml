@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.notice.query.mapper.NoticeMapper">
+
+    <!-- NoticeListResponseDto에 맞춘 매핑 -->
+    <resultMap id="NoticeResponseMap" type="com.linkee.linkeeapi.notice.query.dto.response.NoticeListResponseDto">
+        <result property="noticeTitle" column="notice_title"/>
+        <result property="noticeViews" column="notice_views"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="NoticeResponseMap">
+        SELECT i.notice_title,
+               i.notice_views,
+               i.created_at
+        FROM tb_notice i
+        ORDER BY i.created_at DESC
+            LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 전체 개수 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_notice
+    </select>
+
+    <!-- 상세조회 -->
+    <resultMap id="NoticeDetailResponseMap" type="com.linkee.linkeeapi.notice.query.dto.response.NoticeDetailResponseDto">
+        <result property="noticeTitle" column="notice_title"/>
+        <result property="noticeContent" column="notice_content"/>
+        <result property="noticeViews" column="notice_views"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="adminName" column="user_nickname"/>
+    </resultMap>
+
+
+    <select id="findById" parameterType="long" resultType="com.linkee.linkeeapi.notice.query.dto.response.NoticeDetailResponseDto">
+        SELECT
+            n.notice_title AS noticeTitle,
+            n.notice_content AS noticeContent,
+            n.notice_views AS noticeViews,
+            n.created_at AS createdAt,
+            n.admin_id AS adminId,
+            u.user_nickname AS adminName
+        FROM tb_notice n
+                 JOIN tb_user u ON n.admin_id = u.user_id
+        WHERE n.notice_id = #{noticeId}
+    </select>
+
+
+
+    <!-- 조회수 증가 -->
+    <update id="increaseViewCount">
+        UPDATE tb_notice
+        SET notice_views = notice_views + 1
+        WHERE notice_id = #{noticeId}
+    </update>
+
+</mapper>

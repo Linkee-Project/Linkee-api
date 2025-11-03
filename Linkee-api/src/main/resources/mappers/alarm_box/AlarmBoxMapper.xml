@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.alarm_box.query.mapper.AlarmBoxMapper">
+
+    <select id="selectAllAlarmBox" resultType="com.linkee.linkeeapi.alarm_box.query.dto.response.AlarmBoxResponse">
+        SELECT
+        alarm_box_id,
+        alarm_box_content,
+        is_checked,
+        created_at,
+        user_id
+        FROM tb_alarm_box
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND alarm_box_content LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="isChecked != null and isChecked != ''">
+            AND is_checked = #{isChecked}
+        </if>
+        ORDER BY created_at DESC
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+    </select>
+
+
+    <select id="countAlarmBox" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_alarm_box
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND alarm_box_content LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+    </select>
+
+
+
+    <select id="selectAlarmBoxByBoxId" resultType="com.linkee.linkeeapi.alarm_box.query.dto.response.AlarmBoxResponse">
+        SELECT
+            alarm_box_id,
+            alarm_box_content,
+            is_checked,
+            created_at,
+            user_id
+        FROM tb_alarm_box
+        WHERE alarm_box_id = #{alarmBoxId}
+    </select>
+
+
+</mapper>

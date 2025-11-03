@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.user.query.mapper.UserMapper">
+
+    <select id="selectAllUser" resultType="com.linkee.linkeeapi.user.query.dto.response.UserListResponse">
+        SELECT
+        user_id,
+        user_email,
+        user_password,
+        user_nickname,
+        user_status,
+        user_role,
+        created_at,
+        updated_at
+        FROM tb_user
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND user_nickname LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="userNickname != null and userNickname != ''">
+            AND user_nickname = #{userNickname}
+        </if>
+        <if test="userStatus != null and userStatus != ''">
+            AND user_status = #{userStatus}
+        </if>
+        <if test="userRole != null and userRole != ''">
+            AND user_role = #{userRole}
+        </if>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+
+    </select>
+
+
+    <select id="countUser" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_user
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND user_nickname LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="userNickname != null and userNickname != ''">
+            AND user_nickname = #{userNickname}
+        </if>
+        <if test="userStatus != null and userStatus != ''">
+            AND user_status = #{userStatus}
+        </if>
+        <if test="userRole != null and userRole != ''">
+            AND user_role = #{userRole}
+        </if>
+    </select>
+
+
+    <!--id 값으로 하나(자기정보) 조회-->
+
+    <resultMap id="userMeResultMap" type="com.linkee.linkeeapi.user.query.dto.response.UserMeResponse">
+        <result property="userEmail" column="user_email"/>
+        <result property="userNickname" column="user_nickname"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <collection property="userGrades" ofType="com.linkee.linkeeapi.user.query.dto.response.UserGradeInfo">
+            <result property="gradeName" column="grade_name"/>
+            <result property="categoryName" column="category_name"/>
+            <result property="victoryCount" column="victory_count"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectUserMe" resultMap="userMeResultMap">
+        SELECT u.user_email, u.user_nickname, u.created_at, u.updated_at,
+               ug.victory_count,
+               g.grade_name,
+               c.category_name
+        FROM tb_user u
+                 LEFT JOIN tb_user_grade ug ON u.user_id = ug.user_id
+                 LEFT JOIN tb_grade g ON ug.grade_id = g.grade_id
+                 LEFT JOIN tb_category c ON ug.category_id = c.category_id
+        WHERE u.user_email = #{userEmail}
+    </select>
+
+    <!--    -->
+
+
+</mapper>

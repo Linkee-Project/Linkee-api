@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.question.query.mapper.QuestionMapper">
+
+    <!-- QuestionListResponseDto에 맞춘 매핑 -->
+    <resultMap id="QuestionListResponseMap" type="com.linkee.linkeeapi.question.query.dto.response.QuestionListResponseDto">
+        <result property="questionId" column="question_id"/>
+        <result property="questionTitle" column="question_title"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="userNickname" column="user_nickname"/>
+        <result property="viewCount" column="question_views"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 전체 문제 조회 + 옵션 (keyword) -->
+    <select id="findAllWithKeyword" resultMap="QuestionListResponseMap">
+        SELECT
+        q.question_id,
+        q.question_title,
+        c.category_name,
+        u.user_nickname,
+        q.question_views,
+        q.created_at
+        FROM tb_question q
+        JOIN tb_category c ON q.category_id = c.category_id
+        JOIN tb_user u ON q.user_id = u.user_id
+        WHERE q.is_deleted = 'N'
+        <if test="keyword != null and keyword != ''">
+            AND (
+            q.question_title    LIKE CONCAT('%', #{keyword}, '%')
+            OR q.question_question LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY q.created_at DESC
+        <if test="limit != null and offset != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!-- 전체 문제 조회 + 옵션 (keyword) 개수 -->
+    <select id="countAllWithKeyword"  resultType="int">
+        SELECT COUNT(*)
+        FROM tb_question q
+        WHERE q.is_deleted = 'N'
+        <if test="keyword != null and keyword != ''">
+            AND (
+            q.question_title    LIKE CONCAT('%', #{keyword}, '%')
+            OR q.question_question LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+    </select>
+
+    <!-- 카테고리별 문제 조회 + 옵션(keyword)-->
+    <select id="findByCategoryWithKeyword" resultMap="QuestionListResponseMap">
+        SELECT
+        q.question_id,
+        q.question_title,
+        c.category_name,
+        u.user_nickname,
+        q.question_views,
+        q.created_at
+        FROM tb_question q
+        JOIN tb_category c ON q.category_id = c.category_id
+        JOIN tb_user u ON q.user_id = u.user_id
+        WHERE q.category_id = #{categoryId}
+        AND q.is_deleted = 'N'
+        <if test="keyword != null and keyword != ''">
+            AND (
+            q.question_title    LIKE CONCAT('%', #{keyword}, '%')
+            OR q.question_question LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY q.created_at DESC
+        <if test="limit != null and offset != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!-- 카테고리별 문제 조회 + 옵션(keyword) 개수 -->
+    <select id="countByCategoryWithKeyword" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_question q
+        WHERE q.is_deleted = 'N'
+        AND q.category_id = #{categoryId}
+        <if test="keyword != null and keyword != ''">
+            AND (
+            q.question_title    LIKE CONCAT('%', #{keyword}, '%')
+            OR q.question_question LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+    </select>
+
+    <!-- QuestionDetailResponseDto에 맞춘 매핑 -->
+    <resultMap id="QuestionDetailResponseMap" type="com.linkee.linkeeapi.question.query.dto.response.QuestionDetailResponseDto">
+        <result property="questionId" column="question_id"/>
+        <result property="questionTitle" column="question_title"/>
+        <result property="content" column="question_question"/>
+        <result property="questionAnswer" column="question_answer"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="userNickname" column="user_nickname"/>
+        <result property="viewCount" column="question_views"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <!-- 문제 상세 조회 -->
+    <select id="findDetailByQuestionId" parameterType="long"
+            resultMap="QuestionDetailResponseMap">
+        SELECT
+        q.question_id,
+        q.question_title,
+        q.question_question,
+        q.question_answer,
+        c.category_name,
+        u.user_nickname,
+        q.question_views,
+        q.created_at,
+        q.updated_at
+        FROM tb_question q
+        JOIN tb_category c ON q.category_id = c.category_id
+        JOIN tb_user u ON q.user_id = u.user_id
+        WHERE q.question_id = #{questionId}
+        AND q.is_deleted = 'N'
+    </select>
+
+    <!-- 문제의 옵션 목록  -->
+    <select id="findDetailOptions"
+            resultType="com.linkee.linkeeapi.question.query.dto.response.QuestionDetailResponseDto$OptionList">
+        SELECT
+        o.question_option_id     AS optionId,
+        o.question_option_index  AS optionIndex,
+        o.question_option_text   AS optionText,
+        o.is_corrected           AS isCorrected
+        FROM tb_question_option o
+        WHERE o.question_id = #{id}
+        ORDER BY o.question_option_index ASC
+    </select>
+
+    <!-- 조회수 증가 -->
+    <update id="increaseViewCount">
+        UPDATE tb_question
+        SET question_views = IFNULL(question_views, 0) + 1
+        WHERE question_id = #{questionId}
+    </update>
+
+
+</mapper>

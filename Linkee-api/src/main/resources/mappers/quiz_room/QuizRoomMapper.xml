@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.quiz_room.query.mapper.QuizRoomMapper">
+
+    <!-- 방 목록 조회 (페이징 적용) -->
+    <select id="findAllRoomsPaginated" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomListResponseDto">
+        SELECT quiz_room_id AS quizRoomId,
+               room_title AS roomTitle,
+               category_id AS categoryId,
+               room_status AS roomStatus,
+               joined_count AS joinedCount,
+               room_capacity AS roomCapacity
+        FROM tb_quiz_room
+        WHERE is_private = 'N'
+          AND room_status = 'W'
+        ORDER BY quiz_room_id DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 빠른 시작 -->
+    <select id="findAvailableRoom" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomResponseDto">
+        SELECT quiz_room_id AS quizRoomId,
+               room_title AS roomTitle,
+               joined_count AS joinedCount,
+               room_capacity AS roomCapacity
+          FROM tb_quiz_room
+         WHERE room_status = 'W'
+           AND joined_count &lt; room_capacity
+         ORDER BY created_at DESC
+         LIMIT 1
+    </select>
+
+    <!-- 플레이 상태 -->
+    <select id="findPlayState" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.PlayStateResponseDto">
+      SELECT
+        r.quiz_room_id AS roomId,
+        (SELECT c.current_quiz_index
+           FROM tb_quiz_current_index c
+          WHERE c.quiz_room_id = r.quiz_room_id) AS currentIndex,
+        (SELECT COUNT(*) FROM tb_room_member m
+          WHERE m.quiz_room_id = r.quiz_room_id) AS totalMembers,
+        (SELECT SUM(CASE WHEN m2.is_ready='Y' THEN 1 ELSE 0 END)
+           FROM tb_room_member m2
+          WHERE m2.quiz_room_id = r.quiz_room_id) AS readyCount,
+        (SELECT SUM(CASE WHEN l.is_corrected='Y' THEN 1 ELSE 0 END)
+           FROM tb_room_member m3
+           LEFT JOIN tb_room_user_log l ON l.room_member_id = m3.room_member_id
+          WHERE m3.quiz_room_id = r.quiz_room_id) AS correctCount
+      FROM tb_quiz_room r
+      WHERE r.quiz_room_id = #{roomId}
+    </select>
+
+
+    <!-- 결과 조회 -->
+    <select id="findResultsByRoom" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.ResultRowResponseDto">
+      SELECT
+        m.member_id AS userId,
+        SUM(CASE WHEN l.is_corrected='Y' THEN 1 ELSE 0 END) AS correctCount,
+        COUNT(l.room_user_log_id) AS total,
+        ROUND(
+          SUM(CASE WHEN l.is_corrected='Y' THEN 1 ELSE 0 END)
+          / NULLIF(COUNT(l.room_user_log_id),0) * 100, 1
+        ) AS accuracy
+      FROM tb_room_member m
+      LEFT JOIN tb_room_user_log l ON l.room_member_id = m.room_member_id
+      WHERE m.quiz_room_id = #{roomId}
+      GROUP BY m.member_id
+      ORDER BY correctCount DESC, accuracy DESC
+      LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+</mapper>
