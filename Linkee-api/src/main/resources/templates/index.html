@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+    <script>
+        // 로그인 후 JWT 토큰이 localStorage에 저장된다고 가정
+        // 예: localStorage.setItem('accessToken', token);
+
+        function checkLogin() {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                document.getElementById('userSection').style.display = 'block';
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('email').innerText = localStorage.getItem('email') || '로그인 유저';
+            } else {
+                document.getElementById('userSection').style.display = 'none';
+                document.getElementById('loginSection').style.display = 'block';
+            }
+        }
+
+        async function logout() { const email = localStorage.getItem('email'); if (!email) { alert("로그인된 사용자가 없습니다."); return; } // Redis RefreshToken 삭제 요청 (백엔드 /logout 호출)
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ email }),
+            });
+
+            if (response.ok) { alert("로그아웃 성공!");
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('email');
+                checkLogin();
+                // ✅ 네이버 세션 로그아웃
+                const redirectUri = encodeURIComponent(window.location.origin + "/");
+                window.location.href = `https://nid.naver.com/nidlogin.logout?returl=${redirectUri}`;
+            }
+            else { alert("로그아웃 실패!"); }
+        }
+
+        window.onload = () => {
+            //URL 파라미터에서 토큰/이메일 추출
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('token');
+            const email = params.get('email');
+            if (token && email) {
+                localStorage.setItem('accessToken', token);
+                localStorage.setItem('email', email);
+                // URL에서 쿼리 제거
+                window.history.replaceState({}, document.title, "/");
+            }
+            checkLogin();
+        };
+    </script>
+</head>
+<body>
+<!-- 로그인 후 섹션 -->
+<div id="userSection" style="display:none;">
+    <p><span id="email"></span> 님 환영합니다!</p>
+    <button onclick="logout()">Logout</button> </div>
+<div id="loginSection">
+    <a th:href="@{/oauth2/authorization/naver}">Naver Login</a><br>
+    <a th:href="@{/user}">로그인한 유저만 사용 가능</a><br>
+</div>
+
+</body>
+</html>

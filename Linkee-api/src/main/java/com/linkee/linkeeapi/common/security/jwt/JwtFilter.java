@@ -1,6 +1,5 @@
 package com.linkee.linkeeapi.common.security.jwt;
 
-import com.linkee.linkeeapi.common.jwt.JwtTokenProvider;
 import com.linkee.linkeeapi.common.security.model.CustomUser;
 import com.linkee.linkeeapi.common.security.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;

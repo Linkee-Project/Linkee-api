@@ -40,6 +40,10 @@ dependencies {
     // 타임리프에 시큐리티 적용시키는 라이브러리
     //implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
+    //소셜로그인을 위한 oauth2
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

@@ -1,4 +1,4 @@
-package com.linkee.linkeeapi.common.jwt;
+package com.linkee.linkeeapi.common.security.jwt;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
