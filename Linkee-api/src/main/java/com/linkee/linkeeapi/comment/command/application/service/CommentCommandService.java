@@ -1,5 +1,9 @@
 package com.linkee.linkeeapi.comment.command.application.service;
 
+import com.linkee.linkeeapi.alarm_box.command.application.dto.request.AlarmBoxCreateRequest;
+import com.linkee.linkeeapi.alarm_box.command.application.service.AlarmBoxCommandService;
+import com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateResponse;
+import com.linkee.linkeeapi.alarm_template.query.service.AlarmTemplateQueryService;
 import com.linkee.linkeeapi.comment.command.application.dto.request.CreateCommentRequestDto;
 import com.linkee.linkeeapi.comment.command.application.dto.request.UpdateCommentRequestDto;
 import com.linkee.linkeeapi.comment.command.application.dto.response.CreateCommentResponseDto;
@@ -7,13 +11,19 @@ import com.linkee.linkeeapi.comment.command.application.dto.response.UpdateComme
 import com.linkee.linkeeapi.comment.command.domain.aggregate.Comment;
 import com.linkee.linkeeapi.comment.command.infrastructure.repository.JpaCommentRepository;
 import com.linkee.linkeeapi.common.enums.Status;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
 import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +33,9 @@ public class CommentCommandService {
     private final JpaCommentRepository jpaCommentRepository;
     private final JpaQuestionRepository jpaQuestionRepository;
     private final UserFinder userFinder;
+
+    private final AlarmBoxCommandService alarmBoxCommandService;
+    private final AlarmTemplateQueryService alarmTemplateQueryService;
 
     //댓글 등록
     public CreateCommentResponseDto createComment(Long questionId, Long userId, CreateCommentRequestDto req) {
@@ -40,6 +53,63 @@ public class CommentCommandService {
             Comment reply = Comment.createReply(question, user, parent, req.getContent());
             saved = jpaCommentRepository.save(reply);
         }
+
+        // 알림 로직
+        long templateId;
+        if (saved.getParent() == null) {
+            // 새 루트 댓글은 5번 템플릿
+            templateId = 5L;
+        } else {
+            // 대댓글은 6번 템플릿
+            templateId = 6L;
+        }
+        String alarmContent;
+
+        try {
+            ResponseEntity<AlarmTemplateResponse> responseEntity =
+                    alarmTemplateQueryService.selectAlarmTemplateByAlarmTemplateId(templateId);
+
+            AlarmTemplateResponse templateResponse = responseEntity.getBody();
+
+            if (templateResponse == null || templateResponse.templateContent() == null) {
+                throw new BusinessException(ErrorCode.INVALID_REQUEST);
+            }
+
+            alarmContent = templateResponse.templateContent();
+
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST);
+        }
+
+        Set<Long> recipients = new HashSet<>();
+
+        if (saved.getParent() == null) {
+            // 3-A. 새 루트 댓글: 질문 작성자에게 알림
+            Long questionOwnerId = question.getUser().getUserId();
+            // 본인이 본인 글에 댓글 단 경우는 제외
+            if (!questionOwnerId.equals(userId)) {
+                recipients.add(questionOwnerId);
+            }
+        } else {
+            // 3-B. 대댓글: 부모 댓글 작성자와 질문 작성자에게 알림
+            Long parentCommentOwnerId = saved.getParent().getUser().getUserId();
+            Long questionOwnerId = question.getUser().getUserId();
+
+            // 본인이 본인 댓글에 대댓글 단 경우는 제외
+            if (!parentCommentOwnerId.equals(userId)) {
+                recipients.add(parentCommentOwnerId);
+            }
+            // 질문 작성자가 대댓글 단 경우, 또는 부모댓글 작성자와 질문작성자가 같은 경우는 제외
+            if (!questionOwnerId.equals(userId) && !questionOwnerId.equals(parentCommentOwnerId)) {
+                recipients.add(questionOwnerId);
+            }
+        }
+        // 알림 전송
+        recipients.forEach(recipientId -> {
+            AlarmBoxCreateRequest alarmRequest = new AlarmBoxCreateRequest(alarmContent, recipientId);
+            alarmBoxCommandService.createAlarmBox(alarmRequest);
+        });
+        // 알림 로직 끝
 
         return new CreateCommentResponseDto(saved.getCommentId());
     }

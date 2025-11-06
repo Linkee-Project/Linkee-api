@@ -4,6 +4,7 @@ import com.linkee.linkeeapi.common.model.dto.ApiResponse;
 import com.linkee.linkeeapi.room_member.command.application.dto.request.RoomMemberCreateRequest;
 import com.linkee.linkeeapi.room_member.command.application.dto.response.RoomMemberCreateResponse;
 import com.linkee.linkeeapi.room_member.command.application.service.RoomMemberCommandService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/room_members")
 @RequiredArgsConstructor
+@Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class RoomMemberCommandController {
 
     private final RoomMemberCommandService roomMemberCommandService;

@@ -4,6 +4,7 @@ import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.question.query.dto.response.QuestionDetailResponseDto;
 import com.linkee.linkeeapi.question.query.dto.response.QuestionListResponseDto;
 import com.linkee.linkeeapi.question.query.service.QuestionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/questions")
+@Tag(name = "문제", description = "문제 게시판 및 댓글 관리 API")
 public class QuestionController {
 
     private final QuestionService questionService;

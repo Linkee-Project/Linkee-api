@@ -6,6 +6,7 @@ import com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomListResponseDto
 import com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomResponseDto;
 import com.linkee.linkeeapi.quiz_room.query.dto.response.ResultRowResponseDto;
 import com.linkee.linkeeapi.quiz_room.query.service.QuizRoomQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/quiz-rooms")
 @RequiredArgsConstructor
+@Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class QuizRoomQueryController {
 
     private final QuizRoomQueryService quizRoomService;

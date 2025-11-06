@@ -6,6 +6,7 @@ import com.linkee.linkeeapi.user.query.dto.request.UserSearchRequest;
 import com.linkee.linkeeapi.user.query.dto.response.UserListResponse;
 import com.linkee.linkeeapi.user.query.dto.response.UserMeResponse;
 import com.linkee.linkeeapi.user.query.service.UserQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
+@Tag(name = "회원", description = "회원가입, 로그인, 계정, 프로필 관련 API")
 public class UserQueryController {
 
     private final UserQueryService userQueryService;

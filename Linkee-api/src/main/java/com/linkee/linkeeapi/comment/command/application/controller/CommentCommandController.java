@@ -1,4 +1,4 @@
-package com.linkee.linkeeapi.comment.command.application.application;
+package com.linkee.linkeeapi.comment.command.application.controller;
 
 import com.linkee.linkeeapi.comment.command.application.dto.request.CreateCommentRequestDto;
 import com.linkee.linkeeapi.comment.command.application.dto.request.UpdateCommentRequestDto;
@@ -6,6 +6,7 @@ import com.linkee.linkeeapi.comment.command.application.dto.response.CreateComme
 import com.linkee.linkeeapi.comment.command.application.dto.response.UpdateCommentResponseDto;
 import com.linkee.linkeeapi.comment.command.application.service.CommentCommandService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/questions/{questionId}/comments")
+@Tag(name = "문제", description = "문제 게시판 및 댓글 관리 API")
 public class CommentCommandController {
 
     private final CommentCommandService commentCommandService;

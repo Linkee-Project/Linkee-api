@@ -11,6 +11,7 @@ import com.linkee.linkeeapi.common.security.service.RedisRefreshTokenService;
 import com.linkee.linkeeapi.user.command.application.dto.request.UserCreateRequest;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
+@Tag(name = "회원", description = "회원가입, 로그인, 계정, 프로필 관련 API")
 public class AuthController {
 
     private final UserRepository userRepository;

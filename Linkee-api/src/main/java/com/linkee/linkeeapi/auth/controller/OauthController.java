@@ -1,6 +1,7 @@
 package com.linkee.linkeeapi.auth.controller;
 
 import com.linkee.linkeeapi.auth.repository.AuthRedisRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@Tag(name = "회원", description = "회원가입, 로그인, 계정, 프로필 관련 API")
 public class OauthController {
 
     private final ClientRegistrationRepository clientRegistrationRepository;

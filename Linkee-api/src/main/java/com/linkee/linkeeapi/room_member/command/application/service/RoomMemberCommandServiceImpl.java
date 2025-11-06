@@ -84,10 +84,18 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
      * @throws IllegalArgumentException 룸 멤버를 찾을 수 없을 경우 발생
      */
     @Override
+    @Transactional
     public void toggleReady(Long roomMemberId) {
         RoomMember roomMember = roomMemberRepository.findById(roomMemberId)
                 .orElseThrow(() -> new IllegalArgumentException("RoomMember not found"));
 
+        //  1. 게임 상태 검증
+        QuizRoom quizRoom = roomMember.getQuizRoom();
+        if(quizRoom.getRoomStatus() != RoomStatus.W) {  // 대기(W) 상태가 아닐 경우
+            throw new BusinessException(ErrorCode.QUIZ_ROOM_NOT_WAITING);
+        }
+
+        //  2. 준비 상태 토글
         if (roomMember.getIsReady() == Status.Y) {
             roomMember.setIsReady(Status.N);
         } else {
@@ -102,6 +110,7 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
      * @throws IllegalArgumentException 룸 멤버를 찾을 수 없을 경우 발생
      */
     @Override
+    @Transactional
     public void selfLeaveRoom(Long roomMemberId) {
         RoomMember roomMember = roomMemberRepository.findById(roomMemberId)
                 .orElseThrow(() -> new IllegalArgumentException("RoomMember not found"));
@@ -114,6 +123,7 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
      * @throws IllegalArgumentException 룸 멤버를 찾을 수 없을 경우 발생
      */
     @Override
+    @Transactional
     public void kickRoomMember(Long roomMemberId) {
         RoomMember roomMember = roomMemberRepository.findById(roomMemberId)
                 .orElseThrow(() -> new IllegalArgumentException("RoomMember not found"));

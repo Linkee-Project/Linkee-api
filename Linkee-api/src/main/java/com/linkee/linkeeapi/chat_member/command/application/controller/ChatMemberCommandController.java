@@ -5,6 +5,7 @@ import com.linkee.linkeeapi.chat_member.command.application.dto.response.ChatMem
 import com.linkee.linkeeapi.chat_member.command.application.service.ChatMemberCommandService;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chat_members")
+@Tag(name = "자율", description = "자율방(자유 출제방) 관련 API")
+@Tag(name = "커뮤니케이션", description = "친구 및 채팅 기능 관련 API")
 public class ChatMemberCommandController {
 
     private final ChatMemberCommandService chatMemberCommandService;

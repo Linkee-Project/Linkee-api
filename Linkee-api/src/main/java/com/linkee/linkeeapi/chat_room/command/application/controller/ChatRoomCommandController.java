@@ -3,6 +3,7 @@ package com.linkee.linkeeapi.chat_room.command.application.controller;
 import com.linkee.linkeeapi.chat_room.command.application.dto.request.ChatRoomCreateRequestDto;
 import com.linkee.linkeeapi.chat_room.command.application.dto.request.ChatRoomDeleteRequestDto;
 import com.linkee.linkeeapi.chat_room.command.application.service.ChatRoomCommandService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chat-room")
+@Tag(name = "자율", description = "자율방(자유 출제방) 관련 API")
+@Tag(name = "커뮤니케이션", description = "친구 및 채팅 기능 관련 API")
 public class ChatRoomCommandController {
 
     private final ChatRoomCommandService chatRoomCommandService;

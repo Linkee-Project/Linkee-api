@@ -4,6 +4,7 @@ import com.linkee.linkeeapi.inquiry.command.application.dto.request.CreateInquir
 import com.linkee.linkeeapi.inquiry.command.application.dto.request.UpdateInquiryAnswerRequestDto;
 import com.linkee.linkeeapi.inquiry.command.application.service.InquiryCommandService;
 import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/inquiry")
+@Tag(name = "문의", description = "문의 및 답변 관리 API")
 public class InquiryCommandController {
     private final InquiryCommandService inquiryService;
     private final UserRepository userRepository;

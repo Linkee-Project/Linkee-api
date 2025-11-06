@@ -2,12 +2,14 @@ package com.linkee.linkeeapi.room_question.command.application.dto.request;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RoomQuestionCreateRequest {
     private Long quizRoomId;
     private Long questionId;

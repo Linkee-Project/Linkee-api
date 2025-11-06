@@ -1,10 +1,13 @@
 package com.linkee.linkeeapi.question.command.infrastructure.repository;
 
+import com.linkee.linkeeapi.category.command.aggregate.Category;
+import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface JpaQuestionRepository extends JpaRepository<Question,Long> {
@@ -19,4 +22,7 @@ public interface JpaQuestionRepository extends JpaRepository<Question,Long> {
           and q.isDeleted = com.linkee.linkeeapi.common.enums.Status.N
     """)
     Optional<Question> findByIdWithOptions(@Param("id") Long id);
+
+    // 검증 된, 삭제되지 않은 문제
+    List<Question> findByCategoryAndIsQualifiedAndIsDeleted(Category category, Status isQualified, Status isDeleted);
 }

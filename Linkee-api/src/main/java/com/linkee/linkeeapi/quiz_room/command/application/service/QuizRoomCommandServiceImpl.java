@@ -3,23 +3,38 @@ package com.linkee.linkeeapi.quiz_room.command.application.service;
 import com.linkee.linkeeapi.category.command.aggregate.Category;
 import com.linkee.linkeeapi.category.command.infrastructure.repository.CategoryRepository;
 import com.linkee.linkeeapi.common.enums.RoomStatus;
+import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
+import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
 import com.linkee.linkeeapi.quiz_current_index.command.domain.aggregate.QuizCurrentIndex;
 import com.linkee.linkeeapi.quiz_current_index.command.infrastructure.repository.QuizCurrentIndexRepository;
 import com.linkee.linkeeapi.quiz_room.command.application.dto.request.QuizRoomCreateRequestDto;
 import com.linkee.linkeeapi.quiz_room.command.application.dto.request.QuizRoomDeleteRequestDto;
 import com.linkee.linkeeapi.quiz_room.command.domain.aggregate.QuizRoom;
 import com.linkee.linkeeapi.quiz_room.command.infrastructure.repository.QuizRoomRepository;
+import com.linkee.linkeeapi.quiz_room.command.infrastructure.scheduler.QuizGameAdvanceScheduler;
+import com.linkee.linkeeapi.quiz_room.query.dto.response.ResultRowResponseDto;
+import com.linkee.linkeeapi.quiz_room.query.service.QuizRoomQueryService;
 import com.linkee.linkeeapi.room_member.command.domain.aggregate.RoomMember;
 import com.linkee.linkeeapi.room_member.command.infrastructure.repository.RoomMemberRepository;
+import com.linkee.linkeeapi.room_question.command.application.dto.request.RoomQuestionCreateRequest;
+import com.linkee.linkeeapi.room_question.command.application.service.RoomQuestionCommandService;
+import com.linkee.linkeeapi.room_question.command.infrastructure.repository.RoomQuestionRepository;
+import com.linkee.linkeeapi.room_user_log.command.domain.aggregate.RoomUserLog;
+import com.linkee.linkeeapi.room_user_log.command.infrastructure.repository.JpaRoomUserLogRepository;
 import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.user_grade.command.domain.entity.UserGrade;
+import com.linkee.linkeeapi.user_grade.command.infrastructure.repository.UserGradeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -37,6 +52,16 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
     private final RoomMemberRepository roomMemberRepository;
     private final QuizCurrentIndexRepository quizCurrentIndexRepository;
     private final UserFinder userFinder;
+    private final JpaQuestionRepository jpaQuestionRepository;
+    private final RoomQuestionCommandService roomQuestionCommandService;
+    private final QuizGameAdvanceScheduler quizGameAdvanceScheduler;
+    private final JpaRoomUserLogRepository jpaRoomUserLogRepository;
+    private final RoomQuestionRepository roomQuestionRepository;
+    private final QuizRoomQueryService  quizRoomQueryService;
+    private final UserGradeRepository userGradeRepository;
+
+
+
 
     /*
      * 새로운 퀴즈룸을 생성합니다.
@@ -91,7 +116,34 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         quizCurrentIndexRepository.findByQuizRoom(quizRoom)
                 .ifPresent(quizCurrentIndexRepository::delete);
 
-        // 추후 게임 결과 정산, 포인트 지급 등의 로직 여기 추가 할 수 있음
+        //  3. 게임 결과 정산 및 승리 횟수 업데이트
+        //  3-1. 게임 결과 조회(정답 수 기준 내림차순)
+        List<ResultRowResponseDto> results = quizRoomQueryService.getResultsByRoom(quizRoom.getQuizRoomId(), 0, 1);
+
+        //  3-2. 우승자 선정 (결과아 있고, 정답 수가 0 보다 큰 경우)
+        if (!results.isEmpty() && results.get(0).getCorrectCount() > 0) {
+            ResultRowResponseDto winnerResult = results.get(0);
+            User winner = userFinder.getById(winnerResult.getUserId());
+            Category category = quizRoom.getCategory();
+
+            //  3-3. 해당 유저의 카테고리별 등급 정보 조회 또는 생성
+            UserGrade userGrade = userGradeRepository.findByUserAndCategory(winner, category)
+                    .orElseGet(() -> {
+                        //  등급 정보가 없으면 새로 생성 (기본 등급, 승리 횟수 0)
+                        //  기본 등급(ID=1L)이 DB에 존재한다고 가정
+                        Grade defaultGrade = Grade.builder().gradeId(1L).build();
+                        return UserGrade.builder()
+                                .user(winner)
+                                .category(category)
+                                .grade(defaultGrade)
+                                .victoryCount(0)
+                                .build();
+                    });
+            //  3-4. 승리 횟수 1 증가 및 저장
+            userGrade.modifyVictoryCount(userGrade.getVictoryCount() + 1);
+            userGradeRepository.save(userGrade);
+        }
+
     }
 
 
@@ -142,43 +194,85 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         if (members.stream().anyMatch(member -> !member.isReady())){
             throw new BusinessException(ErrorCode.QUIZ_ROOM_NOT_READY);
         }
+        //  3. 문제 선정 및 방에 할당
+        //  3-1. 해당 카테고리에서 검증 된 문 제 목록 가져옴
+        List<Question> qualifiedQuestions = jpaQuestionRepository.findByCategoryAndIsQualifiedAndIsDeleted(
+                quizRoom.getCategory(), Status.Y, Status.N
+        );
+        //  3-2. 문제 목록을 랜덤으로 섞음
+        Collections.shuffle(qualifiedQuestions);
 
-        //  3. 퀴즈방의 상태를 '진행'으로 변경합니다.
+        //  3-3. 필요한 만큼의 문제를 방에 할다 (quizOrder 설정)
+        for (int i = 0; i < quizRoom.getRoomQuizLimit(); i++) {
+            Question selectedQuestion = qualifiedQuestions.get(i);
+            RoomQuestionCreateRequest createRequest = RoomQuestionCreateRequest.builder()
+                    .quizRoomId(quizRoomId)
+                    .questionId(selectedQuestion.getQuestionId())
+                    .quizOrder(i + 1)   // 1부터 순서대로
+                    .build();
+            roomQuestionCommandService.createRoomQuestion(createRequest);
+
+        }
+
+        //  4. 퀴즈방의 상태를 '진행'으로 변경합니다.
         quizRoom.setRoomStatus(RoomStatus.P);
         quizRoomRepository.save(quizRoom);
 
-        //  4. QuizCurrentIndex 레코드를 생성, 현재 문제 번호룰 1로 설정
+        //  5. QuizCurrentIndex 레코드를 생성, 현재 문제 번호룰 1로 설정
         QuizCurrentIndex newQuizIndex = QuizCurrentIndex.builder()
                 .quizRoom(quizRoom)
                 .currentQuizIndex(1)
                 .build();
         quizCurrentIndexRepository.save(newQuizIndex);
+
+        // 첫 번째 문제의 타이머를 스케줄링 합니다.
+        quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 30 * 1000L);
     }
 
     @Override
     @Transactional
     public void advanceNextQuestion(Long quizRoomId) {
-        //  1. 퀴즈방을 조회한다
+        //  1. 퀴즈방과 현재 문제 인덱스를 조회
         QuizRoom quizRoom = quizRoomRepository.findById(quizRoomId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_ROOM_NOT_FOUND));
-        // "진행 중" 상태인지 확인하는 로직
-        if(quizRoom.getRoomStatus() != RoomStatus.P) {
-            throw new BusinessException(ErrorCode.QUIZ_ROOM_NOT_IN_PLAY);
-        }
-
-        //  2. 해당 퀴즈방의 현재 문제 인덱스 정보를 조회합니다.
         QuizCurrentIndex quizIndex = quizCurrentIndexRepository.findByQuizRoom(quizRoom)
-                .orElseThrow(()-> new BusinessException(ErrorCode.QUIZ_INDEX_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_INDEX_NOT_FOUND));
 
-        //  3. 마지막 문제인지 확인합니다.
+        //  2. 현재 문제에 대한 RoomQuestion 엔티티를 찾음
+        roomQuestionRepository.findByQuizRoomAndQuizOrder(quizRoom, quizIndex.getCurrentQuizIndex())
+                .ifPresent(currentRoomQuestion -> {
+                    //3. 이 방의 모든 멤버를 조회
+                            List<RoomMember> members = roomMemberRepository.findByQuizRoom(quizRoom);
+                            for (RoomMember member : members) {
+                                //  4. 각 멤버가 현재 문제에 대해 답변했는지 확인
+                                jpaRoomUserLogRepository.findByRoomMemberAndRoomQuestion(member, currentRoomQuestion)
+                                        .ifPresentOrElse(
+                                                log -> {},  //  답변 기록이 있으면 아무것도 안 함
+                                                () -> { //  답변 기록이 없으면 오답으로 기록
+                                                    RoomUserLog unansweredLog = RoomUserLog
+                                                            .builder()
+                                                            .roomMember(member)
+                                                            .roomQuestion(currentRoomQuestion)
+                                                            .isCorrected(Status.N)  // 오답처리
+                                                            .build();
+                                                    jpaRoomUserLogRepository.save(unansweredLog);
+                                                }
+                                        );
+                            }
+                });
+
+        //  5. 마지막 문제인지 확인합니다.
         if(quizIndex.getCurrentQuizIndex() >= quizRoom.getRoomQuizLimit()) {
             //  마지막 문제이므로, 게임을 종료시킵니다.
             endGame(quizRoom);
             return; // 종료 후 아래 로직을 실행하지 않고 종료 (자동 종료)
         }
-        //  4. 현재 문제 인덱스를 1 증가시킵니다.
+        //  6. 현재 문제 인덱스를 1 증가시킵니다.
         quizIndex.setCurrentQuizIndex(quizIndex.getCurrentQuizIndex() + 1);
         quizCurrentIndexRepository.save(quizIndex);
+
+        //  7. 다음 문제의 타이머를 스케줄링 합니다 (30초)
+        quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 30 * 1000L);
     }
 
     @Override

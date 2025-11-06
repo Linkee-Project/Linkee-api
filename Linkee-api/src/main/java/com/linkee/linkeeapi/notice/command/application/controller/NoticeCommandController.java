@@ -5,6 +5,7 @@ import com.linkee.linkeeapi.notice.command.application.dto.request.CreateNoticeR
 import com.linkee.linkeeapi.notice.command.application.dto.request.DeleteNoticeRequestDto;
 import com.linkee.linkeeapi.notice.command.application.dto.request.UpdateNoticeRequestDto;
 import com.linkee.linkeeapi.notice.command.application.service.NoticeCommandService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/notice")
+@Tag(name = "공지", description = "공지사항 관리 API")
 public class NoticeCommandController {
 
     private final NoticeCommandService noticeService;

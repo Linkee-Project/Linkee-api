@@ -32,7 +32,7 @@ class ChatMessageQueryServiceImplTest {
     @Test
     @DisplayName("채팅메세지 생성")
     void createMessage(){
-        User user1 = new User(null, "user01", "pass01", "배짱이", Status.Y, Role.USER);
+        User user1 = User.createNormalUser("user01", "pass01", "배짱이");
 
         ChatRoom room = ChatRoom.builder()
                 .chatRoomName("채팅방1")
@@ -55,7 +55,7 @@ class ChatMessageQueryServiceImplTest {
     @Test
     @DisplayName("전체 채팅메세지 조회")
     void selectAll(){
-        User user1 = new User(null, "user01", "pass01", "배짱이",Status.Y, Role.USER);
+        User user1 = User.createNormalUser( "user01", "pass01", "배짱이");
 
         ChatRoom room = ChatRoom.builder()
                 .chatRoomName("채팅방1")

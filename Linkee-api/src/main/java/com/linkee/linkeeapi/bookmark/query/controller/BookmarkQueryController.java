@@ -6,6 +6,7 @@ import com.linkee.linkeeapi.bookmark.query.service.BookmarkQueryService;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.common.security.model.CustomUser;
 import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/bookmarks")
 @RequiredArgsConstructor
+@Tag(name = "회원", description = "회원가입, 로그인, 계정, 프로필 관련 API")
 public class BookmarkQueryController {
 
     private final BookmarkQueryService bookmarkQueryService;

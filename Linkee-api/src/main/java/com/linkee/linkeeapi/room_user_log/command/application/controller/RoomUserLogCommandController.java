@@ -2,6 +2,7 @@ package com.linkee.linkeeapi.room_user_log.command.application.controller;
 
 import com.linkee.linkeeapi.room_user_log.command.application.dto.request.RoomUserLogCreateRequestDto;
 import com.linkee.linkeeapi.room_user_log.command.application.service.RoomUserLogCommandService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/room_user_logs")
 @RequiredArgsConstructor
+@Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class RoomUserLogCommandController {
 
     private final RoomUserLogCommandService roomUserLogCommandService;
