@@ -40,17 +40,17 @@ public class CommentCommandService {
     //댓글 등록
     public CreateCommentResponseDto createComment(Long questionId, Long userId, CreateCommentRequestDto req) {
         Question question = jpaQuestionRepository.findById(questionId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문제입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
         User user = userFinder.getById(userId);
 
         Comment saved;
         if (req.getParentCommentId() == null) {
-            Comment root = Comment.createRoot(question, user, req.getContent());
+            Comment root = Comment.createRoot(question, user, req.getCommentContent());
             saved = jpaCommentRepository.save(root);
         } else {
             Comment parent = jpaCommentRepository.findById(req.getParentCommentId())
-                    .orElseThrow(() -> new IllegalArgumentException("부모 댓글이 존재하지 않습니다."));
-            Comment reply = Comment.createReply(question, user, parent, req.getContent());
+                    .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_PARENT_NOT_FOUND));
+            Comment reply = Comment.createReply(question, user, parent, req.getCommentContent());
             saved = jpaCommentRepository.save(reply);
         }
 
@@ -119,13 +119,13 @@ public class CommentCommandService {
             Long questionId, Long commentId, Long userId, UpdateCommentRequestDto request
     ) {
         Comment comment = jpaCommentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getQuestion().getQuestionId().equals(questionId)) {
-            throw new IllegalArgumentException("해당 질문의 댓글이 아닙니다.");
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"해당 질문의 댓글이 아닙니다.");
         }
         if (!comment.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("댓글 작성자만 수정할 수 있습니다.");
+            throw new BusinessException(ErrorCode.COMMENT_FORBIDDEN_ACCESS);
         }
 
         comment.updateContent(request.getCommentContent());
@@ -147,18 +147,18 @@ public class CommentCommandService {
     public void deleteComment(Long questionId, Long commentId, Long userId) {
         // [1. 댓글 조회]
         Comment target = jpaCommentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
         // [2. 권한 검증]
         // 1) 이 댓글이 해당 질문에 속한 댓글인지 확인
         // 예: 질문1의 댓글을 질문2에서 삭제하려는 것 방지
         if (!target.getQuestion().getQuestionId().equals(questionId)) {
-            throw new IllegalArgumentException("해당 질문의 댓글이 아닙니다.");
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"해당 질문의 댓글이 아닙니다.");
         }
 
         // 2) 댓글 작성자 본인만 삭제 가능
         if (!target.getUser().getUserId().equals(userId)) {
-            throw new IllegalArgumentException("댓글 작성자만 삭제할 수 있습니다.");
+            throw new BusinessException(ErrorCode.COMMENT_FORBIDDEN_ACCESS);
         }
 
 

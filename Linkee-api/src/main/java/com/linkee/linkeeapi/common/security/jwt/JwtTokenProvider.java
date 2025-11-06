@@ -4,10 +4,14 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 
 @Component
@@ -84,4 +88,19 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+
+    public Authentication getAuthentication(String token) {
+        String username = getUsername(token);
+        String role = getRole(token);
+        if (username == null) return null;
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+        return new UsernamePasswordAuthenticationToken(username, null, Collections.singleton(authority));
+    }
+
+
+
+
+
 }

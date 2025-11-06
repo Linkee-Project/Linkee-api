@@ -2,6 +2,7 @@ package com.linkee.linkeeapi.question.command.application.controller;
 
 import com.linkee.linkeeapi.question.command.application.dto.request.CreateQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.request.UpdateQuestionRequestDto;
+import com.linkee.linkeeapi.question.command.application.dto.request.VerifyQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.application.service.QuestionCommandService;
 import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +25,15 @@ public class QuestionCommandController {
     public ResponseEntity<String> create(@Valid @RequestBody CreateQuestionRequestDto request) {
         questionCommandService.createQuestion(request);
         return ResponseEntity.ok("문제 등록 완료");
+    }
+    //문제 검증 변경(관리자)
+    @PostMapping("/{id}/verify")
+    public ResponseEntity<String> verify(
+            @PathVariable Long id,
+            @RequestBody VerifyQuestionRequestDto request
+    ) {
+        questionCommandService.verifyQuestion(id, request);
+        return ResponseEntity.ok("문제 검증 완료");
     }
 
     //문제 수정

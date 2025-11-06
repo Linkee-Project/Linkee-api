@@ -14,6 +14,6 @@ public class CreateCommentRequestDto {
 
     @NotBlank
     @Size(max = 1000)
-    private String content;
+    private String commentContent;
 
 }

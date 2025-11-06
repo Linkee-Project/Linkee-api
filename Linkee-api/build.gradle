@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // jwt 토큰 생성,검증,파싱 해주는 api , 구현체는 따로필요
     implementation 'io.jsonwebtoken:jjwt-api:0.12.7'
-    //websocket, stomp
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     // jjwt-api의 구현체 실제 동작을 수행
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.7'

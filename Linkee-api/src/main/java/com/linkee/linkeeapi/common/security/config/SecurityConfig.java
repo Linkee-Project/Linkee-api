@@ -38,7 +38,7 @@ public class SecurityConfig {
 
                 // ✅ 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/oauth2/**", "/error", "/accessDenied", "/**").permitAll()
+                        .requestMatchers("/**", "/login", "/oauth2/**", "/error", "/accessDenied", "/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")

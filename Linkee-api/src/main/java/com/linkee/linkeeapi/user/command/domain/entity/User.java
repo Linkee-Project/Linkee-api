@@ -51,6 +51,17 @@ public class User extends BaseTimeEntity {
     private Role userRole = Role.USER;
 
 
+    // 관리자 회원가입용
+    public static User createAdminUser(String email, String password, String nickname) {
+        return User.builder()
+                .userEmail(email)
+                .userPassword(password)
+                .userNickname(nickname)
+                .userRole(Role.ADMIN)
+                .userStatus(Status.Y)
+                .build();
+    }
+
     // 일반 회원가입용
     public static User createNormalUser(String email, String password, String nickname) {
         return User.builder()

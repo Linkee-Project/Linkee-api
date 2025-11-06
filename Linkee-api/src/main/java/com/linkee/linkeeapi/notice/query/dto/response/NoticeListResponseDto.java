@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 //목록 조회 응답
 public class NoticeListResponseDto {
 
+    private Long noticeId;
     private String noticeTitle;
     //private String noticeContent;
     private Long noticeViews;

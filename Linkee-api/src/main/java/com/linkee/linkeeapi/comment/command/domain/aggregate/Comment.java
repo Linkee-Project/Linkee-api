@@ -1,6 +1,8 @@
 package com.linkee.linkeeapi.comment.command.domain.aggregate;
 
 import com.linkee.linkeeapi.common.enums.Status;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.BaseTimeEntity;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
@@ -53,7 +55,9 @@ public class Comment extends BaseTimeEntity {
     /*최상위 댓글(루트 댓글)을 생성*/
     public static Comment createRoot(Question q, User u, String content) {
 
-        if (content == null || content.isBlank()) throw new IllegalArgumentException("댓글 내용은 비어 있을 수 없습니다.");
+        if (content == null || content.isBlank()) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"댓글 내용은 비어 있을 수 없습니다.");
+        }
 
         Comment root = Comment.builder()
                 .question(q)
@@ -72,12 +76,12 @@ public class Comment extends BaseTimeEntity {
     public static Comment createReply(Question q, User u, Comment parent, String content) {
         // [검증 1] 대댓글의 대댓글 금지
         if (parent.getParent() != null) {
-            throw new IllegalStateException("대댓글은 1단계까지만 허용됩니다.");
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"대댓글은 1단계까지만 허용됩니다.");
         }
         // [검증 2] 부모와 같은 Question만 허용
         // 예: "질문1의 댓글"에 "질문2의 대댓글"을 다는 것 방지
         if (!parent.getQuestion().getQuestionId().equals(q.getQuestionId())) {
-            throw new IllegalArgumentException("부모 댓글과 다른 문제에는 대댓글을 달 수 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"부모 댓글과 다른 문제에는 대댓글을 달 수 없습니다.");
         }
 
         // 대댓글 생성
@@ -96,7 +100,7 @@ public class Comment extends BaseTimeEntity {
     //댓글 수정
     public void updateContent(String newContent) {
         if (newContent == null || newContent.isBlank()) {
-            throw new IllegalArgumentException("댓글 내용은 비어 있을 수 없습니다.");
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"댓글 내용은 비어 있을 수 없습니다.");
         }
         this.commentContent = newContent;
     }

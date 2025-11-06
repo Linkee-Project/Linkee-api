@@ -1,9 +1,9 @@
 package com.linkee.linkeeapi.qna.command.application.service;
 
-import com.linkee.linkeeapi.chat_member.command.domain.aggregate.entity.ChatMember;
-import com.linkee.linkeeapi.chat_member.command.infrastructure.repository.ChatMemberRepository;
-import com.linkee.linkeeapi.chat_room.command.domain.aggregate.ChatRoom;
-import com.linkee.linkeeapi.chat_room.command.infrastructure.repository.JpaChatRoomRepository;
+import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatMember;
+import com.linkee.linkeeapi.chat.chat_command.chat_repository.ChatMemberRepository;
+import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatRoom;
+import com.linkee.linkeeapi.chat.chat_command.chat_repository.ChatRoomRepository;
 import com.linkee.linkeeapi.qna.command.application.dto.request.CreateQnaRequestDto;
 import com.linkee.linkeeapi.qna.command.domain.aggregate.Qna;
 import com.linkee.linkeeapi.qna.command.infrastructure.repository.JpaQnaRepository;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class QnaCommandServiceImpl implements QnaCommandService{
 
     private final UserFinder userFinder;
-    private final JpaChatRoomRepository chatRoomRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final ChatMemberRepository chatMemberRepository;
     private final JpaQnaRepository qnaRepository;
 
