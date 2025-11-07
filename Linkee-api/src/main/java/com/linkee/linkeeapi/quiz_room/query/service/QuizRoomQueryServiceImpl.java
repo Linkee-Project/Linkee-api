@@ -25,6 +25,7 @@ public class QuizRoomQueryServiceImpl implements QuizRoomQueryService {
         return quizRoomMapper.findAllRoomsPaginated(size, offset);
     }
 
+
     //  빠른 입장
     @Override
     public QuizRoomResponseDto findAvailableRoom() {

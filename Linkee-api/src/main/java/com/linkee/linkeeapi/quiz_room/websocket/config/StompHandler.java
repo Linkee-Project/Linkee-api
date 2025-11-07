@@ -1,4 +1,4 @@
-package com.linkee.linkeeapi.quiz.command.application.config;
+package com.linkee.linkeeapi.quiz_room.websocket.config;
 
 import com.linkee.linkeeapi.common.security.jwt.JwtTokenProvider;
 import com.linkee.linkeeapi.common.security.model.CustomUser;

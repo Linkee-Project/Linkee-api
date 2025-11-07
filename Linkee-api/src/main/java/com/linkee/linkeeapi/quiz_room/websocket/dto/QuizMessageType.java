@@ -1,4 +1,4 @@
-package com.linkee.linkeeapi.quiz.domain.dto.command_dto;
+package com.linkee.linkeeapi.quiz_room.websocket.dto;
 
 public enum QuizMessageType {
     // 클라이언트 → 서버

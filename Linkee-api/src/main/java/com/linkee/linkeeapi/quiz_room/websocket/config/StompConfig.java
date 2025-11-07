@@ -1,4 +1,4 @@
-package com.linkee.linkeeapi.quiz.command.application.config;
+package com.linkee.linkeeapi.quiz_room.websocket.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,10 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // SockJS
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/ws-stomp")
+                .setAllowedOriginPatterns("*")
+                .setAllowedOrigins("http://localhost:5500", "http://127.0.0.1:5500")
+                .withSockJS();
     }
 
     @Override
@@ -34,4 +37,6 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/sub", "/queue");
         registry.setUserDestinationPrefix("/user"); //개인
     }
+
+
 }

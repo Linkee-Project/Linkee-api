@@ -1,6 +1,6 @@
-package com.linkee.linkeeapi.quiz.domain.dto.command_dto.request;
+package com.linkee.linkeeapi.quiz_room.websocket.dto.request;
 
-import com.linkee.linkeeapi.quiz.domain.dto.command_dto.QuizMessageType;
+import com.linkee.linkeeapi.quiz_room.websocket.dto.QuizMessageType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

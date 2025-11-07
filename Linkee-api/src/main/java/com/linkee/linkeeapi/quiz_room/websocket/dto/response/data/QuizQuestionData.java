@@ -1,4 +1,4 @@
-package com.linkee.linkeeapi.quiz.domain.dto.command_dto.response.data;
+package com.linkee.linkeeapi.quiz_room.websocket.dto.response.data;
 
 import lombok.*;
 
@@ -17,7 +17,6 @@ public class QuizQuestionData {
     private Long questionId;
     private String questionContent;
     private String categoryName;
-    private String difficulty;
 
     private List<OptionInfo> options;
 

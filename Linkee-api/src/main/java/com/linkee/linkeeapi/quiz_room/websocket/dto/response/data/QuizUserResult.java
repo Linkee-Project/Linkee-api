@@ -1,4 +1,4 @@
-package com.linkee.linkeeapi.quiz.domain.dto.command_dto.response.data;
+package com.linkee.linkeeapi.quiz_room.websocket.dto.response.data;
 
 import lombok.*;
 
