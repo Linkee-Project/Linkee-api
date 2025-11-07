@@ -8,7 +8,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-/**
+/*
  * 룸 멤버 엔티티. 퀴즈룸에 참여하는 사용자의 정보를 관리합니다.
  * `tb_room_member` 테이블과 매핑됩니다.
  */
@@ -41,7 +41,7 @@ public class RoomMember {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_room_id", nullable = false, foreignKey = @ForeignKey(name = "FK_room_member_quiz_room_id"))
-    private QuizRoom quizroom;
+    private QuizRoom quizRoom;
 
     /*
      * 룸 멤버의 준비 상태 (Y: 준비, N: 미준비).
@@ -50,6 +50,9 @@ public class RoomMember {
     @Enumerated(EnumType.STRING)
     @Column(name = "is_ready", nullable = false, columnDefinition = "ENUM('Y','N') DEFAULT 'N'")
     private Status isReady;
+    public boolean isReady() {
+        return this.isReady == Status.Y;
+    }
 
     /*
      * 룸 멤버의 승리 여부 (Y: 승리, N: 패배, NULL: 미정).

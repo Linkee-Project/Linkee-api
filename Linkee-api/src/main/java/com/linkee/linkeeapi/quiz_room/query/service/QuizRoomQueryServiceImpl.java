@@ -1,5 +1,6 @@
 package com.linkee.linkeeapi.quiz_room.query.service;
 
+import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.quiz_room.query.mapper.QuizRoomMapper;
 import com.linkee.linkeeapi.quiz_room.query.dto.response.PlayStateResponseDto;
 import com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomListResponseDto;
@@ -20,9 +21,11 @@ public class QuizRoomQueryServiceImpl implements QuizRoomQueryService {
 
     //  방 목록 조회
     @Override
-    public List<QuizRoomListResponseDto> findAllRooms(int page, int size) {
+    public PageResponse<QuizRoomListResponseDto> findAllRooms(int page, int size) {
         int offset = page * size;
-        return quizRoomMapper.findAllRoomsPaginated(size, offset);
+        List<QuizRoomListResponseDto> rooms = quizRoomMapper.findAllRoomsPaginated(size, offset);
+        int total = quizRoomMapper.countAllRooms();
+        return PageResponse.from(rooms, offset, size, total);
     }
 
     //  빠른 입장

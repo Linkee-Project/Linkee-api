@@ -15,6 +15,9 @@ public interface QuizRoomMapper {
     //  방 목록 조회 (페이징)
     List<QuizRoomListResponseDto> findAllRoomsPaginated(@Param("limit") int limit, @Param("offset") int offset);
 
+    // 전체 방 개수 조회
+    int countAllRooms();
+
     //  빠른 시작
     QuizRoomResponseDto findAvailableRoom();
 

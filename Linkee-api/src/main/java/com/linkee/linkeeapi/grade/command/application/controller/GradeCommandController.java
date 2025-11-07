@@ -3,6 +3,7 @@ package com.linkee.linkeeapi.grade.command.application.controller;
 import com.linkee.linkeeapi.grade.command.application.dto.request.UpdateGradeNameRequest;
 import com.linkee.linkeeapi.grade.command.application.service.GradeCommandService;
 import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/grades")
+@Tag(name = "회원", description = "회원가입, 로그인, 계정, 프로필 관련 API")
 public class GradeCommandController {
 
     private final GradeCommandService gradeCommandService;

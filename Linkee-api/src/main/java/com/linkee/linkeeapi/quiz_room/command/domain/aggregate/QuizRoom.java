@@ -58,7 +58,7 @@ public class QuizRoom extends BaseTimeEntity {
     private LocalDateTime endedAt;
 
     @Column(name = "room_code")
-    private Integer roomCode;
+    private String roomCode;
 
     @Column(name = "room_quiz_limit", nullable = false)
     private Integer roomQuizLimit;

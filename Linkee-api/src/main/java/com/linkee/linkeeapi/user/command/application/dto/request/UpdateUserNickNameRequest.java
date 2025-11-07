@@ -6,6 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateUserNickNameRequest {
-    private Long userId;
     private String nickName;
 }

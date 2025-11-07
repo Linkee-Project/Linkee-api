@@ -1,5 +1,6 @@
 package com.linkee.linkeeapi.quiz_room.query.service;
 
+import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.quiz_room.query.dto.response.PlayStateResponseDto;
 import com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomListResponseDto;
 import com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomResponseDto;
@@ -10,7 +11,7 @@ import java.util.List;
 public interface QuizRoomQueryService {
 
     //  방 목록 조회
-    List<QuizRoomListResponseDto> findAllRooms(int page, int size);
+    PageResponse<QuizRoomListResponseDto> findAllRooms(int page, int size);
 
     // 빠른 입장
     QuizRoomResponseDto findAvailableRoom();

@@ -1,5 +1,7 @@
 package com.linkee.linkeeapi.grade.command.application.service;
 
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.grade.command.application.dto.request.UpdateGradeNameRequest;
 import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
 import com.linkee.linkeeapi.grade.command.infrastructure.GradeRepository;
@@ -27,7 +29,7 @@ public class GradeCommandService {
     @Transactional
     public void updateGradeName(UpdateGradeNameRequest request) {
         Grade grade = gradeRepository.findById(request.getGradeId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 등급이 존재하지 않습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_REQUEST,"해당 등급이 존재하지 않습니다"));
         grade.modifyGradeName(request.getGradeName());
     }
 
@@ -35,7 +37,7 @@ public class GradeCommandService {
     @Transactional
     public void deleteGrade(Long gradeId) {
         if (!gradeRepository.existsById(gradeId)) {
-            throw new IllegalArgumentException("해당 등급이 존재하지 않습니다. id=" + gradeId);
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"해당 등급이 존재하지 않습니다");
         }
         gradeRepository.deleteById(gradeId);
     }

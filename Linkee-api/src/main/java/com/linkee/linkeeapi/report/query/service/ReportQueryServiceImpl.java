@@ -2,6 +2,8 @@ package com.linkee.linkeeapi.report.query.service;
 
 import com.linkee.linkeeapi.common.enums.Role;
 
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.report.query.dto.request.ReadReportListRequestDto;
 import com.linkee.linkeeapi.report.query.dto.response.ReportDetailResponseDto;
 import com.linkee.linkeeapi.report.query.dto.response.ReportListResponseDto;
@@ -61,8 +63,9 @@ public class ReportQueryServiceImpl implements ReportQueryService {
         }
 
         if (reportDetail == null) {
-            throw new IllegalStateException("조회 권한이 없거나 존재하지 않는 신고입니다.");
+            throw new BusinessException(ErrorCode.REPORT_NO_ACCESS);
         }
+
 
         return reportDetail;
     }

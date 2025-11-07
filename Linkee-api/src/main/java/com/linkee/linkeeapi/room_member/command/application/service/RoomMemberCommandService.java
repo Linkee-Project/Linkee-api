@@ -7,9 +7,8 @@ import com.linkee.linkeeapi.room_member.command.application.dto.response.RoomMem
  * 비즈니스 로직을 정의합니다.
  */
 public interface RoomMemberCommandService {
-    /**
+    /*
      * 새로운 룸 멤버를 생성합니다.(입장)
-     *
      * @param request 생성할 룸 멤버의 정보를 담은 요청 객체
      * @return 생성된 룸 멤버의 정보를 담은 응답 객체
      */

@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.chat_room.query.mapper.ChatRoomMapper">
+<mapper namespace="com.linkee.linkeeapi.chat.command.domain.mapper.ChatRoomMapper">
     <!-- 자신의 채팅방 목록 -->
-    <select id="findMyChatRooms" resultType="com.linkee.linkeeapi.chat_room.query.dto.response.ChatRoomListResponseDto">
+    <select id="findMyChatRooms" resultType="com.linkee.linkeeapi.chat.command.domain.dto.query_dto.response.ChatRoomListResponseDto">
         SELECT
             cr.chat_room_name As chatRoomName,
             cr.room_owner AS ownerId,
@@ -29,7 +29,7 @@
     </select>
 
     <!-- 전체 게임방 목록 -->
-    <select id="findAllGameRooms" resultType="com.linkee.linkeeapi.chat_room.query.dto.response.GameRoomListResponseDto">
+    <select id="findAllGameRooms" resultType="com.linkee.linkeeapi.chat.command.domain.dto.query_dto.response.GameRoomListResponseDto">
         SELECT
             cr.chat_room_name AS chatRoomName,
             cr.is_private AS isPrivate,

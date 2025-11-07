@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.linkee.linkeeapi.quiz_current_index.query.mapper.QuizCurrentIndexMapper">
+
+    <!-- 현재 문제 인덱스 -->
+    <select id="findCurrentIndexByRoomId" resultType="int">
+        SELECT current_quiz_index
+        FROM tb_quiz_current_index
+        WHERE quiz_room_id = #{roomId}
+    </select>
+
+    <!-- 현재 문제 상세 -->
+    <select id="findCurrentQuestion" resultType="com.linkee.linkeeapi.quiz_current_index.query.dto.response.CurrentQuestionResponse">
+        SELECT
+            q.question_id,
+            q.question_question AS questionContent,
+            MAX(CASE WHEN qo.question_option_index = 1 THEN qo.question_option_text END) AS option1,
+            MAX(CASE WHEN qo.question_option_index = 2 THEN qo.question_option_text END) AS option2,
+            MAX(CASE WHEN qo.question_option_index = 3 THEN qo.question_option_text END) AS option3,
+            MAX(CASE WHEN qo.question_option_index = 4 THEN qo.question_option_text END) AS option4
+        FROM
+            tb_quiz_current_index ci
+                JOIN tb_room_question rq
+                     ON ci.quiz_room_id = rq.quiz_room_id AND rq.quiz_order = ci.current_quiz_index
+                JOIN tb_question q
+                     ON rq.question_id = q.question_id
+                LEFT JOIN tb_question_option qo
+                          ON q.question_id = qo.question_id
+        WHERE
+            ci.quiz_room_id = #{roomId}
+        GROUP BY
+            q.question_id, q.question_question
+    </select>
+
+    <!-- 복원용 전체 상태 -->
+    <select id="findReconnectState" resultType="com.linkee.linkeeapi.quiz_current_index.query.dto.response.QuizReconnectStateResponse">
+        SELECT
+            r.quiz_room_id,
+            r.room_status,
+            r.room_quiz_limit,
+            r.joined_count,
+            ci.current_quiz_index
+        FROM tb_quiz_room r
+                 LEFT JOIN tb_quiz_current_index ci ON r.quiz_room_id = ci.quiz_room_id
+        WHERE r.quiz_room_id = #{roomId}
+    </select>
+
+</mapper>

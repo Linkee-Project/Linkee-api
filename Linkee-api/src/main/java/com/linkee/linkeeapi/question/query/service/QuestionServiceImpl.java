@@ -1,5 +1,7 @@
 package com.linkee.linkeeapi.question.query.service;
 
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.question.query.mapper.QuestionMapper;
 import com.linkee.linkeeapi.question.query.dto.response.QuestionDetailResponseDto;
@@ -56,7 +58,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         // 문제 상세 조회 id 검증
         QuestionDetailResponseDto detail = questionMapper.findDetailByQuestionId(questionId);
-        if (detail == null) throw new IllegalArgumentException("존재하지 않는 문제입니다.");
+        if (detail == null) throw new BusinessException(ErrorCode.QUESTION_NOT_FOUND);
 
         // 옵션 목록 조회
         List<QuestionDetailResponseDto.OptionList> options = questionMapper.findDetailOptions(questionId);

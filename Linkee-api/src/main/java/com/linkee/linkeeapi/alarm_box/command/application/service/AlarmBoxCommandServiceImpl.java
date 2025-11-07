@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AlarmBoxCommandServiceImpl implements AlarmBoxCommandService {
@@ -49,6 +51,20 @@ public class AlarmBoxCommandServiceImpl implements AlarmBoxCommandService {
 
             alarmBoxRepository.deleteById(alarmBoxId);
 
+        }
+    }
+
+    // 전체 알림 확인
+    @Transactional
+    @Override
+    public void checkAllAlarms(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        List<AlarmBox> unreadAlarms = alarmBoxRepository.findByUserAndIsChecked(user, Status.N);
+
+        for (AlarmBox alarm : unreadAlarms) {
+            alarm.checkedAlarm();
         }
     }
 }

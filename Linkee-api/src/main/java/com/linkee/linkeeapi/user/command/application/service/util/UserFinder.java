@@ -16,5 +16,12 @@ public class UserFinder {
         return userRepository.findById(id).orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
     }
 
+    // ✅ 이메일 기반 조회 추가
+    public User getByEmail(String email) {
+        return userRepository.findByUserEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
+    }
+
+
 
 }

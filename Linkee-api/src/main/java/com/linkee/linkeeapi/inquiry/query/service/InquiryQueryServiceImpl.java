@@ -2,6 +2,8 @@ package com.linkee.linkeeapi.inquiry.query.service;
 
 
 import com.linkee.linkeeapi.common.enums.Role;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.inquiry.query.dto.response.InquiryResponseDto;
 import com.linkee.linkeeapi.inquiry.query.mapper.InquiryMapper;
@@ -30,6 +32,11 @@ public class InquiryQueryServiceImpl implements InquiryQueryService {
 
         List<InquiryResponseDto> inquiries;
         int total;
+
+        if (currentUser == null) {
+            throw new BusinessException(ErrorCode.INVALID_USER_ID);
+        }
+
 
         if (currentUser.getUserRole() == Role.ADMIN) {
             inquiries = inquiryMapper.findAll(offset, pageSize);

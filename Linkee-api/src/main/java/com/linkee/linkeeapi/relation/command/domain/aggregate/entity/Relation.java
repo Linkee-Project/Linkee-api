@@ -47,4 +47,11 @@ public class Relation extends BaseTimeEntity {
     public void modifyRelationStatus(RelationStatus status) {
         this.relationStatus = status;
     }
+
+    // 이전에 거절('R')된 요청을 다시 보낼 때, 기존 데이터를 재활용하기 위해서 상태를 'P'로 바꾸는 메소드
+    public void reRequest(User requester, User receiver) {
+        this.requester = requester;
+        this.receiver = receiver;
+        this.relationStatus = RelationStatus.P;
+    }
 }

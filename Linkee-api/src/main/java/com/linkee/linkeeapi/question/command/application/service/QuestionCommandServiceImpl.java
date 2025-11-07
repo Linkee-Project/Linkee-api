@@ -2,17 +2,22 @@ package com.linkee.linkeeapi.question.command.application.service;
 
 import com.linkee.linkeeapi.category.command.aggregate.Category;
 import com.linkee.linkeeapi.category.command.infrastructure.repository.CategoryRepository;
+import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.common.enums.Status;
+import com.linkee.linkeeapi.common.event.QuestionVerifiedEvent;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.question.command.application.dto.request.CreateQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.request.UpdateQuestionRequestDto;
+import com.linkee.linkeeapi.question.command.application.dto.request.VerifyQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
 import com.linkee.linkeeapi.question_option.command.domain.aggregate.QuestionOption;
 import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +32,18 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
     private final JpaQuestionRepository jpaQuestionRepository;
     private final UserFinder userFinder;
     private final CategoryRepository categoryRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     //문제 등록
     @Override
     public void createQuestion(CreateQuestionRequestDto request) {
 
-        User user = userFinder.getById(request.getUserId());
+        if (request.getUserId() == null) {
+            throw new BusinessException(ErrorCode.INVALID_USER_ID);
+        }
+
         Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // Question 생성
         Question question = Question.builder()
@@ -42,7 +51,7 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
                 .questionTitle(request.getQuestionTitle())
                 .questionQuestion(request.getQuestionQuestion())
                 .questionAnswer(request.getQuestionAnswer())
-                .user(user)
+                .user(userFinder.getById(request.getUserId()))
                 .isQualified(Status.N)
                 .isDeleted(Status.N)
                 .questionViews(0L)
@@ -69,8 +78,9 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
         User user = userFinder.getById(request.getUserId());
 
         Question question = jpaQuestionRepository.findByIdWithOptions(questionId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문제입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
+        //문제 수정 권한 검증
         question.assertUpdatableBy(user, question.getUser().getUserId());
 
         // 제목 수정
@@ -124,10 +134,32 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
         User user = userFinder.getById(userId);
 
         Question question = jpaQuestionRepository.findByIdWithOptions(questionId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문제입니다."));
-
-        question.assertDeletableBy(userId, question.getUser().getUserId());
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+        //문제 삭제 권한 검증
+        question.assertDeletableBy(user, question.getUser().getUserId());
         question.softDelete();
     }
+    //문제 검증 변경 (관리자)
+    public void verifyQuestion(Long questionId, VerifyQuestionRequestDto request) {
+
+        // 1) 관리자 조회
+        User adminUser = userFinder.getById(request.getAdminId());
+        // 2) ROLE 검사
+        if (adminUser.getUserRole() != Role.ADMIN) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_QUESTION_ACCESS);
+        }
+
+        // 3) 문제 로드
+        Question q = jpaQuestionRepository.findByIdWithOptions(questionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+
+        // 4) 상태 검증 & 검증 처리
+        q.verifyByAdmin(adminUser); // 내부에서 이미 검증됨이면 QUESTION_ALREADY_QUALIFIED 던짐
+
+        // 알림 이벤트
+        eventPublisher.publishEvent(new QuestionVerifiedEvent(this, q));
+
+    }
+
     }
 

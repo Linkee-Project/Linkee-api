@@ -4,5 +4,5 @@ import com.linkee.linkeeapi.qna.command.application.dto.request.CreateQnaRequest
 
 public interface QnaCommandService {
 
-    void createQna(CreateQnaRequestDto request);
+    void createQna(CreateQnaRequestDto request, Long userId);
 }

@@ -1,7 +1,7 @@
 package com.linkee.linkeeapi.qna.command.domain.aggregate;
 
-import com.linkee.linkeeapi.chat_member.command.domain.aggregate.entity.ChatMember;
-import com.linkee.linkeeapi.chat_room.command.domain.aggregate.ChatRoom;
+import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatMember;
+import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatRoom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,5 +1,7 @@
 package com.linkee.linkeeapi.room_question.command.application.service;
 
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
 import com.linkee.linkeeapi.quiz_room.command.infrastructure.repository.QuizRoomRepository;
 import com.linkee.linkeeapi.room_question.command.application.dto.request.RoomQuestionCreateRequest;
@@ -22,9 +24,9 @@ public class RoomQuestionCommandServiceImpl implements RoomQuestionCommandServic
     @Transactional
     public Long createRoomQuestion(RoomQuestionCreateRequest request) {
         var quizRoom = quizRoomRepository.findById(request.getQuizRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("QuizRoom not found with id: " + request.getQuizRoomId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_ROOM_NOT_FOUND));
         var question = jpaQuestionRepository.findById(request.getQuestionId())
-                .orElseThrow(() -> new IllegalArgumentException("Question not found with id: " + request.getQuestionId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
         RoomQuestion roomQuestion = RoomQuestion.builder()
                 .quizRoom(quizRoom)

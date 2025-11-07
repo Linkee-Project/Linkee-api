@@ -1,6 +1,8 @@
 package com.linkee.linkeeapi.comment.command.domain.aggregate;
 
 import com.linkee.linkeeapi.common.enums.Status;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.BaseTimeEntity;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
@@ -50,6 +52,59 @@ public class Comment extends BaseTimeEntity {
     @Builder.Default
     private List<Comment> children = new ArrayList<>();
 
+    /*최상위 댓글(루트 댓글)을 생성*/
+    public static Comment createRoot(Question q, User u, String content) {
+
+        if (content == null || content.isBlank()) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"댓글 내용은 비어 있을 수 없습니다.");
+        }
+
+        Comment root = Comment.builder()
+                .question(q)
+                .user(u)
+                .commentContent(content)
+                .isDeleted(Status.N)
+                .build();
+        return root;
+    }
+
+    /*대댓글 생성
+     *[댓글 구조 예시]
+     * 문제
+     *  ㄴ 댓글 A (루트)  ← 이것에만 대댓글 가능
+     *      ㄴ 대댓글 B  ← 여기에는 대댓글 불가능 */
+    public static Comment createReply(Question q, User u, Comment parent, String content) {
+        // [검증 1] 대댓글의 대댓글 금지
+        if (parent.getParent() != null) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"대댓글은 1단계까지만 허용됩니다.");
+        }
+        // [검증 2] 부모와 같은 Question만 허용
+        // 예: "질문1의 댓글"에 "질문2의 대댓글"을 다는 것 방지
+        if (!parent.getQuestion().getQuestionId().equals(q.getQuestionId())) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"부모 댓글과 다른 문제에는 대댓글을 달 수 없습니다.");
+        }
+
+        // 대댓글 생성
+        Comment child = Comment.builder()
+                .question(q)
+                .user(u)
+                .commentContent(content)
+                .isDeleted(Status.N)
+                .build();
+
+        // 부모 댓글에 이 대댓글을 연결 (parent ↔ child 양쪽 모두 연결)
+        parent.addChild(child);
+
+        return child;
+    }
+    //댓글 수정
+    public void updateContent(String newContent) {
+        if (newContent == null || newContent.isBlank()) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"댓글 내용은 비어 있을 수 없습니다.");
+        }
+        this.commentContent = newContent;
+    }
+
     // 추가(등록/대댓글 연결)
     public void addChild(Comment child) {
         this.children.add(child);  // 부모 컬렉션 동기화
@@ -61,6 +116,13 @@ public class Comment extends BaseTimeEntity {
         this.children.remove(child); // 부모 컬렉션 동기화
         child.setParent(null);       // 자식 FK 해제 → orphan 제거 트리거
     }
+
+    //softDelete
+    public void softDelete() {
+        this.isDeleted = Status.Y;
+        this.commentContent = "(삭제된 댓글입니다)";
+    }
+
 
 
 }

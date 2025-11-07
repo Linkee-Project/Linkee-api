@@ -2,6 +2,7 @@ package com.linkee.linkeeapi.inquiry.command.application.service;
 
 import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.common.enums.Status;
+import com.linkee.linkeeapi.common.event.InquiryAnsweredEvent;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.inquiry.command.application.dto.request.CreateInquiryRequestDto;
@@ -11,6 +12,7 @@ import com.linkee.linkeeapi.inquiry.command.infrastructure.repository.JpaInquiry
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
 
     private final JpaInquiryRepository inquiryRepository;
     private final UserFinder userFinder;
+    private final ApplicationEventPublisher eventPublisher;
 
     //create - builer ver.
     @Override
@@ -86,5 +89,8 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
         inquiry.setUpdatedAt(LocalDateTime.now());
 
         inquiryRepository.save(inquiry);
+
+        // 이벤트 발생 추가 (알림)
+        eventPublisher.publishEvent(new InquiryAnsweredEvent(this, inquiry));
     }
 }

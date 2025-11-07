@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.chat_message.query.mapper.ChatMessageMapper">
+<mapper namespace="com.linkee.linkeeapi.chat.command.domain.mapper.ChatMessageMapper">
 
-    <select id="selectAllChatMessage" resultType="com.linkee.linkeeapi.chat_message.query.dto.response.ChatMessageResponse">
+    <select id="selectAllChatMessage" resultType="com.linkee.linkeeapi.chat.command.domain.dto.query_dto.response.ChatMessageResponse">
         SELECT
         chat_message_id,
         message_content,

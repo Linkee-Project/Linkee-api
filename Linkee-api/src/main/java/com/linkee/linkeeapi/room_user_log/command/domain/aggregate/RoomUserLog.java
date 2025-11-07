@@ -19,7 +19,6 @@ public class RoomUserLog {
     @Column(name = "room_user_log_id")
     private Long roomUserLogId;
 
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "room_question_id", nullable = false, foreignKey = @ForeignKey(name = "FK_room_user_log_question"))
     private RoomQuestion roomQuestion;

@@ -5,6 +5,7 @@ import com.linkee.linkeeapi.user_grade.command.application.dto.request.UpdateVic
 import com.linkee.linkeeapi.user_grade.command.application.dto.request.UserGradeCreateRequest;
 import com.linkee.linkeeapi.user_grade.command.application.service.UserGradeCommandService;
 import com.linkee.linkeeapi.user_grade.command.domain.entity.UserGrade;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user_grades")
+@Tag(name = "회원", description = "회원가입, 로그인, 계정, 프로필 관련 API")
 public class UserGradeCommandController {
 
     private final UserGradeCommandService userGradeCommandService;

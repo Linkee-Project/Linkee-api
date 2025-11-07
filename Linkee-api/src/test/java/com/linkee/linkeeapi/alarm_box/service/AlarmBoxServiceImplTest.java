@@ -42,8 +42,8 @@ class AlarmBoxServiceImplTest {
     @DisplayName("알람박스 전체 조회 및 검색")
     void selectAllAlarmBox() {
 
-        User user1 = new User(null, "user01", "pass01", "배짱이", Status.Y, Role.USER);
-        User user2 = new User(null, "user02", "pass02", "배짱이2", Status.Y, Role.USER);
+        User user1 = User.createNormalUser("user01", "pass01", "배짱이");
+        User user2 = User.createNormalUser("user02", "pass02", "배짱이2");
         repository.save(new AlarmBox(null, "알람내용1", Status.N, user1));
         repository.save(new AlarmBox(null, "알람내용2", Status.N, user2));
         repository.save(new AlarmBox(null, "확인한 알람내용3", Status.Y, user1));
@@ -66,8 +66,8 @@ class AlarmBoxServiceImplTest {
     @Test
     @DisplayName("boxId 로 단건 조회")
     void selectById() {
-        User user1 = new User(null, "user01", "pass01", "배짱이", Status.Y, Role.USER);
-        User user2 = new User(null, "user02", "pass02", "배짱이2", Status.Y, Role.USER);
+        User user1 = User.createNormalUser("user01", "pass01", "배짱이");
+        User user2 = User.createNormalUser("user02", "pass02", "배짱이2");
         repository.save(new AlarmBox(null, "알람내용1", Status.N, user1));
         repository.save(new AlarmBox(null, "알람내용2", Status.N, user2));
         repository.save(new AlarmBox(null, "확인한 알람내용3", Status.Y, user1));
@@ -84,7 +84,7 @@ class AlarmBoxServiceImplTest {
     void saveAlarmTemplate() {
         String content = "알람 컨텐트 11";
 
-        User user1 = new User(null, "user01", "pass01", "배짱이",  Status.Y, Role.USER);
+        User user1 = User.createNormalUser("user01", "pass01", "배짱이");
         userRepository.save(user1);
 
 
@@ -103,7 +103,7 @@ class AlarmBoxServiceImplTest {
     @DisplayName("알림 확인 체크")
     void checkAlarm(){
         String content = "알람 컨텐트 11";
-        User user1 = new User(null, "user01", "pass01", "배짱이",  Status.Y, Role.USER);
+        User user1 = User.createNormalUser("user01", "pass01", "배짱이");
         userRepository.save(user1);
         AlarmBoxCreateRequest request = new AlarmBoxCreateRequest(content, user1.getUserId());
         service.createAlarmBox(request);
@@ -119,7 +119,7 @@ class AlarmBoxServiceImplTest {
     @DisplayName("알람박스 삭제")
     void deleteAlarm(){
         String content = "알람 컨텐트 11";
-        User user1 = new User(null, "user01", "pass01", "배짱이", Status.Y, Role.USER);
+        User user1 = User.createNormalUser("user01", "pass01", "배짱이");
         userRepository.save(user1);
         AlarmBoxCreateRequest request = new AlarmBoxCreateRequest(content, 1L);
         service.createAlarmBox(request);

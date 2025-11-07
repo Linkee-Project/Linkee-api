@@ -1,12 +1,16 @@
 package com.linkee.linkeeapi.user.query.service;
 
 import com.linkee.linkeeapi.auth.authService.AuthService;
+import com.linkee.linkeeapi.common.enums.Status;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.PageResponse;
+import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
 import com.linkee.linkeeapi.user.query.dto.request.UserSearchRequest;
 import com.linkee.linkeeapi.user.query.dto.response.UserListResponse;
 import com.linkee.linkeeapi.user.query.dto.response.UserMeResponse;
 import com.linkee.linkeeapi.user.query.mapper.UserMapper;
-import com.linkee.linkeeapi.user_grade.command.infrastructure.repository.UserGradeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +22,7 @@ public class UserQueryServiceImpl implements UserQueryService{
 
 
     private final UserMapper userMapper;
-    private final UserGradeRepository userGradeRepository;
+    private final UserRepository userRepository;
     private final AuthService authService;
 
     @Override
@@ -56,7 +60,12 @@ public class UserQueryServiceImpl implements UserQueryService{
     @Override
     public UserMeResponse getUserMe(String userEmail) {
 
-        System.out.println("service에서 호출 :" + authService.getCurrentUsername());
+        User foundUser = userRepository.findByUserEmail(userEmail).orElseThrow();
+
+        if(foundUser.getUserStatus() == Status.N){
+            throw new BusinessException(ErrorCode.INVALID_USER_ID,"이미 탈퇴한 회원 입니다");
+        }
+
         return userMapper.selectUserMe(userEmail);
     }
 

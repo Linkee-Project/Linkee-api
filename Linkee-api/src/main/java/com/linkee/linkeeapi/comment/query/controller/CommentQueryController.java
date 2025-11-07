@@ -2,6 +2,7 @@ package com.linkee.linkeeapi.comment.query.controller;
 
 import com.linkee.linkeeapi.comment.query.dto.CommentListResponseDto;
 import com.linkee.linkeeapi.comment.query.service.CommentQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/comments")
+@Tag(name = "문제", description = "문제 게시판 및 댓글 관리 API")
 public class CommentQueryController {
 
     private final CommentQueryService service;

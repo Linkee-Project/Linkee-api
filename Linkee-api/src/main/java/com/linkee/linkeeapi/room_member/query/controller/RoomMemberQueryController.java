@@ -3,6 +3,7 @@ package com.linkee.linkeeapi.room_member.query.controller;
 import com.linkee.linkeeapi.room_member.query.dto.request.RoomMemberSearchRequest;
 import com.linkee.linkeeapi.room_member.query.dto.response.RoomMemberResponse;
 import com.linkee.linkeeapi.room_member.query.service.RoomMemberQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/room_members")
+@Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class RoomMemberQueryController {
 
     private final RoomMemberQueryService roomMemberQueryService;

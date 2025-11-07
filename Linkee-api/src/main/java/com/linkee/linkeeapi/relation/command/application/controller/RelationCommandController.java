@@ -3,12 +3,14 @@ package com.linkee.linkeeapi.relation.command.application.controller;
 import com.linkee.linkeeapi.relation.command.application.dto.request.RelationCreateRequest;
 import com.linkee.linkeeapi.relation.command.application.service.RelationCommandService;
 import com.linkee.linkeeapi.relation.command.domain.aggregate.entity.RelationStatus;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/relations")
+@Tag(name = "커뮤니케이션", description = "친구 및 채팅 기능 관련 API")
 public class RelationCommandController {
 
     private final RelationCommandService relationCommandService;

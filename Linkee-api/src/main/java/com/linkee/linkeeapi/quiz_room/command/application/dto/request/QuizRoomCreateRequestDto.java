@@ -42,5 +42,5 @@ public class QuizRoomCreateRequestDto {
     // 퀴즈룸에 참여할 수 있는 최대 인원 수.
     private Integer roomCapacity;
     // 비공개 퀴즈룸일 경우 필요한 입장 코드. (isPrivate이 'Y'일 경우 사용)
-    private Integer roomCode;
+    private String roomCode;
 }

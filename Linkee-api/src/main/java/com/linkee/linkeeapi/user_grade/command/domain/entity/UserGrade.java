@@ -46,6 +46,10 @@ public class UserGrade {
     public void modifyVictoryCount(int victoryCount){
         this.victoryCount = victoryCount;
     }
+
+    public void modifyGrade(Grade newGrade) {
+        this.grade = newGrade;
+    }
 }
 
 

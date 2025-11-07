@@ -3,6 +3,8 @@ package com.linkee.linkeeapi.report.command.application.service;
 import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.common.enums.Status;
 
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.report.command.application.dto.request.CreateReportRequestDto;
 import com.linkee.linkeeapi.report.command.application.dto.request.UpdateReportActionRequestDto;
 import com.linkee.linkeeapi.report.command.domain.aggregate.Report;
@@ -50,13 +52,11 @@ public class ReportCommandServiceImpl implements ReportCommandService {
         User adminUser = userFinder.getById(request.getAdminId());
 
         // 권한 확인
-        if (adminUser.getUserRole() != Role.ADMIN) {
-            throw new IllegalStateException("관리자만 신고 처리가 가능합니다.");
-        }
+        if (adminUser.getUserRole() != Role.ADMIN) { throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS); }
 
         // 신고 조회
         Report report = reportRepository.findById(request.getReportId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 신고를 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.REPORT_NOT_FOUND));
 
         // 도메인 내부 메서드로 상태 변경
         // setter사용 지양해야하니까
