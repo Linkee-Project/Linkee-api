@@ -4,8 +4,16 @@ package com.linkee.linkeeapi.quiz_room.websocket.controller;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.security.model.CustomUser;
+import com.linkee.linkeeapi.quiz_room.command.application.service.QuizRoomCommandService;
+import com.linkee.linkeeapi.quiz_room.command.domain.aggregate.QuizRoom;
+import com.linkee.linkeeapi.quiz_room.command.infrastructure.repository.QuizRoomRepository;
 import com.linkee.linkeeapi.quiz_room.websocket.dto.request.QuizWebsocketRequest;
 import com.linkee.linkeeapi.quiz_room.websocket.service.QuizRoomWebSocketService;
+import com.linkee.linkeeapi.room_member.command.application.service.RoomMemberCommandService;
+import com.linkee.linkeeapi.room_member.command.domain.aggregate.RoomMember;
+import com.linkee.linkeeapi.room_member.command.infrastructure.repository.RoomMemberRepository;
+import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.user.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -16,14 +24,18 @@ import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
 
-import static com.linkee.linkeeapi.quiz_room.websocket.dto.QuizInboundType.READY_TOGGLE;
-import static com.linkee.linkeeapi.quiz_room.websocket.dto.QuizMessageType.SUBMIT_ANSWER;
+
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class QuizRoomWebSocketController {
     private final QuizRoomWebSocketService quizRoomSocketService;
+    private final QuizRoomCommandService quizRoomCommandService;
+    private final RoomMemberCommandService roomMemberCommandService;
+    private final RoomMemberRepository roomMemberRepository;
+    private final QuizRoomRepository quizRoomRepository;
+    private final UserFinder userFinder;
 
     @MessageMapping("/quiz-room/{roomId}")
     public void handleQuizMessage(
@@ -44,7 +56,7 @@ public class QuizRoomWebSocketController {
         // 메시지 타입에 따라 서비스 로직 호출
         switch (message.getType()) {
             case START_QUIZ -> {
-                // ✅ 기존 startGame 로직 그대로 호출 (문제 배정/상태전환/인덱스 생성/스케줄러)
+                // 기존 startGame 로직 그대로 호출 (문제 배정/상태전환/인덱스 생성/스케줄러)
                 quizRoomCommandService.startGame(roomId, userId);
             }
 
@@ -52,18 +64,27 @@ public class QuizRoomWebSocketController {
                 if (message.getAnswerIndex() == null) {
                     throw new BusinessException(ErrorCode.INVALID_REQUEST, "answerIndex가 필요합니다.");
                 }
-                // ✅ 선택값은 저장하지 않고, 정답 여부만 RoomUserLog에 저장 (정책 반영)
+                // ✅ 답안 제출 처리 (Command에 구현 O)
                 quizRoomCommandService.submitAnswer(roomId, userId, message.getAnswerIndex());
             }
 
             case READY_TOGGLE -> {
-                // (옵션) 준비 토글을 WS로 받을 경우 — REST 없이도 동작
                 if (message.getReady() == null) {
                     throw new BusinessException(ErrorCode.INVALID_REQUEST, "ready 값이 필요합니다.");
                 }
-                quizRoomCommandService.toggleReady(roomId, userId, message.getReady());
-                // 토글 결과는 필요 시 socket으로 멤버 목록/상태 갱신 브로드캐스트
+                QuizRoom quizRoom = quizRoomRepository.findById(roomId)
+                        .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_ROOM_NOT_FOUND));
+                User user = userFinder.getById(userId);
+                RoomMember roomMember = roomMemberRepository.findByQuizRoomAndMember(quizRoom, user)
+                        .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_MEMBER_NOT_FOUND));
+
+                // 준비 상태 토글(RoomMember 업데이트)
+                roomMemberCommandService.toggleReady(roomMember.getRoomMemberId());
+
+                // ✅ 멤버 목록 갱신 브로드캐스트
+                quizRoomSocketService.broadcastMemberList(roomId);
             }
+
 
             case JOIN -> {
                 // (옵션) 클라에서 “방 입장” 이벤트를 WS로 보낼 때 사용

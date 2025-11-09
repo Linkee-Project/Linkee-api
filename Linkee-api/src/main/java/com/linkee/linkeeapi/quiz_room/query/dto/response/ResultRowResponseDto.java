@@ -12,7 +12,7 @@ import lombok.Setter;
 //  결과 조회 응답
 public class ResultRowResponseDto {
     private Long userId;
+    private String userNickname;
     private Integer correctCount;
-    private Integer total;
-    private Double accuracy;
+    private Integer total;        // roomQuizLimit
 }

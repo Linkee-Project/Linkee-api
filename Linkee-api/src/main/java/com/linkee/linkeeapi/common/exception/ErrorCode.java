@@ -61,6 +61,10 @@ public enum ErrorCode {
     QUIZ_ROOM_NOT_IN_WAITING_STATE("9007", "대기 중인 방에만 참여할 수 있습니다.", HttpStatus.BAD_REQUEST),
     QUIZ_ROOM_FULL("9008", "방이 가득 찼습니다.", HttpStatus.BAD_REQUEST),
     USER_ALREADY_IN_ROOM("9009", "이미 참여한 방입니다.", HttpStatus.BAD_REQUEST),
+    ALREADY_SUBMITTED("9010", "이미 답안을 제출했습니다.",HttpStatus.BAD_REQUEST),
+    CORRECT_ANSWER_NOT_FOUND("9011", "정답이 설정되지 않았습니다.",HttpStatus.INTERNAL_SERVER_ERROR),// 서버 문제
+    ROOM_MEMBER_NOT_FOUND("9012", "퀴즈방 참가자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    ROOM_QUESTION_NOT_FOUND("9013", "퀴즈방 문제를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     //댓글 관련 오류(10000번대 사용)
     COMMENT_NOT_FOUND("10000", "존재하지 않는 댓글입니다.", HttpStatus.NOT_FOUND),

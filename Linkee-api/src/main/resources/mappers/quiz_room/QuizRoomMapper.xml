@@ -56,20 +56,18 @@
 
     <!-- 결과 조회 -->
     <select id="findResultsByRoom" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.ResultRowResponseDto">
-      SELECT
-        m.member_id AS userId,
-        SUM(CASE WHEN l.is_corrected='Y' THEN 1 ELSE 0 END) AS correctCount,
-        COUNT(l.room_user_log_id) AS total,
-        ROUND(
-          SUM(CASE WHEN l.is_corrected='Y' THEN 1 ELSE 0 END)
-          / NULLIF(COUNT(l.room_user_log_id),0) * 100, 1
-        ) AS accuracy
-      FROM tb_room_member m
-      LEFT JOIN tb_room_user_log l ON l.room_member_id = m.room_member_id
-      WHERE m.quiz_room_id = #{roomId}
-      GROUP BY m.member_id
-      ORDER BY correctCount DESC, accuracy DESC
-      LIMIT #{limit} OFFSET #{offset}
+        SELECT
+            u.user_id AS userId,
+            u.user_nickname AS userNickname,  -- ✅ 추가
+            SUM(CASE WHEN l.is_corrected='Y' THEN 1 ELSE 0 END) AS correctCount,
+            COUNT(l.room_user_log_id) AS total
+        FROM tb_room_member m
+                 INNER JOIN tb_user u ON m.member_id = u.user_id  -- ✅ 조인 추가
+                 LEFT JOIN tb_room_user_log l ON l.room_member_id = m.room_member_id
+        WHERE m.quiz_room_id = #{roomId}
+        GROUP BY u.user_id, u.user_nickname
+        ORDER BY correctCount DESC
+            LIMIT #{size} OFFSET #{offset}
     </select>
 
 </mapper>

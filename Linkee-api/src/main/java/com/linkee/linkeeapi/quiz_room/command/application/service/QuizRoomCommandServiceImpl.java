@@ -9,6 +9,7 @@ import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
+import com.linkee.linkeeapi.question_option.command.domain.aggregate.QuestionOption;
 import com.linkee.linkeeapi.quiz_current_index.command.domain.aggregate.QuizCurrentIndex;
 import com.linkee.linkeeapi.quiz_current_index.command.infrastructure.repository.QuizCurrentIndexRepository;
 import com.linkee.linkeeapi.quiz_room.command.application.dto.request.QuizRoomCreateRequestDto;
@@ -18,10 +19,12 @@ import com.linkee.linkeeapi.quiz_room.command.infrastructure.repository.QuizRoom
 import com.linkee.linkeeapi.quiz_room.command.infrastructure.scheduler.QuizGameAdvanceScheduler;
 import com.linkee.linkeeapi.quiz_room.query.dto.response.ResultRowResponseDto;
 import com.linkee.linkeeapi.quiz_room.query.service.QuizRoomQueryService;
+import com.linkee.linkeeapi.quiz_room.websocket.service.QuizRoomWebSocketService;
 import com.linkee.linkeeapi.room_member.command.domain.aggregate.RoomMember;
 import com.linkee.linkeeapi.room_member.command.infrastructure.repository.RoomMemberRepository;
 import com.linkee.linkeeapi.room_question.command.application.dto.request.RoomQuestionCreateRequest;
 import com.linkee.linkeeapi.room_question.command.application.service.RoomQuestionCommandService;
+import com.linkee.linkeeapi.room_question.command.domain.aggregate.RoomQuestion;
 import com.linkee.linkeeapi.room_question.command.infrastructure.repository.RoomQuestionRepository;
 import com.linkee.linkeeapi.room_user_log.command.domain.aggregate.RoomUserLog;
 import com.linkee.linkeeapi.room_user_log.command.infrastructure.repository.JpaRoomUserLogRepository;
@@ -59,6 +62,7 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
     private final RoomQuestionRepository roomQuestionRepository;
     private final QuizRoomQueryService  quizRoomQueryService;
     private final UserGradeRepository userGradeRepository;
+    private final QuizRoomWebSocketService quizRoomWebSocketService;
 
 
 
@@ -227,7 +231,58 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
 
         // 첫 번째 문제의 타이머를 스케줄링 합니다.
         quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 30 * 1000L);
+
+        // WS 첫 문제 브로드캐스트 (SocketService에서 QUESTION_STARTED 전송)
+        quizRoomWebSocketService.startQuiz(quizRoomId, userId);
     }
+
+    @Override
+    @Transactional
+    public void submitAnswer(Long quizRoomId, Long userId, Integer answerIndex) {
+        // 1. 퀴즈방 조회
+        QuizRoom quizRoom = quizRoomRepository.findById(quizRoomId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_ROOM_NOT_FOUND));
+
+        // 2. 게임 진행 중인지 확인
+        if (quizRoom.getRoomStatus() != RoomStatus.P) {
+            throw new BusinessException(ErrorCode.QUIZ_ROOM_NOT_IN_PLAY);
+        }
+
+        // 3. 현재 문제 인덱스 조회
+        QuizCurrentIndex quizIndex = quizCurrentIndexRepository.findByQuizRoom(quizRoom)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_INDEX_NOT_FOUND));
+
+        // 4. 현재 문제의 RoomQuestion 조회
+        RoomQuestion currentRoomQuestion = roomQuestionRepository
+                .findByQuizRoomAndQuizOrder(quizRoom, quizIndex.getCurrentQuizIndex())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_QUESTION_NOT_FOUND));
+
+        // 5. RoomMember 조회
+        User user = userFinder.getById(userId);
+        RoomMember roomMember = roomMemberRepository.findByQuizRoomAndMember(quizRoom, user)
+                .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_MEMBER_NOT_FOUND));
+
+        // 6. 중복 제출 방지
+        if (jpaRoomUserLogRepository.existsByRoomMemberAndRoomQuestion(roomMember, currentRoomQuestion)) {
+            throw new BusinessException(ErrorCode.ALREADY_SUBMITTED);
+        }
+
+        // 7. ✅ Question 엔티티에서 정답 확인
+        Question question = currentRoomQuestion.getQuestion();
+        boolean isCorrect = question.getQuestionAnswer().equals(answerIndex);
+
+        // 8. RoomUserLog 저장 (선택한 값은 저장하지 않음, 정답 여부만 저장)
+        RoomUserLog log = RoomUserLog.builder()
+                .roomMember(roomMember)
+                .roomQuestion(currentRoomQuestion)
+                .isCorrected(isCorrect ? Status.Y : Status.N)
+                .build();
+        jpaRoomUserLogRepository.save(log);
+
+        // 9. ✅ WebSocket으로 제출 알림 브로드캐스트
+        quizRoomWebSocketService.notifyAnswerSubmitted(quizRoomId, userId, roomMember.getMember().getUserNickname());
+    }
+
 
     @Override
     @Transactional
@@ -270,6 +325,9 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         //  6. 현재 문제 인덱스를 1 증가시킵니다.
         quizIndex.setCurrentQuizIndex(quizIndex.getCurrentQuizIndex() + 1);
         quizCurrentIndexRepository.save(quizIndex);
+
+        // ✅ 다음 문제 브로드캐스트
+        quizRoomWebSocketService.broadcastNextQuestion(quizRoomId, quizIndex.getCurrentQuizIndex());
 
         //  7. 다음 문제의 타이머를 스케줄링 합니다 (30초)
         quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 30 * 1000L);
