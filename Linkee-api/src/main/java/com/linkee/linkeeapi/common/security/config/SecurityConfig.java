@@ -30,6 +30,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // ✅ CORS 허용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // ✅ JWT 구조이므로 세션 비활성화
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
@@ -40,10 +42,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**", "/login", "/oauth2/**", "/error", "/accessDenied", "/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/ws/**", "/sockjs/**").permitAll() // 웹소켓 연결 테스트
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+
 
                 // ✅ OAuth2 로그인 설정 (네이버용)
                 .oauth2Login(oauth -> oauth
@@ -59,6 +63,25 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+    //퀴즈방 웹소켓 테스트시 필요 설정
+    // ✅ CORS 설정(127.0.0.1:5500, localhost:* 모두 허용 + Authorization 헤더 허용)
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        var c = new org.springframework.web.cors.CorsConfiguration();
+        // VSCode Live Server / 로컬 프론트들
+        c.setAllowedOriginPatterns(java.util.List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+        ));
+        c.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        c.setAllowedHeaders(java.util.List.of("Authorization","Content-Type","X-Requested-With"));
+        c.setExposedHeaders(java.util.List.of("Authorization")); // 필요시
+        c.setAllowCredentials(true);
+
+        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", c);
+        return source;
     }
 
     @Bean

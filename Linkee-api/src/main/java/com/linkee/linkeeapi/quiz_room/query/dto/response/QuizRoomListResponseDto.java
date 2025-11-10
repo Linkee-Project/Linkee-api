@@ -17,5 +17,5 @@ public class QuizRoomListResponseDto {
     private RoomStatus roomStatus;  // 상태 (대기, 진행)
     private Integer joinedCount;    // 현재 인원
     private Integer roomCapacity;   // 최대 인원
-
+    private Long quizRoomId;        // stomp 구현시 필요
 }

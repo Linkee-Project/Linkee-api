@@ -28,6 +28,7 @@ public class QuizRoomQueryServiceImpl implements QuizRoomQueryService {
         return PageResponse.from(rooms, offset, size, total);
     }
 
+
     //  빠른 입장
     @Override
     public QuizRoomResponseDto findAvailableRoom() {

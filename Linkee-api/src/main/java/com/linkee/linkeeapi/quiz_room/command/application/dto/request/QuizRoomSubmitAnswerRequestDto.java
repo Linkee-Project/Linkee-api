@@ -1,12 +1,14 @@
 package com.linkee.linkeeapi.quiz_room.command.application.dto.request;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor // 답안 제출을 위한 DTO
+@Builder
 public class QuizRoomSubmitAnswerRequestDto {
     //  현재 참여중인 퀴즈방 ID
     private Long quizRoomId;
