@@ -49,6 +49,7 @@ public class QuizRoomWebSocketService {
     private final QuizRoomQueryService quizRoomQueryService;
     private final QuizCurrentIndexRepository quizCurrentIndexRepository;
     private final RoomMemberQueryService roomMemberQueryService;
+    private final UserFinder userFinder;
 
     /*
      * 퀴즈 시작: 첫 문제 브로드캐스트
@@ -96,12 +97,15 @@ public class QuizRoomWebSocketService {
         log.info("✅ First question broadcasted to roomId={}", roomId);
     }
 
-    /*
+    /**
      * 답안 제출 알림 브로드캐스트
      */
     @Transactional(readOnly = true)
-    public void notifyAnswerSubmitted(Long roomId, Long userId, String userName) {
-        log.info("Answer submitted: roomId={}, userId={}, userName={}", roomId, userId, userName);
+    public void notifyAnswerSubmitted(Long roomId, Long userId) {
+        log.info("Answer submitted: roomId={}, userId={}", roomId, userId);
+
+        // 사용자 정보 조회
+        User user = userFinder.getById(userId);
 
         // 현재 제출 인원 계산
         QuizRoom room = quizRoomRepository.findById(roomId).orElseThrow();
@@ -115,7 +119,7 @@ public class QuizRoomWebSocketService {
 
         AnswerSubmittedData data = AnswerSubmittedData.builder()
                 .userId(userId)
-                .userName(userName)
+                .userName(user.getUserNickname())
                 .submittedCount((int) submittedCount)
                 .totalParticipants(totalParticipants)
                 .build();
@@ -123,13 +127,13 @@ public class QuizRoomWebSocketService {
         QuizWebSocketResponse response = QuizWebSocketResponse.builder()
                 .type(QuizMessageType.ANSWER_SUBMITTED)
                 .success(true)
-                .message(userName + "님이 답안을 제출했습니다.")
+                .message(user.getUserNickname() + "님이 답안을 제출했습니다.")
                 .data(data)
                 .build();
 
         messagingTemplate.convertAndSend("/sub/quiz-room/" + roomId, response);
+        log.info("✅ Answer submission broadcasted to roomId={}", roomId);
     }
-
     /*
      * 문제 결과 브로드캐스트 (30초 후 스케줄러에서 호출)
      */

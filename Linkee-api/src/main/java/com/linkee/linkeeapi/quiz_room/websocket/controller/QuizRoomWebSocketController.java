@@ -4,6 +4,7 @@ package com.linkee.linkeeapi.quiz_room.websocket.controller;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.security.model.CustomUser;
+import com.linkee.linkeeapi.quiz_room.command.application.dto.request.QuizRoomSubmitAnswerRequestDto;
 import com.linkee.linkeeapi.quiz_room.command.application.service.QuizRoomCommandService;
 import com.linkee.linkeeapi.quiz_room.command.domain.aggregate.QuizRoom;
 import com.linkee.linkeeapi.quiz_room.command.infrastructure.repository.QuizRoomRepository;
@@ -64,8 +65,18 @@ public class QuizRoomWebSocketController {
                 if (message.getAnswerIndex() == null) {
                     throw new BusinessException(ErrorCode.INVALID_REQUEST, "answerIndex가 필요합니다.");
                 }
-                // ✅ 답안 제출 처리 (Command에 구현 O)
-                quizRoomCommandService.submitAnswer(roomId, userId, message.getAnswerIndex());
+
+                // ✅ 팀원이 만든 DTO로 변환
+                QuizRoomSubmitAnswerRequestDto request = QuizRoomSubmitAnswerRequestDto.builder()
+                        .quizRoomId(roomId)
+                        .submittedOptionIndex(message.getAnswerIndex())
+                        .build();
+
+                // ✅ 팀원이 구현한 메서드 호출
+                quizRoomCommandService.submitAnswer(request, userId);
+
+                // ✅ WebSocket 브로드캐스트
+                quizRoomSocketService.notifyAnswerSubmitted(request.getQuizRoomId(), userId);
             }
 
             case READY_TOGGLE -> {

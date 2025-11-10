@@ -359,10 +359,9 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         RoomQuestion currentRoomQuestion = roomQuestionRepository.findByQuizRoomAndQuizOrder(quizRoom, quizIndex.getCurrentQuizIndex())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_QUESTION_NOT_FOUND));
         // 6. 이미 해당 문제에 대해 답을 제출했는지 확인합니다.
-        jpaRoomUserLogRepository.findByRoomMemberAndRoomQuestion(member, currentRoomQuestion)
-                .ifPresent(log -> {
-                    throw new BusinessException(ErrorCode.ALREADY_SUBMITTED_ANSWER);
-                });
+        if (jpaRoomUserLogRepository.existsByRoomMemberAndRoomQuestion(member, currentRoomQuestion)) {
+            throw new BusinessException(ErrorCode.ALREADY_SUBMITTED_ANSWER);
+        }
         // 7. 정답 여부를 확인합니다.
         Question question = currentRoomQuestion.getQuestion();
         boolean isCorrect = question.getQuestionAnswer().equals(request.getSubmittedOptionIndex());

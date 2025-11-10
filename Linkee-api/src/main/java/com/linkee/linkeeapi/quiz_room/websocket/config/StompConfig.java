@@ -19,7 +19,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
         // SockJS
         registry.addEndpoint("/ws-stomp")
                 .setAllowedOriginPatterns("*")
-                .setAllowedOrigins("http://localhost:5500", "http://127.0.0.1:5500")
+                .setAllowedOriginPatterns("http://localhost:*","http://127.0.0.1:*")
                 .withSockJS();
     }
 
