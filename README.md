@@ -16,7 +16,6 @@
 3. [🚀 기술 스택](#-3-기술-스택)  
 4. [🗂️ 프로젝트 산출물](#️-4-프로젝트-산출물)  
 5. [⚠️ Trouble Shooting](#️-5-trouble-shooting)  
-6. [🍺 프로젝트 회고록](#-6-프로젝트-회고록)
 
 
 
@@ -227,12 +226,21 @@ Linkee는 사용자가 CS 관련 퀴즈에 참여하고 문제를 풀며 다른 
   </details>
 
   
-- ### 🔁 통합테스트 시나리오 및 코드
-  통합테스트 시나리오를 자세히 보려면 [여기](https://www.notion.so/26136d2af8f5802e914afbc54cf37e47?source=copy_link)를 클릭하세요  
+- ### 🔁 유닛테스트 시나리오 및 코드
+  통합테스트 시나리오를 자세히 보려면 [여기](https://docs.google.com/spreadsheets/d/1m9Jk_0A6LhK9aZ2RiVEwYnF6yCltFJS01lFYrovXV8I/edit?gid=1206072661#gid=1206072661)를 클릭하세요  
 
   <details> 
   <summary> 테스트 시나리오 이미지</summary>
   <img width="977" height="657" alt="Image" src="https://github.com/user-attachments/assets/646c91fc-f880-4ef9-bad9-bb53b60709ce" />
+  </details>
+
+- ### 🎁 MSA 구조도
+
+  <details> 
+  <summary> msa 구조도 이미지</summary>
+    <img width="977" height="657" alt="Image" src="https://github.com/user-attachments/assets/2cf6bd3d-a41f-431f-bccd-4a92907bed69" />
+  </details>
+
   </details>
   
 ---
@@ -883,6 +891,3 @@ Linkee는 사용자가 CS 관련 퀴즈에 참여하고 문제를 풀며 다른 
 
 
 ---
-
-## 🍺 6. 프로젝트 회고록
-
