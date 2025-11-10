@@ -1,10 +1,8 @@
 package com.linkee.linkeeapi.quiz_room.websocket.service;
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
-import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
-import com.linkee.linkeeapi.question_option.command.domain.aggregate.QuestionOption;
+import com.linkee.linkeeapi.question.command.domain.aggregate.QuestionOption;
 import com.linkee.linkeeapi.quiz_current_index.command.domain.aggregate.QuizCurrentIndex;
 import com.linkee.linkeeapi.quiz_current_index.command.infrastructure.repository.QuizCurrentIndexRepository;
 import com.linkee.linkeeapi.quiz_room.command.domain.aggregate.QuizRoom;

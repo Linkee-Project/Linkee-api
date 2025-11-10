@@ -1,7 +1,7 @@
 package com.linkee.linkeeapi.quiz_room.command.application.service;
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
-import com.linkee.linkeeapi.category.command.infrastructure.repository.CategoryRepository;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
+import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaCategoryRepository;
 import com.linkee.linkeeapi.common.enums.RoomStatus;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
@@ -10,7 +10,6 @@ import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
 import com.linkee.linkeeapi.grade.command.infrastructure.GradeRepository;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
-import com.linkee.linkeeapi.question_option.command.domain.aggregate.QuestionOption;
 import com.linkee.linkeeapi.quiz_current_index.command.domain.aggregate.QuizCurrentIndex;
 import com.linkee.linkeeapi.quiz_current_index.command.infrastructure.repository.QuizCurrentIndexRepository;
 import com.linkee.linkeeapi.quiz_room.command.application.dto.request.QuizRoomCreateRequestDto;
@@ -53,7 +52,7 @@ import java.util.List;
 public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
 
     private final QuizRoomRepository quizRoomRepository;
-    private final CategoryRepository categoryRepository;
+    private final JpaCategoryRepository categoryRepository;
     private final RoomMemberRepository roomMemberRepository;
     private final QuizCurrentIndexRepository quizCurrentIndexRepository;
     private final UserFinder userFinder;

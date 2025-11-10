@@ -1,6 +1,6 @@
 package com.linkee.linkeeapi.user_grade.command.infrastructure.repository;
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import com.linkee.linkeeapi.user_grade.command.domain.entity.UserGrade;
 import org.apache.ibatis.annotations.Param;

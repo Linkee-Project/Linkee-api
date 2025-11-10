@@ -1,6 +1,6 @@
 package com.linkee.linkeeapi.user_grade.command.domain.entity;
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
 import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import jakarta.persistence.*;

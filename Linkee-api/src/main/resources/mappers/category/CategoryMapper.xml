@@ -2,9 +2,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.category.query.mapper.CategoryMapper">
+<mapper namespace="com.linkee.linkeeapi.question.query.mapper.CategoryMapper">
 
-    <select id="findAll" resultType="com.linkee.linkeeapi.category.query.dto.response.CategoryResponse">
+    <select id="findAll" resultType="com.linkee.linkeeapi.question.query.dto.response.CategoryResponseDto">
         SELECT
             c.category_id   AS categoryId,
             c.category_name AS categoryName

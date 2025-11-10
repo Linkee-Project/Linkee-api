@@ -1,8 +1,8 @@
 package com.linkee.linkeeapi.user_grade.command.application.service;
 
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
-import com.linkee.linkeeapi.category.command.infrastructure.repository.CategoryRepository;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
+import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaCategoryRepository;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
@@ -24,7 +24,7 @@ public class UserGradeCommandService {
     private final UserGradeRepository userGradeRepository;
     private final UserRepository userRepository;
     private final GradeRepository gradeRepository;
-    private final CategoryRepository categoryRepository;
+    private final JpaCategoryRepository categoryRepository;
 
 
     public UserGrade createUserGrade(UserGradeCreateRequest request) {

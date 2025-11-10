@@ -1,6 +1,6 @@
 package com.linkee.linkeeapi.common.event;
 
-import com.linkee.linkeeapi.comment.command.domain.aggregate.Comment;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Comment;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

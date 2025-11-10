@@ -1,0 +1,61 @@
+package com.linkee.linkeeapi.question.command.application.service;
+
+import com.linkee.linkeeapi.question.command.domain.aggregate.Bookmark;
+import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaBookmarkRepository;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
+import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
+import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class BookmarkCommandService {
+
+    private final JpaBookmarkRepository bookmarkRepository;
+    private final UserRepository userRepository;
+    private final JpaQuestionRepository jpaQuestionRepository;
+
+
+    @Transactional
+    public void createBookmark(Long userId, Long questionId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
+        Question question = jpaQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+
+        // 중복 방지
+        if (bookmarkRepository.existsByUserAndQuestion(user, question)) {
+            throw new BusinessException(ErrorCode.BOOKMARK_ALREADY_EXISTS);
+        }
+
+        Bookmark bookmark = Bookmark.builder()
+                .user(user)
+                .question(question)
+                .build();
+
+        bookmarkRepository.save(bookmark);
+    }
+
+
+    @Transactional
+    public void deleteBookmark(Long userId, Long questionId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        Question question = jpaQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문제입니다."));
+
+        if (!bookmarkRepository.existsByUserAndQuestion(user, question)) {
+
+            throw new IllegalArgumentException("해당 북마크가 존재하지 않습니다.");
+
+        }
+
+        bookmarkRepository.deleteByUserAndQuestion(user, question);
+    }
+
+}

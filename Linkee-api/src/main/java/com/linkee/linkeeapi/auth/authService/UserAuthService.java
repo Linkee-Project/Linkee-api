@@ -1,8 +1,8 @@
 package com.linkee.linkeeapi.auth.authService;
 
 import com.linkee.linkeeapi.auth.mail.EmailService;
-import com.linkee.linkeeapi.category.command.aggregate.Category;
-import com.linkee.linkeeapi.category.command.infrastructure.repository.CategoryRepository;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
+import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaCategoryRepository;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
@@ -18,14 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class UserAuthService {
 
     private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
+    private final JpaCategoryRepository categoryRepository;
     private final GradeRepository gradeRepository;
     private final UserGradeRepository userGradeRepository;
     private final PasswordEncoder passwordEncoder;
