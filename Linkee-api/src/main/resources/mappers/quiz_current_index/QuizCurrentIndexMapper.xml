@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.quiz_current_index.query.mapper.QuizCurrentIndexMapper">
+<mapper namespace="com.linkee.linkeeapi.quiz.query.mapper.QuizCurrentIndexMapper">
 
     <!-- 현재 문제 인덱스 -->
     <select id="findCurrentIndexByRoomId" resultType="int">
@@ -13,7 +13,7 @@
     </select>
 
     <!-- 현재 문제 상세 -->
-    <select id="findCurrentQuestion" resultType="com.linkee.linkeeapi.quiz_current_index.query.dto.response.CurrentQuestionResponse">
+    <select id="findCurrentQuestion" resultType="com.linkee.linkeeapi.quiz.query.dto.response.CurrentQuestionResponse">
         SELECT
             q.question_id,
             q.question_question AS questionContent,
@@ -36,7 +36,7 @@
     </select>
 
     <!-- 복원용 전체 상태 -->
-    <select id="findReconnectState" resultType="com.linkee.linkeeapi.quiz_current_index.query.dto.response.QuizReconnectStateResponse">
+    <select id="findReconnectState" resultType="com.linkee.linkeeapi.quiz.query.dto.response.QuizReconnectStateResponse">
         SELECT
             r.quiz_room_id,
             r.room_status,

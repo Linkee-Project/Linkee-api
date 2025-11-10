@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.linkee.linkeeapi.room_question.query.mapper.RoomQuestionMapper">
+<mapper namespace="com.linkee.linkeeapi.quiz.query.mapper.RoomQuestionMapper">
 
     <!--
         [ResultMap 설명]
         - id: 이 resultMap을 식별하는 고유한 이름입니다.
         - type: 쿼리 결과를 매핑할 최종적인 객체 타입(DTO)을 지정합니다.
     -->
-    <resultMap id="roomQuestionResponseResultMap" type="com.linkee.linkeeapi.room_question.query.dto.response.RoomQuestionResponse">
+    <resultMap id="roomQuestionResponseResultMap" type="com.linkee.linkeeapi.quiz.query.dto.response.RoomQuestionResponse">
         <!-- <id>: PK 컬럼을 DTO의 필드에 매핑합니다. -->
         <id property="roomQuestionId" column="room_question_id"/>
         <!-- <result>: 일반 컬럼을 DTO의 필드에 매핑합니다. -->
