@@ -16,4 +16,7 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
     // 특정 QuizRoom과 User에 해당하는 RoomMember를 조회하는 메서드
     Optional<RoomMember> findByQuizRoomAndMember(QuizRoom quizRoom, User member);
 
+    // ✅ 특정 퀴즈방의 특정 사용자 조회
+    Optional<RoomMember> findByQuizRoomAndMember(QuizRoom quizRoom, User member);
+
 }

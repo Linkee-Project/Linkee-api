@@ -1,0 +1,10 @@
+﻿# IDE
+.idea/
+*.iml
+
+# Gradle/빌드 아웃풋
+.gradle/
+build/
+out/
+**/build/
+**/out/
