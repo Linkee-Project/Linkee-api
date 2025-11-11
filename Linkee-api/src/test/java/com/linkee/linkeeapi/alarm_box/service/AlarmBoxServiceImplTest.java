@@ -1,12 +1,12 @@
 package com.linkee.linkeeapi.alarm_box.service;
 
-import com.linkee.linkeeapi.alarm_box.command.application.dto.request.AlarmBoxCreateRequest;
-import com.linkee.linkeeapi.alarm_box.command.application.service.AlarmBoxCommandService;
-import com.linkee.linkeeapi.alarm_box.command.domain.aggregate.entity.AlarmBox;
-import com.linkee.linkeeapi.alarm_box.command.infrastructure.repository.AlarmBoxRepository;
-import com.linkee.linkeeapi.alarm_box.query.dto.request.AlarmBoxSearchRequest;
-import com.linkee.linkeeapi.alarm_box.query.dto.response.AlarmBoxResponse;
-import com.linkee.linkeeapi.alarm_box.query.service.AlarmBoxQueryService;
+import com.linkee.linkeeapi.alarm.command.application.dto.request.AlarmBoxCreateRequest;
+import com.linkee.linkeeapi.alarm.command.application.service.AlarmBoxCommandService;
+import com.linkee.linkeeapi.alarm.command.domain.aggregate.entity.AlarmBox;
+import com.linkee.linkeeapi.alarm.command.instructure.repository.AlarmBoxRepository;
+import com.linkee.linkeeapi.alarm.query.dto.request.AlarmBoxSearchRequest;
+import com.linkee.linkeeapi.alarm.query.dto.response.AlarmBoxResponse;
+import com.linkee.linkeeapi.alarm.query.service.AlarmBoxQueryService;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.users.command.domain.entity.User;

@@ -1,7 +1,8 @@
 package com.linkee.linkeeapi.qna.query.service;
 
-import com.linkee.linkeeapi.qna.query.dto.response.QnaResponseDto;
-import com.linkee.linkeeapi.qna.query.mapper.QnaMapper;
+import com.linkee.linkeeapi.chat.query.dto.response.QnaResponseDto;
+import com.linkee.linkeeapi.chat.query.mapper.QnaMapper;
+import com.linkee.linkeeapi.chat.query.service.QnaQueryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
