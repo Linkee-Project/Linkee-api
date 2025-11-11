@@ -1,5 +1,6 @@
 package com.linkee.linkeeapi.quiz.command.application.controller;
 
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.common.model.dto.ApiResponse;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomCreateRequestDto;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomDeleteRequestDto;
@@ -8,7 +9,9 @@ import com.linkee.linkeeapi.quiz.command.application.service.QuizRoomCommandServ
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * 퀴즈룸 생성 관련 HTTP 요청을 처리하는 컨트롤러.
  * 클라이언트의 요청을 받아 QuizRoomCommandService로 전달합니다.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/quiz-rooms")
 @RequiredArgsConstructor
@@ -30,18 +34,21 @@ public class QuizRoomCommandController {
      * @return 생성된 퀴즈룸의 ID를 포함하는 API 응답
      */
     @PostMapping
-    public ApiResponse<Long> createQuizRoom(@RequestBody QuizRoomCreateRequestDto request) {
-        // 추후 Spring Security가 적용되면 @AuthenticationPrincipal 에서 유저 정보를 받아와야 합니다.
-        Long userId = 1L; // 임시로 방장(유저) ID를 1로 설정합니다.
+    public ApiResponse<Long> createQuizRoom(@RequestBody QuizRoomCreateRequestDto request,
+                                            @AuthenticationPrincipal CustomUser user) {
 
-        Long quizRoomId = quizRoomCommandService.create(request, userId);
+        log.info("✅ 퀴즈방 생성 요청: userId={}", user.getUserId());
+        Long quizRoomId = quizRoomCommandService.create(request, user.getUserId());
         return ApiResponse.success(quizRoomId);
     }
 
     // 퀴즈방 나가기 (멤버)
     @PostMapping("/leave-quiz-room")
-    public ResponseEntity<String> leaveQuizRoom(@Valid @RequestBody QuizRoomDeleteRequestDto request) {
+    public ResponseEntity<String> leaveQuizRoom(@Valid @RequestBody QuizRoomDeleteRequestDto request,
+                                                @AuthenticationPrincipal CustomUser user
+                                                ) {
         quizRoomCommandService.leaveQuizRoom(request);
+        log.info("🚪 {}번 유저 퀴즈방 나감", user != null ? user.getUserId() : "익명");
         return ResponseEntity.ok("퀴즈방에서 나갔습니다.");
     }
 
@@ -49,10 +56,10 @@ public class QuizRoomCommandController {
      * @param quizRoomId 게임을 시작할 퀴즈방의 ID
      * @return 성공 메시지 */
     @PostMapping("/{quizRoomId}/start")
-    public ResponseEntity<String> startGame(@PathVariable Long quizRoomId) {
-        //  요청을 보낸 사용자가 방장인지 확인하는 로직 추가 필요
-        Long userId = 1L;
-        quizRoomCommandService.startGame(quizRoomId, userId);
+    public ResponseEntity<String> startGame(@PathVariable Long quizRoomId,
+                                            @AuthenticationPrincipal CustomUser user) {
+
+        quizRoomCommandService.startGame(quizRoomId, user.getUserId());
         return ResponseEntity.ok("게임이 시작되었습니다.");
     }
 
@@ -66,11 +73,10 @@ public class QuizRoomCommandController {
     }
 
     @PostMapping("/submit-answer")
-    public ResponseEntity<String> submitAnswer(@RequestBody QuizRoomSubmitAnswerRequestDto request) {
-        // 추후 Spring Security 적용 시 @AuthenticationPrincipal 에서 유저 정보를 받아와야 함
-        Long userId = 1L;
+    public ResponseEntity<String> submitAnswer(@RequestBody QuizRoomSubmitAnswerRequestDto request,
+                                               @AuthenticationPrincipal CustomUser user) {
 
-        quizRoomCommandService.submitAnswer(request, userId);
+        quizRoomCommandService.submitAnswer(request, user.getUserId());
         return ResponseEntity.ok("답안이 제출되었습니다.");
     }
 }
