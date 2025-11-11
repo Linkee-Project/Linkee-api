@@ -1,6 +1,7 @@
 package com.linkee.linkeeapi.chat.command.application.service.chat_service;
 
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatMessageRequestDto;
+import com.linkee.linkeeapi.chat.command.application.dto.response.ChatMemberDto;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMember;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoom;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMemberRepository;
@@ -69,6 +70,8 @@ public class ChatRoomInOutService {
             chatRoomRepository.save(room);
         }
 
+
+
         return ChatMessageRequestDto.builder()
                 .roomId(roomId)
                 .message(user.getUserNickname() + "님이 입장했습니다.")
@@ -84,18 +87,28 @@ public class ChatRoomInOutService {
 
         boolean isOwner = room.getRoomOwner().getUserId().equals(user.getUserId());
 
+
         if (isOwner) {
-            List<ChatMember> members = chatMemberRepository.findByChatRoom(room);
-            members.forEach(ChatMember::modifyLeftAt);
-            chatMemberRepository.deleteAll(members);
-            chatRoomRepository.deleteById(roomId);
+            // 방장 퇴장 → 방 + 모든 멤버 + Qna 안전 삭제
+            chatRoomRepository.delete(room);
+            chatRoomRepository.flush(); // DB 반영 강제
         } else {
-            ChatMember member = chatMemberRepository.findByChatRoomAndUser(room, user).orElseThrow();
+            // 일반 멤버 퇴장
+            ChatMember member = chatMemberRepository.findByChatRoomAndUser(room, user)
+                    .orElseThrow(() -> new RuntimeException("Member not found"));
+
+            // Cascade + orphanRemoval로 Qna 자동 삭제
             chatMemberRepository.delete(member);
+
             room.decreaseJoinedCount();
-            if (room.getJoinedCount() == 0) chatRoomRepository.deleteById(roomId);
-            else chatRoomRepository.save(room);
+            if (room.getJoinedCount() == 0) {
+                chatRoomRepository.delete(room);
+            } else {
+                chatRoomRepository.save(room);
+            }
         }
+
+
 
         return ChatMessageRequestDto.builder()
                 .roomId(roomId)
@@ -104,4 +117,30 @@ public class ChatRoomInOutService {
                 .sentAt(LocalDateTime.now())
                 .build();
     }
+
+
+
+    // 입장 시 참여자 리스트 가져오기
+    @Transactional(readOnly = true)
+    public List<ChatMemberDto> getRoomMembers(Long roomId) {
+        ChatRoom room = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+
+        return chatMemberRepository.findAllByChatRoomAndLeftAtIsNull(room)
+                .stream()
+                .map(cm -> new ChatMemberDto(
+                        cm.getUser().getUserId(),
+                        cm.getUser().getUserNickname(),
+                        cm.getJoinedAt()
+                ))
+                .toList();
+    }
+
+    // 참여자 목록 WebSocket 전송
+    public void broadcastMemberList(Long roomId) {
+        List<ChatMemberDto> members = getRoomMembers(roomId);
+        messagingTemplate.convertAndSend("/topic/chatroom/" + roomId + "/members", members);
+    }
+
+
 }

@@ -3,7 +3,9 @@ package com.linkee.linkeeapi.chat.command.application.controller;
 
 
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatMessageRequestDto;
+import com.linkee.linkeeapi.chat.command.application.dto.response.ChatMemberDto;
 import com.linkee.linkeeapi.chat.command.application.service.chat_service.ChatRoomInOutService;
+import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMember;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMessageMongo;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMessageMongoRepository;
 import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
@@ -16,6 +18,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Controller
@@ -55,7 +58,7 @@ public class ChatWebSocketController {
     }
 
 
-    // 방입장
+    // 방 입장
     @MessageMapping("/chat.join")
     public void joinRoom(@Header("roomId") Long roomId,
                          @Header("Authorization") String token,
@@ -63,7 +66,10 @@ public class ChatWebSocketController {
 
         ChatMessageRequestDto joinMessage = chatRoomInOutService.joinRoom(roomId, token, roomCode);
 
+        // 입장 메시지 전송
         messagingTemplate.convertAndSend("/topic/chatroom/" + roomId, joinMessage);
+
+
     }
 
     // 방 퇴장
@@ -73,8 +79,12 @@ public class ChatWebSocketController {
 
         ChatMessageRequestDto leaveMessage = chatRoomInOutService.leaveRoom(roomId, token);
 
+        // 퇴장 메시지 전송
         messagingTemplate.convertAndSend("/topic/chatroom/" + roomId, leaveMessage);
+
+
     }
+
 
 
 

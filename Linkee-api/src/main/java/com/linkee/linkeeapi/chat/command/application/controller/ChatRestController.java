@@ -3,6 +3,7 @@ package com.linkee.linkeeapi.chat.command.application.controller;
 
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomCreateRequestDto;
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomJoinRequestDto;
+import com.linkee.linkeeapi.chat.command.application.dto.response.ChatMemberDto;
 import com.linkee.linkeeapi.chat.command.application.dto.response.ChatRoomJoinResponseDto;
 import com.linkee.linkeeapi.chat.command.application.dto.response.ChatRoomResponseDto;
 import com.linkee.linkeeapi.chat.command.application.service.chat_service.ChatRoomCreateService;
@@ -99,5 +100,12 @@ public class ChatRestController {
         } catch (RuntimeException ex) {
             return ResponseEntity.status(401).body(ex.getMessage());
         }
+    }
+
+
+    @GetMapping("/{roomId}/members")
+    public ResponseEntity<List<ChatMemberDto>> getRoomMembers(@PathVariable Long roomId) {
+        List<ChatMemberDto> members = chatRoomInOutService.getRoomMembers(roomId);
+        return ResponseEntity.ok(members);
     }
 }
