@@ -3,10 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.quiz_room.query.mapper.QuizRoomMapper">
+<mapper namespace="com.linkee.linkeeapi.quiz.query.mapper.QuizRoomMapper">
 
     <!-- 방 목록 조회 (페이징 적용) -->
-    <select id="findAllRoomsPaginated" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomListResponseDto">
+    <select id="findAllRoomsPaginated" resultType="com.linkee.linkeeapi.quiz.query.dto.response.QuizRoomListResponseDto">
         SELECT quiz_room_id AS quizRoomId,
                room_title AS roomTitle,
                category_id AS categoryId,
@@ -29,7 +29,7 @@
     </select>
 
     <!-- 빠른 시작 -->
-    <select id="findAvailableRoom" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.QuizRoomResponseDto">
+    <select id="findAvailableRoom" resultType="com.linkee.linkeeapi.quiz.query.dto.response.QuizRoomResponseDto">
         SELECT quiz_room_id AS quizRoomId,
                room_title AS roomTitle,
                joined_count AS joinedCount,
@@ -42,7 +42,7 @@
     </select>
 
     <!-- 플레이 상태 -->
-    <select id="findPlayState" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.PlayStateResponseDto">
+    <select id="findPlayState" resultType="com.linkee.linkeeapi.quiz.query.dto.response.PlayStateResponseDto">
       SELECT
         r.quiz_room_id AS roomId,
         (SELECT c.current_quiz_index
@@ -63,7 +63,7 @@
 
 
     <!-- 결과 조회 -->
-    <select id="findResultsByRoom" resultType="com.linkee.linkeeapi.quiz_room.query.dto.response.ResultRowResponseDto">
+    <select id="findResultsByRoom" resultType="com.linkee.linkeeapi.quiz.query.dto.response.ResultRowResponseDto">
         SELECT
             u.user_id AS userId,
             u.user_nickname AS userNickname,  -- ✅ userNickname 필요
