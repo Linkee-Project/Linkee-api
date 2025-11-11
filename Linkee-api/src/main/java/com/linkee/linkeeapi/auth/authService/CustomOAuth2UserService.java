@@ -1,11 +1,10 @@
 package com.linkee.linkeeapi.auth.authService;
 
 import com.linkee.linkeeapi.common.enums.Role;
-import com.linkee.linkeeapi.common.security.service.CustomUserDetails;
+import com.linkee.linkeeapi.common.service.CustomUserDetails;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.Range;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;

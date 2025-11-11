@@ -2,7 +2,7 @@ package com.linkee.linkeeapi.alarm_box.command.application.controller;
 
 import com.linkee.linkeeapi.alarm_box.command.application.dto.request.AlarmBoxCreateRequest;
 import com.linkee.linkeeapi.alarm_box.command.application.service.AlarmBoxCommandService;
-import com.linkee.linkeeapi.common.security.model.CustomUser;
+import com.linkee.linkeeapi.common.model.CustomUser;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

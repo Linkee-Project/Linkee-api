@@ -1,9 +1,7 @@
 package com.linkee.linkeeapi.user.command.application.controller;
 
-import com.linkee.linkeeapi.auth.authService.AuthService;
-import com.linkee.linkeeapi.common.security.model.CustomUser;
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.user.command.application.dto.request.UpdateUserNickNameRequest;
-import com.linkee.linkeeapi.user.command.application.dto.request.UserCreateRequest;
 import com.linkee.linkeeapi.user.command.application.service.UserCommandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
