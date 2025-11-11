@@ -1,9 +1,9 @@
 package com.linkee.linkeeapi.users.command.application.service;
 
-import com.linkee.linkeeapi.alarm_box.command.domain.aggregate.entity.AlarmBox;
-import com.linkee.linkeeapi.alarm_box.command.infrastructure.repository.AlarmBoxRepository;
-import com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateResponse;
-import com.linkee.linkeeapi.alarm_template.query.mapper.AlarmTemplateMapper;
+import com.linkee.linkeeapi.alarm.command.domain.aggregate.entity.AlarmBox;
+import com.linkee.linkeeapi.alarm.command.instructure.repository.AlarmBoxRepository;
+import com.linkee.linkeeapi.alarm.query.dto.response.AlarmTemplateResponse;
+import com.linkee.linkeeapi.alarm.query.mapper.AlarmTemplateMapper;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.event.FriendRequestEvent;
 import com.linkee.linkeeapi.common.exception.BusinessException;
