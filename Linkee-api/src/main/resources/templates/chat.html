@@ -111,7 +111,9 @@
         const socket = new SockJS('http://localhost:8080/ws-chat');
         // const socket = new SockJS('http://192.168.2.49:8080/ws-chat');
         stompClient = Stomp.over(socket);
-        stompClient.connect({'Authorization': token}, function(frame) {
+
+        // ✅ Authorization 헤더는 여기서 Bearer 포함
+        stompClient.connect({'Authorization': 'Bearer ' + token}, function(frame) {
             console.log('Connected: ' + frame);
             loadRooms();
             setInterval(loadRooms, 5000); // 5초마다 방 목록 갱신
@@ -174,7 +176,7 @@
     function enterRoom(roomId) {
         selectedRoomId = roomId;
         document.getElementById("chat").innerHTML = "";
-        document.getElementById("qna-box").style.display = "none"
+        document.getElementById("qna-box").style.display = "none";
 
         const roomLi = document.querySelector(`#rooms li[data-room-id='${roomId}']`);
         const isPrivate = roomLi ? roomLi.textContent.includes("🔒") : false;
@@ -184,61 +186,66 @@
             roomCode = parseInt(prompt("비밀방 코드 입력:"));
             if (!roomCode) {
                 alert("코드를 입력해야 입장할 수 있습니다.");
+                selectedRoomId = null;
                 return;
             }
         }
 
-        stompClient.send("/app/chat.join", {
-            'roomId': roomId,
-            'Authorization': token,
-            'roomCode': roomCode
-        }, {});
+        // ✅ REST API로 입장 검증
+        fetch(`http://localhost:8080/chat/rooms/${roomId}/join`, {
+            method: 'POST',
+            headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ roomCode: roomCode })
+        })
+            .then(res => {
+                if (!res.ok) return res.text().then(msg => { throw new Error(msg); });
+                return res.json();
+            })
+            .then(joinMessage => {
+                // 입장 성공 메시지 보여주기
+                showMessage(joinMessage.message, true);
 
-        if(currentSubscription) currentSubscription.unsubscribe();
-        currentSubscription = stompClient.subscribe('/topic/chatroom/' + roomId, function(messageOutput) {
-            const msg = JSON.parse(messageOutput.body);
+                // 기존 구독 해제
+                if (currentSubscription) currentSubscription.unsubscribe();
 
-            if(msg.message === "비밀번호가 틀렸습니다.") {
-                alert(msg.message);
+                // ✅ WebSocket 구독 시작
+                currentSubscription = stompClient.subscribe('/topic/chatroom/' + roomId, function(messageOutput) {
+                    const msg = JSON.parse(messageOutput.body);
+
+                    // QnA 처리
+                    if(msg.type === "QNA_QUESTION") {
+                        document.getElementById("qna-box").style.display = "block";
+                        document.getElementById("current-question").textContent = msg.question;
+                        document.getElementById("answer-section").style.display = "none";
+                        showMessage("🧩 새 문제가 등록되었습니다! 문제: " + msg.question, true);
+                        return;
+                    }
+
+                    if(msg.type === "QNA_ANSWER") {
+                        document.getElementById("answer-section").style.display = "block";
+                        document.getElementById("current-answer").textContent = msg.answer;
+                        showMessage("✅ 정답이 공개되었습니다! 정답: " + msg.answer, true);
+                        return;
+                    }
+
+                    // 기존 메시지 처리
+                    showMessage(msg.senderNickname + ": " + msg.message, msg.senderNickname === "SYSTEM");
+                });
+
+                // 기존 메시지 불러오기
+                loadMessages();
+                highlightSelectedRoom();
+            })
+            .catch(err => {
+                // 입장 실패 처리
+                alert(err.message);
                 selectedRoomId = null;
                 document.getElementById("chat").innerHTML = "";
                 highlightSelectedRoom();
-                return;
-            }
-
-            // QnA 처리
-            if(msg.type === "QNA_QUESTION") {
-                document.getElementById("qna-box").style.display = "block";
-                document.getElementById("current-question").textContent = msg.question;
-                document.getElementById("answer-section").style.display = "none";
-                showMessage("🧩 새 문제가 등록되었습니다! 문제: " + msg.question, true);
-                return;
-            }
-
-            if(msg.type === "QNA_ANSWER") {
-                document.getElementById("answer-section").style.display = "block";
-                document.getElementById("current-answer").textContent = msg.answer;
-                showMessage("✅ 정답이 공개되었습니다! 정답: " + msg.answer, true);
-                return;
-            }
-
-            // 입장 성공 메시지 처리
-            if(msg.senderNickname === "SYSTEM" && msg.message.includes("님이 입장했습니다")) {
-                loadMessages(); // 성공 시에만 메시지 불러오기
-                highlightSelectedRoom();
-            }
-
-            // 기존 메시지 처리
-            showMessage(msg.senderNickname + ": " + msg.message, msg.senderNickname === "SYSTEM");
-
-
-        });
-        if(!isPrivate) {
-            loadMessages();
-            highlightSelectedRoom();
-        }
-
-
+            });
 
         // ✅ 현재 문제 조회
         fetch(`http://localhost:8080/chat/qna/${roomId}/current`, {
@@ -256,6 +263,8 @@
                 }
             });
     }
+
+
 
     // 메시지 불러오기
     function loadMessages() {

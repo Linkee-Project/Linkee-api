@@ -3,7 +3,7 @@ package com.linkee.linkeeapi.quiz_room.websocket.controller;
 
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
-import com.linkee.linkeeapi.common.security.model.CustomUser;
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.quiz_room.command.application.dto.request.QuizRoomSubmitAnswerRequestDto;
 import com.linkee.linkeeapi.quiz_room.command.application.service.QuizRoomCommandService;
 import com.linkee.linkeeapi.quiz_room.command.domain.aggregate.QuizRoom;

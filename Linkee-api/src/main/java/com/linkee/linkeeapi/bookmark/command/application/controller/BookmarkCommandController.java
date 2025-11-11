@@ -1,7 +1,7 @@
 package com.linkee.linkeeapi.bookmark.command.application.controller;
 
 import com.linkee.linkeeapi.bookmark.command.application.service.BookmarkCommandService;
-import com.linkee.linkeeapi.common.security.model.CustomUser;
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
