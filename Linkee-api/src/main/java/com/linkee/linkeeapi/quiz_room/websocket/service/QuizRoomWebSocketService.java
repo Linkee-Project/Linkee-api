@@ -1,9 +1,7 @@
 package com.linkee.linkeeapi.quiz_room.websocket.service;
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
-import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
 import com.linkee.linkeeapi.question_option.command.domain.aggregate.QuestionOption;
 import com.linkee.linkeeapi.quiz_current_index.command.domain.aggregate.QuizCurrentIndex;
 import com.linkee.linkeeapi.quiz_current_index.command.infrastructure.repository.QuizCurrentIndexRepository;
@@ -23,8 +21,8 @@ import com.linkee.linkeeapi.room_question.command.domain.aggregate.RoomQuestion;
 import com.linkee.linkeeapi.room_question.command.infrastructure.repository.RoomQuestionRepository;
 import com.linkee.linkeeapi.room_user_log.command.domain.aggregate.RoomUserLog;
 import com.linkee.linkeeapi.room_user_log.command.infrastructure.repository.JpaRoomUserLogRepository;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

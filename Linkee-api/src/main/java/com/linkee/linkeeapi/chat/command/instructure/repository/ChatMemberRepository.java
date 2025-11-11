@@ -2,7 +2,7 @@ package com.linkee.linkeeapi.chat.command.instructure.repository;
 
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMember;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoom;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

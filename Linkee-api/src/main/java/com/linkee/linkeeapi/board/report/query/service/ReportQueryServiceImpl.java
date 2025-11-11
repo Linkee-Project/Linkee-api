@@ -1,15 +1,14 @@
 package com.linkee.linkeeapi.board.report.query.service;
 
-import com.linkee.linkeeapi.common.enums.Role;
-
-import com.linkee.linkeeapi.common.exception.BusinessException;
-import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.board.report.query.dto.request.ReadReportListRequestDto;
 import com.linkee.linkeeapi.board.report.query.dto.response.ReportDetailResponseDto;
 import com.linkee.linkeeapi.board.report.query.dto.response.ReportListResponseDto;
 import com.linkee.linkeeapi.board.report.query.mapper.ReportMapper;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.common.enums.Role;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

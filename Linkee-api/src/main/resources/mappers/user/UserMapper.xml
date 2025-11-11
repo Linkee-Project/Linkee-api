@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.user.query.mapper.UserMapper">
+<mapper namespace="com.linkee.linkeeapi.users.query.mapper.UserMapper">
 
-    <select id="selectAllUser" resultType="com.linkee.linkeeapi.user.query.dto.response.UserListResponse">
+    <select id="selectAllUser" resultType="com.linkee.linkeeapi.users.query.dto.response.UserListResponse">
         SELECT
         user_id,
         user_email,
@@ -56,12 +56,12 @@
 
     <!--id 값으로 하나(자기정보) 조회-->
 
-    <resultMap id="userMeResultMap" type="com.linkee.linkeeapi.user.query.dto.response.UserMeResponse">
+    <resultMap id="userMeResultMap" type="com.linkee.linkeeapi.users.query.dto.response.UserMeResponse">
         <result property="userEmail" column="user_email"/>
         <result property="userNickname" column="user_nickname"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
-        <collection property="userGrades" ofType="com.linkee.linkeeapi.user.query.dto.response.UserGradeInfo">
+        <collection property="userGrades" ofType="com.linkee.linkeeapi.users.query.dto.response.UserGradeInfo">
             <result property="gradeName" column="grade_name"/>
             <result property="categoryName" column="category_name"/>
             <result property="victoryCount" column="victory_count"/>

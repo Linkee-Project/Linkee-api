@@ -3,7 +3,8 @@ package com.linkee.linkeeapi.board.inquiry.command.application.controller;
 import com.linkee.linkeeapi.board.inquiry.command.application.dto.request.CreateInquiryRequestDto;
 import com.linkee.linkeeapi.board.inquiry.command.application.dto.request.UpdateInquiryAnswerRequestDto;
 import com.linkee.linkeeapi.board.inquiry.command.application.service.InquiryCommandService;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

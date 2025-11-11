@@ -5,7 +5,7 @@ import com.linkee.linkeeapi.bookmark.query.dto.response.BookmarkResponse;
 import com.linkee.linkeeapi.bookmark.query.service.BookmarkQueryService;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.common.model.CustomUser;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

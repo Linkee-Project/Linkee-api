@@ -1,13 +1,13 @@
 package com.linkee.linkeeapi.board.notice.query.service;
 
-import com.linkee.linkeeapi.common.exception.BusinessException;
-import com.linkee.linkeeapi.common.exception.ErrorCode;
-import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.board.notice.command.infrastructure.repository.NoticeRepository;
 import com.linkee.linkeeapi.board.notice.query.dto.response.NoticeDetailResponseDto;
 import com.linkee.linkeeapi.board.notice.query.dto.response.NoticeListResponseDto;
 import com.linkee.linkeeapi.board.notice.query.mapper.NoticeMapper;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.common.model.PageResponse;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

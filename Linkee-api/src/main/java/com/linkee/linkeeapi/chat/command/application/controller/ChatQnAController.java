@@ -4,7 +4,7 @@ import com.linkee.linkeeapi.chat.command.application.service.chat_service.ChatRo
 import com.linkee.linkeeapi.qna.command.application.dto.request.CreateQnaRequestDto;
 import com.linkee.linkeeapi.qna.query.dto.response.QnaResponseDto;
 import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

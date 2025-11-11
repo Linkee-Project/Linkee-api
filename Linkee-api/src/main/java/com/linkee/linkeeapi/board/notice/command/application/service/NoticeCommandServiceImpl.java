@@ -1,16 +1,16 @@
 package com.linkee.linkeeapi.board.notice.command.application.service;
 
-import com.linkee.linkeeapi.common.enums.Role;
-import com.linkee.linkeeapi.common.exception.BusinessException;
-import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.board.notice.command.application.dto.request.CreateNoticeRequestDto;
 import com.linkee.linkeeapi.board.notice.command.application.dto.request.UpdateNoticeRequestDto;
 import com.linkee.linkeeapi.board.notice.command.domain.aggregate.entity.Notice;
 import com.linkee.linkeeapi.board.notice.command.infrastructure.repository.NoticeRepository;
 import com.linkee.linkeeapi.board.notice.query.mapper.NoticeMapper;
+import com.linkee.linkeeapi.common.enums.Role;
+import com.linkee.linkeeapi.common.exception.BusinessException;
+import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.CustomUser;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

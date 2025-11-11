@@ -12,8 +12,8 @@ import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomReposito
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
