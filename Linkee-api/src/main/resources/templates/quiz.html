@@ -1,353 +1,876 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Linkee Quiz WS Tester</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linkee 퀴즈방 완전 테스트</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     <style>
-        :root { --bg:#0b1020; --fg:#e7e9ee; --muted:#96a0b5; --card:#141b34; --accent:#7aa2ff; }
-        *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,Segoe UI,Roboto,Apple SD Gothic Neo,Apple Color Emoji,Arial}
-        h2{margin:0 0 8px} h3{margin:12px 0 6px;color:var(--accent)}
-        .wrap{display:grid;grid-template-columns: 320px 1fr; gap:16px; padding:16px}
-        .card{background:var(--card);border:1px solid #232b4a;border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
-        .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-        input,select,button,textarea{background:#0e1530;color:var(--fg);border:1px solid #29335a;border-radius:10px;padding:8px 10px}
-        button{cursor:pointer} button.primary{background:var(--accent);color:#0c1226;border:none}
-        .grid{display:grid;gap:8px}
-        .log{height:180px;overflow:auto;background:#0a0f22;border:1px solid #1f2746;border-radius:12px;padding:8px}
-        .list{max-height:220px;overflow:auto;border:1px solid #1f2746;border-radius:12px}
-        .list table{width:100%;border-collapse:collapse}
-        .list th,.list td{padding:8px;border-bottom:1px solid #1f2746;text-align:left}
-        .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#1a2343;color:#b8c4ff;font-size:12px}
-        .q-box{border:1px solid #29335a;border-radius:12px;padding:10px}
-        .opt{display:block;margin:6px 0;padding:6px;border-radius:8px;background:#0e1530}
-        .hidden{display:none}
-        .ok{color:#98ffa1} .warn{color:#ffd27a} .err{color:#ff9393}
-        .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
-        .muted{color:var(--muted)}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        h1, h2, h3 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .status-badge.connected {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-badge.disconnected {
+            background: #ef4444;
+            color: white;
+        }
+
+        .room-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .room-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 3px solid transparent;
+        }
+
+        .room-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .room-info {
+            color: #666;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+
+        .quiz-area {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .timer {
+            background: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .question-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .option-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.03);
+        }
+
+        .option-btn.selected {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .result-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .ranking-item {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ranking-item.first {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        }
+
+        .ranking-item.second {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e0e0e0 100%);
+        }
+
+        .ranking-item.third {
+            background: linear-gradient(135deg, #cd7f32 0%, #daa520 100%);
+        }
+
+        .log {
+            background: #1e293b;
+            color: #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 8px;
+            border-left: 3px solid #10b981;
+            padding-left: 15px;
+        }
+
+        .log-entry.error {
+            border-left-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .log-entry.info {
+            border-left-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .participants {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .participant-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge.owner {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .badge.ready {
+            background: #10b981;
+            color: white;
+        }
+
+        .submission-info {
+            background: #e0f2fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 600;
+            color: #0369a1;
+        }
     </style>
 </head>
 <body>
-<div class="wrap">
-    <!-- LEFT: Controls -->
-    <section class="card grid" style="gap:12px">
-        <h2>① 연결 & JWT</h2>
-        <div class="grid">
-            <label>API Base URL
-                <input id="apiBase" value="http://localhost:8080" />
-            </label>
-            <label>WS Endpoint (SockJS)
-                <input id="wsPath" value="/ws-stomp" />
-            </label>
-            <label>Publish Prefix
-                <input id="pubPrefix" value="/pub" />
-            </label>
-            <label>Subscribe Prefix
-                <input id="subPrefix" value="/sub" />
-            </label>
-            <label>JWT (Bearer ... 없음, 순수 토큰만)
-                <textarea id="jwt" rows="3" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."></textarea>
-            </label>
-            <div class="row">
-                <button class="primary" id="btnConnect">Connect</button>
-                <button id="btnDisconnect">Disconnect</button>
-            </div>
-            <div class="muted">CONNECT 시 Authorization 헤더로 <span class="mono">Bearer {token}</span> 전송합니다.</div>
-        </div>
+<div class="container">
+    <h1 style="color: white; text-align: center; margin-bottom: 30px;">🎮 Linkee 퀴즈방 완전 테스트</h1>
 
-        <hr style="border-color:#1f2746">
-
-        <h2>② 방 관리</h2>
-        <div class="grid">
-            <div class="row">
-                <input id="roomTitle" placeholder="방 제목" style="flex:1">
-                <select id="roomMode">
-                    <option value="G">그룹(G)</option>
-                    <option value="S">개인(S)</option>
-                </select>
-                <input id="roomCap" type="number" min="2" value="4" style="width:80px"/>
-                <button id="btnCreate" class="primary">방 생성</button>
-            </div>
-            <div class="row">
-                <button id="btnFetchRooms">모집중 방 새로고침</button>
-                <span class="pill">status=W 만 조회</span>
-            </div>
-            <div id="rooms" class="list"></div>
-            <div class="row">
-                <input id="roomId" placeholder="선택된 roomId" style="flex:1"/>
-                <button id="btnJoin" class="primary">참여</button>
-            </div>
-        </div>
-
-        <hr style="border-color:#1f2746">
-
-        <h2>③ 준비 & 시작</h2>
-        <div class="row">
-            <button id="btnReady">내 상태: Ready</button>
-            <button id="btnUnready">취소</button>
-            <button id="btnStart" class="primary">방장 시작</button>
-        </div>
-    </section>
-
-    <!-- RIGHT: Live Area -->
-    <section class="card grid" style="gap:12px">
-        <h2>라이브 상태</h2>
-
-        <div class="grid" style="grid-template-columns: 1fr 1fr; gap:12px">
-            <div class="card" style="background:#0c1226">
-                <h3>참여자 목록</h3>
-                <div id="members" class="list"></div>
-            </div>
-            <div class="card" style="background:#0c1226">
-                <h3>순위</h3>
-                <div id="ranking" class="list"></div>
-            </div>
-        </div>
-
-        <div class="q-box" id="questionBox">
-            <div class="row" style="justify-content:space-between;align-items:center">
-                <h3 id="qTitle">(문제 대기중)</h3>
-                <span id="qMeta" class="pill">-/-</span>
-            </div>
-            <div id="qText" style="margin:6px 0 8px"></div>
-            <form id="optForm"></form>
-            <div class="row">
-                <button id="btnSubmitAns" class="primary" disabled>정답 제출</button>
-                <span id="ansStatus" class="muted"></span>
-            </div>
-        </div>
-
+    <div class="grid">
+        <!-- 왼쪽: 인증 & 방 관리 -->
         <div>
-            <h3>내 문제 풀이 기록</h3>
-            <div id="review" class="list"></div>
+            <!-- 인증 -->
+            <div class="card">
+                <h2>🔐 인증</h2>
+                <div class="input-group">
+                    <label>JWT Token</label>
+                    <input type="text" id="jwtToken" placeholder="Bearer 토큰을 입력하세요">
+                </div>
+                <button onclick="connectWebSocket()">🔌 WebSocket 연결</button>
+                <div>
+                    <span id="connectionStatus" class="status-badge disconnected">연결 안됨</span>
+                </div>
+            </div>
+
+            <!-- 방 만들기 -->
+            <div class="card">
+                <h2>➕ 방 만들기</h2>
+                <div class="input-group">
+                    <label>방 제목</label>
+                    <input type="text" id="roomTitle" value="테스트 퀴즈방">
+                </div>
+                <div class="input-group">
+                    <label>카테고리</label>
+                    <select id="categoryId">
+                        <option value="">카테고리 로딩 중...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>정원 / 문제 수 / 모드</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <input type="number" id="roomCapacity" value="5" min="2" max="10">
+                        <input type="number" id="roomQuizLimit" value="5" min="5" max="20">
+                        <select id="roomMode">
+                            <option value="S">솔로</option>
+                            <option value="G">그룹</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="createRoom()">방 만들기</button>
+            </div>
+
+            <!-- 방 목록 -->
+            <div class="card">
+                <h2>📋 방 목록</h2>
+                <button onclick="loadRooms()" class="secondary">🔄 새로고침</button>
+                <div id="roomList" class="room-list">
+                    <p style="color: #999;">방 목록을 불러오려면 새로고침을 클릭하세요</p>
+                </div>
+            </div>
         </div>
 
+        <!-- 오른쪽: 퀴즈방 -->
         <div>
-            <h3>로그</h3>
-            <div id="log" class="log mono"></div>
+            <!-- 퀴즈방 영역 -->
+            <div id="quizRoomSection" class="card hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 id="currentRoomTitle">퀴즈방</h2>
+                    <button onclick="leaveRoom()" class="danger">🚪 나가기</button>
+                </div>
+
+                <!-- 참가자 목록 -->
+                <div class="participants">
+                    <h3>👥 참가자 (<span id="participantCount">0</span>명)</h3>
+                    <div id="participantList"></div>
+                </div>
+
+                <!-- 게임 컨트롤 -->
+                <div>
+                    <button id="readyBtn" onclick="toggleReady()" class="secondary">✅ 준비 완료</button>
+                    <button id="startBtn" onclick="startQuiz()" class="hidden">🎬 게임 시작 (방장)</button>
+                </div>
+
+                <!-- 퀴즈 문제 -->
+                <div id="quizArea" class="hidden">
+                    <div class="quiz-area">
+                        <div class="question-header">
+                            <span class="question-number" id="questionNumber">문제 1/5</span>
+                            <span class="timer" id="timer">⏱️ 30초</span>
+                        </div>
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <span style="background: white; padding: 10px 20px; border-radius: 20px; font-weight: 600; color: #667eea;" id="categoryName">카테고리</span>
+                        </div>
+                        <div class="question-content" id="questionContent">
+                            문제가 여기에 표시됩니다
+                        </div>
+                        <div class="options" id="optionsContainer"></div>
+                    </div>
+
+                    <!-- 제출 현황 -->
+                    <div id="submissionInfo" class="submission-info hidden">
+                        <span id="submissionText"></span>
+                    </div>
+                </div>
+
+                <!-- 문제 결과 -->
+                <div id="resultArea" class="hidden">
+                    <div class="result-box">
+                        <h3>✅ 정답 공개!</h3>
+                        <div style="background: #c8e6c9; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                            <strong id="correctAnswer">정답: </strong>
+                        </div>
+                        <h4>참가자 결과:</h4>
+                        <div id="userResults"></div>
+                    </div>
+                </div>
+
+                <!-- 최종 순위 -->
+                <div id="rankingArea" class="hidden">
+                    <div class="result-box">
+                        <h2>🏆 최종 순위</h2>
+                        <div id="rankingList"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+
+    <!-- 로그 -->
+    <div class="card full-width">
+        <h3>📝 메시지 로그</h3>
+        <button onclick="clearLog()">🗑️ 로그 지우기</button>
+        <div id="logContainer" class="log"></div>
+    </div>
 </div>
 
-<!-- SockJS & Stomp (CDN) -->
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script>
-    (() => {
-        // ===== Configurable endpoints (프로젝트에 맞게 수정) =====
-        const endpoints = {
-            // REST
-            createRoom: () => `${apiBase()}/api/quiz-rooms`, // POST {title, mode, capacity}
-            getRooms: () => `${apiBase()}/api/quiz-rooms?status=W`, // GET
-            joinRoom: (roomId) => `${apiBase()}/api/quiz-rooms/${roomId}/join`, // POST
-            ready: (roomId) => `${apiBase()}/api/quiz-rooms/${roomId}/ready`, // POST {ready:true/false}
-            // STOMP topics (백엔드 설정과 맞춰주세요)
-            topicMembers: (roomId) => `${subPrefix()}/room.${roomId}.members`,
-            topicQuestion: (roomId) => `${subPrefix()}/room.${roomId}.question`,
-            topicRanking: (roomId) => `${subPrefix()}/room.${roomId}.ranking`,
-            topicEnd: (roomId) => `${subPrefix()}/room.${roomId}.end`,
-            // publish
-            pubStart: (roomId) => `${pubPrefix()}/room/${roomId}/start`, // 메시지 바디: {}
-            pubAnswer: (roomId) => `${pubPrefix()}/room/${roomId}/answer`, // {questionId, optionId}
+    const API_BASE = 'http://localhost:8080/api/v1';
+    let stompClient = null;
+    let currentRoomId = null;
+    let isRoomOwner = false;
+    let timerInterval = null;
+
+    // ==================== 유틸리티 ====================
+    function log(message, type = 'info') {
+        const container = document.getElementById('logContainer');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        const time = new Date().toLocaleTimeString();
+        entry.textContent = `[${time}] ${message}`;
+        container.appendChild(entry);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function clearLog() {
+        document.getElementById('logContainer').innerHTML = '';
+        log('로그가 지워졌습니다');
+    }
+
+    function getHeaders() {
+        const token = document.getElementById('jwtToken').value.trim();
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': token.startsWith('Bearer ') ? token : `Bearer ${token}`
+        };
+    }
+
+    // ==================== WebSocket ====================
+    function connectWebSocket() {
+        const token = document.getElementById('jwtToken').value.trim();
+        if (!token) {
+            alert('JWT 토큰을 입력하세요');
+            return;
+        }
+
+        log('WebSocket 연결 시도...', 'info');
+
+        const socket = new SockJS('http://localhost:8080/ws-stomp');
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
+
+        const headers = {
+            Authorization: token.startsWith('Bearer ') ? token : `Bearer ${token}`
         };
 
-        // ===== Shortcuts to inputs =====
-        const $ = (id) => document.getElementById(id);
-        const apiBase = () => $("apiBase").value.trim();
-        const wsPath = () => $("wsPath").value.trim();
-        const pubPrefix = () => $("pubPrefix").value.trim();
-        const subPrefix = () => $("subPrefix").value.trim();
-        const token = () => $("jwt").value.trim();
+        stompClient.connect(
+            headers,
+            function(frame) {
+                log('✅ WebSocket 연결 성공!', 'success');
+                document.getElementById('connectionStatus').textContent = '연결됨';
+                document.getElementById('connectionStatus').className = 'status-badge connected';
 
-        // ===== State =====
-        let stomp = null;
-        let connected = false;
-        let currentRoomId = null;
-        let currentQuestion = null;
-        let review = []; // [{no, questionId, title, my, correct, isCorrect}]
-        let questionIndex = 0, questionTotal = 0;
+                stompClient.subscribe('/user/queue/errors', function(message) {
+                    const data = JSON.parse(message.body);
+                    log(`❌ 에러: ${data.message}`, 'error');
+                    alert(data.message);
+                });
 
-        // ===== Utils =====
-        function log(msg, cls=""){
-            const el = $("log");
-            const time = new Date().toLocaleTimeString();
-            const line = document.createElement("div");
-            line.innerHTML = `[${time}] ${msg}`;
-            if (cls) line.className = cls;
-            el.appendChild(line); el.scrollTop = el.scrollHeight;
-        }
-        function authHeaders(){
-            return { "Authorization": `Bearer ${token()}` };
-        }
-        async function http(method, url, body){
-            const res = await fetch(url, { method, headers: {"Content-Type":"application/json", ...authHeaders()}, body: body? JSON.stringify(body): undefined });
-            if(!res.ok){ const t = await res.text(); throw new Error(`${res.status} ${res.statusText}: ${t}`); }
-            return res.status === 204 ? null : res.json();
-        }
-        function renderMembers(list){
-            const box = $("members");
-            const rows = (list||[]).map(m => `<tr><td>${m.userId||m.id}</td><td>${m.nickname||m.name||"-"}</td><td>${m.isReady? '✅': '⬜'}</td></tr>`).join("");
-            box.innerHTML = `<table><thead><tr><th>ID</th><th>닉네임</th><th>Ready</th></tr></thead><tbody>${rows}</tbody></table>`;
-        }
-        function renderRanking(list){
-            const box = $("ranking");
-            const rows = (list||[]).map((r,i)=> `<tr><td>${i+1}</td><td>${r.nickname||r.name||r.userId}</td><td>${r.score}</td></tr>`).join("");
-            box.innerHTML = `<table><thead><tr><th>#</th><th>사용자</th><th>점수</th></tr></thead><tbody>${rows}</tbody></table>`;
-        }
-        function renderRooms(rooms){
-            const box = $("rooms");
-            const rows = (rooms||[]).map(r => `<tr>
-        <td>${r.quizRoomId||r.id}</td>
-        <td>${r.roomTitle||r.title}</td>
-        <td><span class="pill">${r.joinedCount||0}/${r.roomCapacity||r.capacity}</span></td>
-        <td><button data-room="${r.quizRoomId||r.id}">선택</button></td>
-      </tr>`).join("");
-            box.innerHTML = `<table><thead><tr><th>ID</th><th>제목</th><th>인원</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
-            box.querySelectorAll('button[data-room]').forEach(b=> b.onclick = ()=> { $("roomId").value = b.dataset.room; });
-        }
-        function renderQuestion(q){
-            $("qTitle").textContent = q.questionTitle || q.title || `문제 ${questionIndex}/${questionTotal}`;
-            $("qText").textContent = q.questionText || q.question || q.text || "";
+                // ✅ 연결 성공 시 카테고리와 방 목록 모두 로드
+                loadCategories();
+                loadRooms();
+            },
+            function(error) {
+                log('❌ WebSocket 연결 실패: ' + error, 'error');
+                document.getElementById('connectionStatus').textContent = '연결 실패';
+                document.getElementById('connectionStatus').className = 'status-badge disconnected';
+            }
+        );
+    }
 
-            const opts = q.options || q.optionList || [];
-            const form = $("optForm");
-            form.innerHTML = opts.map(o => `
-      <label class="opt">
-        <input type="radio" name="ans" value="${o.optionId||o.id||o.index}">
-        <span>${o.optionText || o.text}</span>
-      </label>`).join("");
-            $("btnSubmitAns").disabled = false;
-            $("ansStatus").textContent = "";
-        }
-        function pushReview(row){
-            const box = $("review");
-            const rows = review.map(r => `<tr>
-      <td>${r.no}</td><td class="mono">${r.questionId}</td><td>${r.title}</td>
-      <td>${r.my}</td><td>${r.correct ?? '-'}</td><td>${r.isCorrect===true? '✅': r.isCorrect===false? '❌':'-'}</td>
-    </tr>`).join("");
-            box.innerHTML = `<table><thead><tr><th>No</th><th>QID</th><th>제목</th><th>내답</th><th>정답</th><th>판정</th></tr></thead><tbody>${rows}</tbody></table>`;
-        }
+    // ==================== REST API ====================
+    async function loadRooms() {
+        try {
+            log('방 목록 조회 중...', 'info');
+            const response = await fetch(`${API_BASE}/quiz-rooms`, { headers: getHeaders() });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        // ===== STOMP wiring =====
-        function connectWS(){
-            if(connected){ log('이미 연결됨', 'warn'); return; }
-            const url = apiBase() + wsPath();
-            const sock = new SockJS(url);
-            stomp = Stomp.over(sock);
-            // optional: stomp.debug = (m)=>console.log(m);
-            stomp.connect({ Authorization: `Bearer ${token()}` }, () => {
-                connected = true;
-                log('WS CONNECTED ✅', 'ok');
-                subscribeRoomFeeds(); // 방 선택되어 있으면 즉시 구독
-            }, (err) => { log('WS ERROR: '+err, 'err'); });
-        }
-        function disconnectWS(){ if(stomp){ stomp.disconnect(()=>log('WS DISCONNECTED','warn')); } connected=false; }
+            const result = await response.json();
 
-        function subscribeRoomFeeds(){
-            if(!connected || !currentRoomId) return;
-            // 멤버 구독
-            stomp.subscribe(endpoints.topicMembers(currentRoomId), (frame)=>{
-                try{ const payload = JSON.parse(frame.body); renderMembers(payload.members||payload||[]); }
-                catch(e){ log('members parse error: '+e, 'err'); }
+            // ✅ PageResponse 구조 반영
+            const rooms = result?.data?.content ?? result?.data ?? result;
+
+            if (!Array.isArray(rooms) || rooms.length === 0) {
+                document.getElementById('roomList').innerHTML = '<p style="color: #999;">방이 없습니다</p>';
+                return;
+            }
+
+            const html = rooms.map(room => {
+                const categoryName = room.category?.categoryName || '미지정';
+                return `
+                <div class="room-card" onclick="joinRoom(${room.quizRoomId}, '${room.roomTitle}')">
+                    <h3>${room.roomTitle}</h3>
+                    <div class="room-info">📁 ${categoryName}</div>
+                    <div class="room-info">👥 ${room.joinedCount}/${room.roomCapacity}명</div>
+                    <div class="room-info">
+                        <span style="background: ${room.roomStatus === 'W' ? '#10b981' : '#f59e0b'}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">
+                            ${room.roomStatus === 'W' ? '🟢 대기중' : room.roomStatus === 'P' ? '🟡 진행중' : '⚫ 종료'}
+                        </span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            document.getElementById('roomList').innerHTML = html;
+            log(`✅ 방 ${rooms.length}개 로드 완료`, 'success');
+        } catch (error) {
+            log(`❌ 방 목록 조회 실패: ${error.message}`, 'error');
+            document.getElementById('roomList').innerHTML =
+                '<p style="color: #ef4444;">방 목록을 불러올 수 없습니다.</p>';
+        }
+    }
+    // ==================== 카테고리 API ====================
+    async function loadCategories() {
+        try {
+            log('카테고리 목록 조회 중...', 'info');
+            const response = await fetch(`${API_BASE}/categories`, {
+                headers: getHeaders()
             });
-            // 문제 구독
-            stomp.subscribe(endpoints.topicQuestion(currentRoomId), (frame)=>{
-                try{
-                    const payload = JSON.parse(frame.body);
-                    currentQuestion = payload.question || payload;
-                    questionIndex = payload.index || payload.no || (questionIndex+1);
-                    questionTotal = payload.total || payload.totalCount || questionTotal;
-                    $("qMeta").textContent = `${questionIndex}/${questionTotal || '?'}`;
-                    renderQuestion(currentQuestion);
-                    log(`문제 수신 QID=${currentQuestion.questionId||currentQuestion.id}`);
-                }catch(e){ log('question parse error: '+e, 'err'); }
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const categories = await response.json();
+
+            const selectEl = document.getElementById('categoryId');
+            selectEl.innerHTML = categories.map(cat =>
+                `<option value="${cat.categoryId}">${cat.categoryName}</option>`
+            ).join('');
+
+            log(`✅ 카테고리 ${categories.length}개 로드 완료`, 'success');
+        } catch (error) {
+            log(`❌ 카테고리 조회 실패: ${error.message}`, 'error');
+
+        }
+    }
+
+    async function createRoom() {
+        const requestData = {
+            categoryId: parseInt(document.getElementById('categoryId').value),
+            roomTitle: document.getElementById('roomTitle').value,
+            roomCapacity: parseInt(document.getElementById('roomCapacity').value),
+            roomQuizLimit: parseInt(document.getElementById('roomQuizLimit').value),
+            roomMode: document.getElementById('roomMode').value,
+            isPrivate: 'N'
+        };
+
+        try {
+            const response = await fetch(`${API_BASE}/quiz-rooms`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify(requestData)
             });
-            // 순위 구독
-            stomp.subscribe(endpoints.topicRanking(currentRoomId), (frame)=>{
-                try{ const payload = JSON.parse(frame.body); renderRanking(payload.ranking||payload||[]); }
-                catch(e){ log('ranking parse error: '+e, 'err'); }
-            });
-            // 종료 구독
-            stomp.subscribe(endpoints.topicEnd(currentRoomId), (frame)=>{
-                log('게임 종료 이벤트 수신', 'warn');
-                try{
-                    const payload = JSON.parse(frame.body);
-                    if(payload.finalRanking) renderRanking(payload.finalRanking);
-                    if(payload.review){ review = payload.review; pushReview(); }
-                }catch(e){ /* optional */ }
-            });
+
+            const result = await response.json();
+            if (result.success) {
+                log(`✅ 방 생성 성공! ID: ${result.data}`, 'success');
+                alert('방이 생성되었습니다!');
+                loadRooms();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            log(`❌ 방 생성 실패: ${error.message}`, 'error');
+            alert('방 생성 실패: ' + error.message);
+        }
+    }
+
+    async function joinRoom(roomId, roomTitle) {
+        if (!stompClient || !stompClient.connected) {
+            alert('먼저 WebSocket에 연결하세요');
+            return;
         }
 
-        // ===== Buttons =====
-        $("btnConnect").onclick = connectWS;
-        $("btnDisconnect").onclick = disconnectWS;
+        try {
+            // REST로 방 입장
+            const response = await fetch(`${API_BASE}/room_members`, {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                    quizRoomId: roomId,
+                    userId: 1 // 실제로는 JWT에서 추출
+                })
+            });
 
-        $("btnCreate").onclick = async () => {
-            try{
-                const dto = { title: $("roomTitle").value, mode: $("roomMode").value, capacity: +$("roomCap").value };
-                const res = await http('POST', endpoints.createRoom(), dto);
-                log('방 생성 성공 id='+ (res.quizRoomId||res.id), 'ok');
-                $("roomId").value = res.quizRoomId || res.id;
-            }catch(e){ log('방 생성 실패 '+ e.message, 'err'); }
-        };
+            const result = await response.json();
+            if (!result.success) {
+                throw new Error(result.message);
+            }
 
-        $("btnFetchRooms").onclick = async () => {
-            try{ const res = await http('GET', endpoints.getRooms()); renderRooms(res.content||res||[]); }
-            catch(e){ log('방 목록 실패 '+e.message, 'err'); }
-        };
+            // WebSocket 구독
+            currentRoomId = roomId;
+            stompClient.subscribe(`/sub/quiz-room/${roomId}`, function(message) {
+                handleMessage(JSON.parse(message.body));
+            });
 
-        $("btnJoin").onclick = async () => {
-            const id = $("roomId").value.trim(); if(!id) return alert('roomId 입력');
-            try{
-                await http('POST', endpoints.joinRoom(id), {});
-                currentRoomId = id; review = []; questionIndex=0; questionTotal=0; pushReview();
-                log('방 참여 성공 roomId='+id, 'ok');
-                if(connected) subscribeRoomFeeds();
-            }catch(e){ log('참여 실패 '+e.message, 'err'); }
-        };
+            // UI 전환
+            document.getElementById('quizRoomSection').classList.remove('hidden');
+            document.getElementById('currentRoomTitle').textContent = roomTitle;
 
-        $("btnReady").onclick = async ()=> {
-            const id = currentRoomId || $("roomId").value.trim(); if(!id) return alert('roomId');
-            try{ await http('POST', endpoints.ready(id), { ready:true }); log('READY ✅', 'ok'); }
-            catch(e){ log('ready 실패 '+e.message, 'err'); }
-        };
-        $("btnUnready").onclick = async ()=> {
-            const id = currentRoomId || $("roomId").value.trim(); if(!id) return alert('roomId');
-            try{ await http('POST', endpoints.ready(id), { ready:false }); log('UNREADY', 'warn'); }
-            catch(e){ log('unready 실패 '+e.message, 'err'); }
-        };
+            log(`✅ 방 입장 성공: ${roomTitle}`, 'success');
 
-        $("btnStart").onclick = ()=> {
-            if(!connected) return alert('WS 연결 필요');
-            const id = currentRoomId || $("roomId").value.trim(); if(!id) return alert('roomId');
-            stomp.send(endpoints.pubStart(id), authHeaders(), JSON.stringify({}));
-            log('방장 시작 신호 전송', 'ok');
-        };
+            // TODO: 실제 참가자 목록 로드
+            updateParticipants([
+                { userId: 1, userName: '나', isReady: false, isOwner: true }
+            ]);
+        } catch (error) {
+            log(`❌ 방 입장 실패: ${error.message}`, 'error');
+            alert('방 입장 실패: ' + error.message);
+        }
+    }
 
-        $("btnSubmitAns").onclick = (e)=>{
-            e.preventDefault();
-            if(!currentQuestion) return;
-            const sel = document.querySelector('input[name="ans"]:checked');
-            if(!sel) return alert('선택된 보기 없음');
-            const optionId = sel.value;
-            const roomId = currentRoomId || $("roomId").value.trim();
-            // 리뷰에 임시 저장 (정답 여부/정답 텍스트는 서버 채점 이벤트에서 보강)
-            review.push({ no: review.length+1, questionId: currentQuestion.questionId||currentQuestion.id, title: currentQuestion.questionTitle||currentQuestion.title||'', my: optionId });
-            pushReview();
+    function leaveRoom() {
+        // TODO: REST API 호출
+        currentRoomId = null;
+        document.getElementById('quizRoomSection').classList.add('hidden');
+        document.getElementById('quizArea').classList.add('hidden');
+        document.getElementById('resultArea').classList.add('hidden');
+        document.getElementById('rankingArea').classList.add('hidden');
+        stopTimer();
+        log('방을 나갔습니다', 'info');
+        loadRooms();
+    }
 
-            // 전송
-            stomp.send(endpoints.pubAnswer(roomId), authHeaders(), JSON.stringify({
-                questionId: currentQuestion.questionId || currentQuestion.id,
-                optionId
-            }));
-            $("ansStatus").textContent = '제출됨';
-            $("btnSubmitAns").disabled = true;
-        };
+    // ==================== WebSocket 메시지 ====================
+    function toggleReady() {
+        if (!stompClient || !currentRoomId) return;
+        stompClient.send(`/pub/quiz-room/${currentRoomId}`, {}, JSON.stringify({
+            type: 'READY_TOGGLE',
+            ready: true
+        }));
+        log('📤 준비 상태 토글', 'info');
+    }
 
-        // ===== OPTIONAL: 서버가 채점 결과를 별도 이벤트로 푸시하는 경우 예시 =====
-        // stomp.subscribe(`${subPrefix()}/room.{roomId}.answer-result`, frame => { ... })
+    function startQuiz() {
+        if (!stompClient || !currentRoomId) return;
+        stompClient.send(`/pub/quiz-room/${currentRoomId}`, {}, JSON.stringify({
+            type: 'START_QUIZ'
+        }));
+        log('📤 게임 시작 요청', 'info');
+    }
 
-    })();
+    function submitAnswer(optionIndex) {
+        if (!stompClient || !currentRoomId) return;
+
+        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+        event.target.classList.add('selected');
+
+        stompClient.send(`/pub/quiz-room/${currentRoomId}`, {}, JSON.stringify({
+            type: 'SUBMIT_ANSWER',
+            answerIndex: optionIndex
+        }));
+        log(`📤 답안 제출: ${optionIndex}번`, 'info');
+    }
+
+    function handleMessage(data) {
+        log(`📩 받음: ${data.type}`, 'success');
+
+        switch(data.type) {
+            case 'QUESTION_STARTED':
+                displayQuestion(data.data);
+                break;
+            case 'ANSWER_SUBMITTED':
+                displaySubmission(data.data);
+                break;
+            case 'QUESTION_RESULT':
+                displayResult(data.data);
+                break;
+            case 'QUIZ_FINISHED':
+                displayRanking(data.data);
+                break;
+            case 'MEMBER_UPDATED':
+                log('👥 멤버 목록 갱신', 'info');
+                break;
+            case 'ERROR':
+                log(`❌ 에러: ${data.message}`, 'error');
+                break;
+        }
+    }
+
+    function displayQuestion(data) {
+        document.getElementById('quizArea').classList.remove('hidden');
+        document.getElementById('resultArea').classList.add('hidden');
+        document.getElementById('submissionInfo').classList.add('hidden');
+
+        document.getElementById('questionNumber').textContent = `문제 ${data.questionNumber}/${data.totalQuestions}`;
+        document.getElementById('categoryName').textContent = data.categoryName;
+        document.getElementById('questionContent').textContent = data.questionContent;
+
+        const optionsHtml = data.options.map(opt => `
+                <button class="option-btn" onclick="submitAnswer(${opt.optionIndex})">
+                    <strong>${opt.optionIndex}.</strong> ${opt.optionText}
+                </button>
+            `).join('');
+        document.getElementById('optionsContainer').innerHTML = optionsHtml;
+
+        startTimer(data.timeLimit || 30);
+        log(`❓ 새 문제: ${data.questionContent}`, 'info');
+    }
+
+    function displaySubmission(data) {
+        document.getElementById('submissionInfo').classList.remove('hidden');
+        document.getElementById('submissionText').textContent =
+            `${data.userName}님이 제출했습니다 (${data.submittedCount}/${data.totalParticipants})`;
+        log(`✅ ${data.userName} 제출 (${data.submittedCount}/${data.totalParticipants})`, 'success');
+    }
+
+    function displayResult(data) {
+        stopTimer();
+        document.getElementById('quizArea').classList.add('hidden');
+        document.getElementById('resultArea').classList.remove('hidden');
+
+        document.getElementById('correctAnswer').textContent = `정답: ${data.correctOptionText}`;
+
+        const resultsHtml = data.userResults.map(user => `
+                <div class="participant-item">
+                    <span>${user.isCorrect ? '✅' : '❌'} ${user.userName}</span>
+                </div>
+            `).join('');
+        document.getElementById('userResults').innerHTML = resultsHtml;
+
+        log(`📊 문제 결과 공개`, 'info');
+    }
+
+    function displayRanking(data) {
+        stopTimer();
+        document.getElementById('quizArea').classList.add('hidden');
+        document.getElementById('resultArea').classList.add('hidden');
+        document.getElementById('rankingArea').classList.remove('hidden');
+
+        const rankingsHtml = data.rankings.map(rank => {
+            const className = rank.rank === 1 ? 'first' : rank.rank === 2 ? 'second' : rank.rank === 3 ? 'third' : '';
+            const medal = rank.rank === 1 ? '🥇' : rank.rank === 2 ? '🥈' : rank.rank === 3 ? '🥉' : `${rank.rank}위`;
+            return `
+                    <div class="ranking-item ${className}">
+                        <span><strong>${medal} ${rank.userName}</strong></span>
+                        <span>${rank.correctCount}/${data.totalQuestions}</span>
+                    </div>
+                `;
+        }).join('');
+        document.getElementById('rankingList').innerHTML = rankingsHtml;
+
+        log(`🏆 최종 순위 발표!`, 'success');
+    }
+
+    function updateParticipants(participants) {
+        document.getElementById('participantCount').textContent = participants.length;
+
+        const html = participants.map(p => `
+                <div class="participant-item">
+                    <span>
+                        👤 ${p.userName}
+                        ${p.isOwner ? '<span class="badge owner">방장</span>' : ''}
+                        ${p.isReady ? '<span class="badge ready">준비완료</span>' : ''}
+                    </span>
+                </div>
+            `).join('');
+        document.getElementById('participantList').innerHTML = html;
+
+        // 방장이면 시작 버튼 표시
+        isRoomOwner = participants.some(p => p.isOwner && p.userId === 1);
+        if (isRoomOwner) {
+            document.getElementById('startBtn').classList.remove('hidden');
+        }
+    }
+
+    function startTimer(seconds) {
+        stopTimer();
+        let remaining = seconds;
+        const timerEl = document.getElementById('timer');
+
+        timerInterval = setInterval(() => {
+            remaining--;
+            timerEl.textContent = `⏱️ ${remaining}초`;
+            if (remaining <= 10) {
+                timerEl.style.background = '#e74c3c';
+            }
+            if (remaining <= 0) {
+                stopTimer();
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    window.onload = function() {
+        log('🎮 Linkee 퀴즈방 테스트 페이지 로드 완료', 'info');
+        log('💡 순서: JWT 토큰 입력 → WebSocket 연결 → 방 만들기/입장 → 게임 시작', 'info');
+
+        // ✅ 카테고리 자동 로드 추가
+        loadCategories();
+    };
+
+    window.onbeforeunload = function() {
+        if (stompClient) {
+            stompClient.disconnect();
+        }
+    };
 </script>
 </body>
 </html>
