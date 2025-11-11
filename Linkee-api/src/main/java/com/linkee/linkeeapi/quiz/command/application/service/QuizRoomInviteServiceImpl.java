@@ -1,16 +1,17 @@
 package com.linkee.linkeeapi.quiz.command.application.service;
 
+import com.linkee.linkeeapi.common.enums.RelationStatus;
 import com.linkee.linkeeapi.common.event.QuizRoomInviteEvent;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomInviteRequestDto;
 import com.linkee.linkeeapi.quiz.command.domain.aggregate.QuizRoom;
 import com.linkee.linkeeapi.quiz.command.infrastructure.repository.QuizRoomRepository;
-import com.linkee.linkeeapi.relation.command.domain.aggregate.entity.Relation;
-import com.linkee.linkeeapi.relation.command.domain.aggregate.entity.RelationStatus;
-import com.linkee.linkeeapi.relation.command.infrastructure.repository.RelationRepository;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+
+import com.linkee.linkeeapi.users.command.domain.entity.Relation;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.RelationRepository;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;

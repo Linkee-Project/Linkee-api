@@ -21,8 +21,9 @@ import com.linkee.linkeeapi.quiz.command.domain.aggregate.RoomQuestion;
 import com.linkee.linkeeapi.quiz.command.infrastructure.repository.RoomQuestionRepository;
 import com.linkee.linkeeapi.quiz.command.domain.aggregate.RoomUserLog;
 import com.linkee.linkeeapi.quiz.command.infrastructure.repository.JpaRoomUserLogRepository;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
