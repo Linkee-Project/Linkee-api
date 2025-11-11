@@ -3,7 +3,7 @@ package com.linkee.linkeeapi.chat.command.application.service.services;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoom;
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomCreateRequestDto;
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomDeleteRequestDto;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 
 public interface ChatRoomCommandService {
 

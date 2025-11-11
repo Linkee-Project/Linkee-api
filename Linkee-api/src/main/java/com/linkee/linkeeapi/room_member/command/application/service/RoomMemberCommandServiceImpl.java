@@ -10,14 +10,13 @@ import com.linkee.linkeeapi.room_member.command.application.dto.request.RoomMemb
 import com.linkee.linkeeapi.room_member.command.application.dto.response.RoomMemberCreateResponse;
 import com.linkee.linkeeapi.room_member.command.domain.aggregate.RoomMember;
 import com.linkee.linkeeapi.room_member.command.infrastructure.repository.RoomMemberRepository;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /*
  * RoomMemberCommandService 인터페이스의 구현체.

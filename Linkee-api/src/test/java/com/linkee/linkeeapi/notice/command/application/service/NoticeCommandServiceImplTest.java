@@ -9,8 +9,8 @@ import com.linkee.linkeeapi.notice.command.application.dto.request.UpdateNoticeR
 import com.linkee.linkeeapi.notice.command.domain.aggregate.entity.Notice;
 import com.linkee.linkeeapi.notice.command.infrastructure.repository.NoticeRepository;
 import com.linkee.linkeeapi.notice.query.mapper.NoticeMapper;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

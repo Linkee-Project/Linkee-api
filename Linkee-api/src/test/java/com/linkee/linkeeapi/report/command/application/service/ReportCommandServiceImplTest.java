@@ -8,8 +8,8 @@ import com.linkee.linkeeapi.report.command.application.dto.request.UpdateReportA
 import com.linkee.linkeeapi.report.command.domain.aggregate.Report;
 import com.linkee.linkeeapi.report.command.domain.aggregate.ReportType;
 import com.linkee.linkeeapi.report.command.infrastructure.repository.ReportRepository;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

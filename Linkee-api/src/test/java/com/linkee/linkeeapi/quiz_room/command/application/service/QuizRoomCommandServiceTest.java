@@ -22,9 +22,9 @@ import com.linkee.linkeeapi.room_question.command.application.service.RoomQuesti
 import com.linkee.linkeeapi.room_question.command.domain.aggregate.RoomQuestion;
 import com.linkee.linkeeapi.room_question.command.infrastructure.repository.RoomQuestionRepository;
 import com.linkee.linkeeapi.room_user_log.command.infrastructure.repository.JpaRoomUserLogRepository;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user_grade.command.infrastructure.repository.UserGradeRepository;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserGradeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

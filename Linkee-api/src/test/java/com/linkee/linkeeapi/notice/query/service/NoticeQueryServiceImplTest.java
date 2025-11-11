@@ -9,7 +9,7 @@ import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.notice.query.dto.response.NoticeDetailResponseDto;
 import com.linkee.linkeeapi.notice.query.dto.response.NoticeListResponseDto;
 import com.linkee.linkeeapi.notice.query.mapper.NoticeMapper;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class NoticeQueryServiceImplTest {

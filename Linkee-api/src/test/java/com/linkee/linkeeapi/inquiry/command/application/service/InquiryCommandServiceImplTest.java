@@ -9,8 +9,8 @@ import com.linkee.linkeeapi.inquiry.command.application.dto.request.CreateInquir
 import com.linkee.linkeeapi.inquiry.command.application.dto.request.UpdateInquiryAnswerRequestDto;
 import com.linkee.linkeeapi.inquiry.command.domain.aggregate.Inquiry;
 import com.linkee.linkeeapi.inquiry.command.infrastructure.repository.JpaInquiryRepository;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

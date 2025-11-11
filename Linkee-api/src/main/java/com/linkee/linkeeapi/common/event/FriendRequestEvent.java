@@ -1,6 +1,6 @@
 package com.linkee.linkeeapi.common.event;
 
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

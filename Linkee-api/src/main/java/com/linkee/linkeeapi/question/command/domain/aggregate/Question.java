@@ -5,16 +5,13 @@ import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.BaseTimeEntity;
-import com.linkee.linkeeapi.question.command.application.dto.request.UpdateQuestionRequestDto;
 import com.linkee.linkeeapi.question_option.command.domain.aggregate.QuestionOption;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "tb_question")

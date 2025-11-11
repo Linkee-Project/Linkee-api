@@ -5,20 +5,19 @@ import com.linkee.linkeeapi.category.command.aggregate.Category;
 import com.linkee.linkeeapi.category.command.infrastructure.repository.CategoryRepository;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
-import com.linkee.linkeeapi.grade.command.domain.aggregate.entity.Grade;
-import com.linkee.linkeeapi.grade.command.infrastructure.GradeRepository;
-import com.linkee.linkeeapi.user.command.application.dto.request.UserCreateRequest;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
-import com.linkee.linkeeapi.user_grade.command.domain.entity.UserGrade;
-import com.linkee.linkeeapi.user_grade.command.infrastructure.repository.UserGradeRepository;
+import com.linkee.linkeeapi.users.command.domain.entity.Grade;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.GradeRepository;
+import com.linkee.linkeeapi.users.command.application.dto.request.UserCreateRequest;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.domain.entity.UserGrade;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserGradeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor

@@ -2,7 +2,7 @@ package com.linkee.linkeeapi.room_member.command.infrastructure.repository;
 
 import com.linkee.linkeeapi.quiz_room.command.domain.aggregate.QuizRoom;
 import com.linkee.linkeeapi.room_member.command.domain.aggregate.RoomMember;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
