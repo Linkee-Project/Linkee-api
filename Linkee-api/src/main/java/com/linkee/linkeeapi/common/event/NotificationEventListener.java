@@ -4,7 +4,7 @@ import com.linkee.linkeeapi.alarm_box.command.application.dto.request.AlarmBoxCr
 import com.linkee.linkeeapi.alarm_box.command.application.service.AlarmBoxCommandService;
 import com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateResponse;
 import com.linkee.linkeeapi.alarm_template.query.mapper.AlarmTemplateMapper;
-import com.linkee.linkeeapi.comment.command.domain.aggregate.Comment;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Comment;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.sse.service.SseService;
 import com.linkee.linkeeapi.board.inquiry.command.domain.aggregate.Inquiry;

@@ -1,7 +1,7 @@
 package com.linkee.linkeeapi.question.command.application.service;
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
-import com.linkee.linkeeapi.category.command.infrastructure.repository.CategoryRepository;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
+import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaCategoryRepository;
 import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.event.QuestionVerifiedEvent;
@@ -12,7 +12,7 @@ import com.linkee.linkeeapi.question.command.application.dto.request.UpdateQuest
 import com.linkee.linkeeapi.question.command.application.dto.request.VerifyQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
-import com.linkee.linkeeapi.question_option.command.domain.aggregate.QuestionOption;
+import com.linkee.linkeeapi.question.command.domain.aggregate.QuestionOption;
 import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 
@@ -31,7 +31,7 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
 
     private final JpaQuestionRepository jpaQuestionRepository;
     private final UserFinder userFinder;
-    private final CategoryRepository categoryRepository;
+    private final JpaCategoryRepository categoryRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     //문제 등록

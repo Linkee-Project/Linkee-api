@@ -1,7 +1,7 @@
 package com.linkee.linkeeapi.quiz.query.dto.response;
 
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
 import com.linkee.linkeeapi.common.enums.RoomStatus;
 import lombok.*;
 

@@ -1,8 +1,8 @@
 package com.linkee.linkeeapi.auth.authService;
 
 import com.linkee.linkeeapi.auth.mail.EmailService;
-import com.linkee.linkeeapi.category.command.aggregate.Category;
-import com.linkee.linkeeapi.category.command.infrastructure.repository.CategoryRepository;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
+import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaCategoryRepository;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.users.command.domain.entity.Grade;
@@ -24,7 +24,7 @@ import java.util.List;
 public class UserAuthService {
 
     private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
+    private final JpaCategoryRepository categoryRepository;
     private final GradeRepository gradeRepository;
     private final UserGradeRepository userGradeRepository;
     private final PasswordEncoder passwordEncoder;

@@ -1,5 +1,6 @@
 package com.linkee.linkeeapi.quiz.command.application.dto.response.data;
 
+import com.linkee.linkeeapi.question.command.domain.aggregate.QuestionOption;
 import lombok.*;
 
 @Getter
@@ -12,7 +13,7 @@ public class OptionInfo {
     private String optionText;
     private Integer optionIndex;
 
-    public static OptionInfo from(com.linkee.linkeeapi.question_option.command.domain.aggregate.QuestionOption e) {
+    public static OptionInfo from(QuestionOption e) {
         return OptionInfo.builder()
                 .optionId(e.getQuestionOptionId())
                 .optionIndex(e.getOptionIndex())

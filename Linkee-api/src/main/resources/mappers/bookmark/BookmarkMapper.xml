@@ -3,10 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.bookmark.query.mapper.BookmarkMapper">
+<mapper namespace="com.linkee.linkeeapi.question.query.mapper.BookmarkMapper">
 
     <!-- 전체 북마크 조회 -->
-    <select id="selectAllBookmarks" resultType="com.linkee.linkeeapi.bookmark.query.dto.response.BookmarkResponse">
+    <select id="selectAllBookmarks" resultType="com.linkee.linkeeapi.question.query.dto.response.BookmarkListResponseDto">
         SELECT
         b.bookmark_id,
         b.user_id,
@@ -31,7 +31,7 @@
     </select>
 
     <!-- 특정 유저의 북마크 조회 -->
-    <select id="selectBookmarksByUserId" resultType="com.linkee.linkeeapi.bookmark.query.dto.response.BookmarkResponse">
+    <select id="selectBookmarksByUserId" resultType="com.linkee.linkeeapi.question.query.dto.response.BookmarkListResponseDto">
         SELECT
         b.bookmark_id,
         b.user_id,

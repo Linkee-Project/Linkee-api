@@ -1,6 +1,6 @@
 package com.linkee.linkeeapi.question.command.infrastructure.repository;
 
-import com.linkee.linkeeapi.category.command.aggregate.Category;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
