@@ -468,7 +468,7 @@
 </div>
 
 <script>
-    const API_BASE = 'http://localhost:8080/api/v1';
+    const API_BASE = 'http://192.168.2.76:8080/api/v1';
     let stompClient = null;
     let currentRoomId = null;
     let isRoomOwner = false;
@@ -490,6 +490,33 @@
         log('로그가 지워졌습니다');
     }
 
+    // 🔐 JWT 파서 추가
+    function getJwtClaims() {
+        const raw = document.getElementById('jwtToken').value.trim();
+        if (!raw) return null;
+        const token = raw.startsWith('Bearer ') ? raw.slice(7) : raw;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload; // { userId, sub, email, name, ... }
+        } catch (e) {
+            console.error('JWT parse error', e);
+            return null;
+        }
+    }
+    function getCurrentUserId() {
+        const c = getJwtClaims();
+        // 프로젝트 클레임 키에 맞게 우선순위로 추출
+        if (!c) return null;
+        if (typeof c.userId !== 'undefined') return Number(c.userId);
+        if (typeof c.id !== 'undefined') return Number(c.id);
+        if (typeof c.sub !== 'undefined') return Number(c.sub); // sub가 숫자면 변환
+        return null;
+    }
+    function getCurrentUserName() {
+        const c = getJwtClaims();
+        return c?.name ?? c?.username ?? c?.email ?? `user-${getCurrentUserId() ?? 'unknown'}`;
+    }
+
     function getHeaders() {
         const token = document.getElementById('jwtToken').value.trim();
         return {
@@ -508,7 +535,7 @@
 
         log('WebSocket 연결 시도...', 'info');
 
-        const socket = new SockJS('http://localhost:8080/ws-stomp');
+        const socket = new SockJS('http://192.168.2.76:8080/ws-stomp');
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
 
@@ -581,6 +608,7 @@
                 '<p style="color: #ef4444;">방 목록을 불러올 수 없습니다.</p>';
         }
     }
+
     // ==================== 카테고리 API ====================
     async function loadCategories() {
         try {
@@ -642,6 +670,12 @@
             return;
         }
 
+        const myId = getCurrentUserId();
+        if (!myId) {
+            alert('JWT에서 사용자 정보를 읽지 못했습니다. 토큰을 확인하세요.');
+            return;
+        }
+
         try {
             // REST로 방 입장
             const response = await fetch(`${API_BASE}/room_members`, {
@@ -649,7 +683,8 @@
                 headers: getHeaders(),
                 body: JSON.stringify({
                     quizRoomId: roomId,
-                    userId: 1 // 실제로는 JWT에서 추출
+                    // userID 확인용
+                    userId: myId
                 })
             });
 
@@ -670,9 +705,9 @@
 
             log(`✅ 방 입장 성공: ${roomTitle}`, 'success');
 
-            // TODO: 실제 참가자 목록 로드
+            // 임시 참가자 목록(백엔드 연동 전 더미)
             updateParticipants([
-                { userId: 1, userName: '나', isReady: false, isOwner: true }
+                { userId: myId, userName: getCurrentUserName(), isReady: false, isOwner: true }
             ]);
         } catch (error) {
             log(`❌ 방 입장 실패: ${error.message}`, 'error');
@@ -827,10 +862,13 @@
             `).join('');
         document.getElementById('participantList').innerHTML = html;
 
-        // 방장이면 시작 버튼 표시
-        isRoomOwner = participants.some(p => p.isOwner && p.userId === 1);
+        // 방장이면 시작 버튼 표시 (하드코딩 제거)
+        const me = getCurrentUserId();
+        isRoomOwner = participants.some(p => p.isOwner && p.userId === me);
         if (isRoomOwner) {
             document.getElementById('startBtn').classList.remove('hidden');
+        } else {
+            document.getElementById('startBtn').classList.add('hidden');
         }
     }
 
