@@ -16,7 +16,6 @@ import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuesti
 import com.linkee.linkeeapi.quiz.command.domain.aggregate.QuizCurrentIndex;
 import com.linkee.linkeeapi.quiz.command.infrastructure.repository.QuizCurrentIndexRepository;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomCreateRequestDto;
-import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomDeleteRequestDto;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomSubmitAnswerRequestDto;
 import com.linkee.linkeeapi.quiz.command.domain.aggregate.QuizRoom;
 import com.linkee.linkeeapi.quiz.command.infrastructure.repository.QuizRoomRepository;
@@ -181,26 +180,27 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
 
     @Override
     @Transactional
-    public void leaveQuizRoom(QuizRoomDeleteRequestDto request) {
-        QuizRoom quizRoom = quizRoomRepository.findById(request.getQuizRoomId())
+    public void leaveQuizRoom(Long quizRoomId, Long userId) {
+        QuizRoom quizRoom = quizRoomRepository.findById(quizRoomId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_ROOM_NOT_FOUND));
 
-        //  게임 중에는 아무도 나갈 수 없음
-        if(quizRoom.getRoomStatus() == RoomStatus.P) {
+        if (quizRoom.getRoomStatus() == RoomStatus.P) {
             throw new BusinessException(ErrorCode.QUIZ_ROOM_GAME_IN_PLAY);
-
         }
-        // 대기 상태에서 나가는 경우
-        if(quizRoom.getRoomOwner().getUserId().equals(request.getUserId())) {
 
-            // 방장이 나가면 방 자동 삭제
+        if (quizRoom.getRoomOwner().getUserId().equals(userId)) {
+            // 방장: 방 종료
             endGame(quizRoom);
         } else {
-            //  일반 멤버가 나가면 인원수만 감소
-            quizRoom.setJoinedCount(quizRoom.getJoinedCount() - 1);
+            // 일반 멤버: RoomMember row 찾아 나가기 + 인원 감소
+            User user = userFinder.getById(userId);
+            RoomMember member = roomMemberRepository.findByQuizRoomAndMember(quizRoom, user)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_MEMBER_NOT_FOUND));
+            member.setLeftedAt(LocalDateTime.now());
+            // 인원 감소
+            quizRoom.setJoinedCount(Math.max(0, quizRoom.getJoinedCount() - 1));
             quizRoomRepository.save(quizRoom);
         }
-
     }
 
     // 게임 시작
@@ -362,7 +362,9 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         }
         // 7. 정답 여부를 확인합니다.
         Question question = currentRoomQuestion.getQuestion();
-        boolean isCorrect = question.getQuestionAnswer().equals(request.getSubmittedOptionIndex());
+        boolean isCorrect = question.getOptions().stream()
+                .anyMatch(opt -> opt.getIsCorrected() == Status.Y
+                        && opt.getOptionIndex().equals(request.getSubmittedOptionIndex()));
         // 8. 답변 기록(RoomUserLog)을 생성하고 저장
         RoomUserLog answerLog = RoomUserLog.builder()
                 .roomMember(member)

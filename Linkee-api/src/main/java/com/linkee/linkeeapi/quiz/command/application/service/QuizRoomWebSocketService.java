@@ -166,7 +166,7 @@ public class QuizRoomWebSocketService {
                             .userName(member.getMember().getUserNickname())
                             .selectedOptionId(null) // 선택값 저장 안함
                             .isCorrect(log != null && log.getIsCorrected() == Status.Y)
-                            .responseTime(15) // 결과 표시 시간
+                            .responseTime(5) // 결과 표시 시간
                             .build();
                 })
                 .toList();

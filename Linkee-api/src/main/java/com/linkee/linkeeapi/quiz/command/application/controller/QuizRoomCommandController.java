@@ -3,11 +3,9 @@ package com.linkee.linkeeapi.quiz.command.application.controller;
 import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.common.model.dto.ApiResponse;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomCreateRequestDto;
-import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomDeleteRequestDto;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomSubmitAnswerRequestDto;
 import com.linkee.linkeeapi.quiz.command.application.service.QuizRoomCommandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -43,12 +41,10 @@ public class QuizRoomCommandController {
     }
 
     // 퀴즈방 나가기 (멤버)
-    @PostMapping("/leave-quiz-room")
-    public ResponseEntity<String> leaveQuizRoom(@Valid @RequestBody QuizRoomDeleteRequestDto request,
-                                                @AuthenticationPrincipal CustomUser user
-                                                ) {
-        quizRoomCommandService.leaveQuizRoom(request);
-        log.info("🚪 {}번 유저 퀴즈방 나감", user != null ? user.getUserId() : "익명");
+    @PostMapping("/{quizRoomId}/leave")
+    public ResponseEntity<String> leaveQuizRoom(@PathVariable Long quizRoomId,
+                                                @AuthenticationPrincipal CustomUser user) {
+        quizRoomCommandService.leaveQuizRoom(quizRoomId, user.getUserId());
         return ResponseEntity.ok("퀴즈방에서 나갔습니다.");
     }
 

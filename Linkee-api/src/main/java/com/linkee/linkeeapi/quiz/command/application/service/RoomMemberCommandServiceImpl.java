@@ -38,12 +38,10 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
      * @throws IllegalArgumentException 사용자 또는 퀴즈룸을 찾을 수 없을 경우 발생
      */
     @Override
-    public RoomMemberCreateResponse createRoomMember(RoomMemberCreateRequest request) {
+    public RoomMemberCreateResponse createRoomMember(RoomMemberCreateRequest request, Long userId) {
         //  1. 유저와 퀴즈방 조회
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
         QuizRoom quizRoom = quizRoomRepository.findById(request.getQuizRoomId())
-                .orElseThrow(() ->  new BusinessException(ErrorCode.QUIZ_ROOM_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_ROOM_NOT_FOUND));
 
         // 비공개 방일 경우 코드 검증
         if (quizRoom.getIsPrivate() == Status.Y) {
@@ -56,6 +54,10 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
                 throw new BusinessException(ErrorCode.INVALID_ROOM_CODE);
             }
         }
+
+        // 유저 로드
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
 
         //  대기중인 방인지 확인
         if (quizRoom.getRoomStatus() != RoomStatus.W) {
@@ -107,7 +109,7 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
         System.out.println("Room ID: " + quizRoom.getQuizRoomId());
         System.out.println("Room Status: " + quizRoom.getRoomStatus());
         System.out.println("-------------------------");
-        if(quizRoom.getRoomStatus() != RoomStatus.W) {  // 대기(W) 상태가 아닐 경우
+        if (quizRoom.getRoomStatus() != RoomStatus.W) {  // 대기(W) 상태가 아닐 경우
             throw new BusinessException(ErrorCode.QUIZ_ROOM_NOT_WAITING);
         }
 
@@ -119,28 +121,37 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
         }
     }
 
-
-    /*
-     * 특정 룸 멤버가 스스로 방을 나간 시간을 기록합니다. (자발적 나감)
-     * @param roomMemberId 방을 나갈 룸 멤버의 ID
-     */
-    @Override
-    @Transactional
-    public void selfLeaveRoom(Long roomMemberId) {
-        RoomMember roomMember = roomMemberRepository.findById(roomMemberId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
-        roomMember.setLeftedAt(LocalDateTime.now());
-    }
-
     /*
      * 방장이 특정 룸 멤버를 강제로 내보낸 시간을 기록합니다. (강퇴)
      * @param roomMemberId 강퇴할 룸 멤버의 ID
      */
-    @Override
+    @Transactional
+    public void selfLeaveRoom(Long roomMemberId) {
+        leave(roomMemberId, false); // 자발적 나감
+    }
+    /*
+     * 방장이 특정 룸 멤버를 강제로 내보낸 시간을 기록합니다. (강퇴)
+     * @param roomMemberId 강퇴할 룸 멤버의 ID
+     */
     @Transactional
     public void kickRoomMember(Long roomMemberId) {
+        leave(roomMemberId, true);  // 강퇴
+    }
+
+    private void leave(Long roomMemberId, boolean kicked) {
         RoomMember roomMember = roomMemberRepository.findById(roomMemberId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
-        roomMember.setLeftedAt(LocalDateTime.now());
+
+        // 이미 나간 사람 재요청 방지(멱등성)
+        if (roomMember.getLeftedAt() == null) {
+            roomMember.setLeftedAt(LocalDateTime.now());
+        }
+
+        QuizRoom room = roomMember.getQuizRoom();
+
+        // 인원 수 감소(음수 방지)
+        room.setJoinedCount(Math.max(0, room.getJoinedCount() - 1));
+        quizRoomRepository.save(room);
+
     }
 }

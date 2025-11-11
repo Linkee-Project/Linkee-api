@@ -19,6 +19,20 @@
         ORDER BY quiz_room_id DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
+    <!-- 방 상세 조회 -->
+    <select id="findRoomHeader"
+            resultType="com.linkee.linkeeapi.quiz.query.dto.response.RoomHeaderRow">
+        /* 방 헤더 조회: 제목/방장/방장닉네임
+           - 멤버 목록은 RoomMemberMapper에서 재사용하여 가져온다 */
+        SELECT
+            r.quiz_room_id    AS quizRoomId,
+            r.room_title      AS roomTitle,
+            r.room_owner      AS ownerId,
+            u.user_nickname   AS ownerNickname
+        FROM tb_quiz_room r
+                 JOIN tb_user u ON u.user_id = r.room_owner
+        WHERE r.quiz_room_id = #{roomId}
+    </select>
 
     <!-- 전체 방 개수 조회 -->
     <select id="countAllRooms" resultType="int">
@@ -76,7 +90,7 @@
         WHERE m.quiz_room_id = #{roomId}
         GROUP BY u.user_id, u.user_nickname, qr.room_quiz_limit
         ORDER BY correctCount DESC
-            LIMIT #{size} OFFSET #{offset}
+            LIMIT #{limit} OFFSET #{offset}
     </select>
 
 </mapper>

@@ -1,16 +1,16 @@
 package com.linkee.linkeeapi.quiz.query.controller;
 
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.common.model.dto.ApiResponse;
-import com.linkee.linkeeapi.quiz.query.dto.response.PlayStateResponseDto;
-import com.linkee.linkeeapi.quiz.query.dto.response.QuizRoomListResponseDto;
-import com.linkee.linkeeapi.quiz.query.dto.response.QuizRoomResponseDto;
-import com.linkee.linkeeapi.quiz.query.dto.response.ResultRowResponseDto;
+import com.linkee.linkeeapi.question.query.dto.response.QuestionDetailResponseDto;
+import com.linkee.linkeeapi.quiz.query.dto.response.*;
 import com.linkee.linkeeapi.quiz.query.service.QuizRoomQueryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +35,21 @@ public class QuizRoomQueryController {
     ) {
         PageResponse<QuizRoomListResponseDto> rooms = quizRoomService.findAllRooms(page, size);
         return ApiResponse.success(rooms);
+    }
+    //방 목록 상세 조회
+    @GetMapping("/{roomId}")
+    public ResponseEntity<ApiResponse<QuizRoomDetailResponseDto>> getRoomDetail(
+            @PathVariable Long roomId,
+            @AuthenticationPrincipal CustomUser user
+    ) {
+        Long currentUserId = (user != null ? user.getUserId() : null);
+
+        QuizRoomDetailResponseDto dto = quizRoomService.getRoomDetail(roomId, currentUserId);
+        if (dto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.failure("ROOM_NOT_FOUND", "해당 방을 찾을 수 없습니다."));
+        }
+        return ResponseEntity.ok(ApiResponse.success(dto));
     }
 
     // 빠른 시작 (null 처리 추가)

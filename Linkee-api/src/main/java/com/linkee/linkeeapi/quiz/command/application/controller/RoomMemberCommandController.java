@@ -1,11 +1,13 @@
 package com.linkee.linkeeapi.quiz.command.application.controller;
 
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.common.model.dto.ApiResponse;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.RoomMemberCreateRequest;
 import com.linkee.linkeeapi.quiz.command.application.dto.response.RoomMemberCreateResponse;
 import com.linkee.linkeeapi.quiz.command.application.service.RoomMemberCommandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /*
@@ -26,11 +28,13 @@ public class RoomMemberCommandController {
      * @return 성공 응답
      */
     @PostMapping
-    public ApiResponse<RoomMemberCreateResponse> createRoomMember(@RequestBody RoomMemberCreateRequest request) {
-        RoomMemberCreateResponse response = roomMemberCommandService.createRoomMember(request);
-        return ApiResponse.success(response);
+    public ApiResponse<RoomMemberCreateResponse> createRoomMember(
+            @RequestBody RoomMemberCreateRequest request,
+            @AuthenticationPrincipal CustomUser user) {
+        return ApiResponse.success(
+                roomMemberCommandService.createRoomMember(request, user.getUserId())
+        );
     }
-
     /*
      * 특정 룸 멤버의 준비 상태를 토글합니다. (Y -> N, N -> Y)
      * @param roomMemberId 준비 상태를 변경할 룸 멤버의 ID

@@ -12,7 +12,7 @@ public interface RoomMemberCommandService {
      * @param request 생성할 룸 멤버의 정보를 담은 요청 객체
      * @return 생성된 룸 멤버의 정보를 담은 응답 객체
      */
-    RoomMemberCreateResponse createRoomMember(RoomMemberCreateRequest request);
+    
 
     /*
      * 특정 룸 멤버의 준비 상태를 토글합니다
@@ -31,4 +31,6 @@ public interface RoomMemberCommandService {
      * @param roomMemberId 강퇴할 룸 멤버의 ID
      */
     void kickRoomMember(Long roomMemberId);
+
+    RoomMemberCreateResponse createRoomMember(RoomMemberCreateRequest request, Long userId);
 }
