@@ -43,8 +43,8 @@ public class SecurityConfig {
                         .requestMatchers(/*"/**",*/ "/login/**", "/oauth2/**", "/error", "/accessDenied").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/ws/**", "/sockjs/**").permitAll() // 웹소켓 연결 테스트
-                        .requestMatchers("/user/**").hasRole("USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasAuthority("USER")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
 

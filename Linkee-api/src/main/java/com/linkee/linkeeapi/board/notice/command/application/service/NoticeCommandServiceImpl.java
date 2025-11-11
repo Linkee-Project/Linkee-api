@@ -51,6 +51,7 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOTICE_NOT_FOUND));
 
         User adminUser = userFinder.getById(customUser.getUserId());
+
         if (adminUser.getUserRole() != Role.ADMIN) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS);
         }

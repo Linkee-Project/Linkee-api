@@ -10,6 +10,7 @@ let state = {
 // ✅ JWT 토큰에서 role 확인
 function getUserRoleFromToken() {
     const token = localStorage.getItem("accessToken");
+
     if (!token) return null;
 
     try {
@@ -163,6 +164,7 @@ async function openDetail(id) {
         document.getElementById("modalTitle").textContent =
             data.noticeTitle || "제목 없음";
         body.innerHTML = data.noticeContent || "내용이 없습니다.";
+
     } catch {
         body.innerHTML = "상세 내용을 불러올 수 없습니다.";
     }
