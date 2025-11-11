@@ -40,7 +40,7 @@ public class SecurityConfig {
 
                 // ✅ 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**", "/login", "/oauth2/**", "/error", "/accessDenied", "/**").permitAll()
+                        .requestMatchers(/*"/**",*/ "/login/**", "/oauth2/**", "/error", "/accessDenied").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/ws/**", "/sockjs/**").permitAll() // 웹소켓 연결 테스트
                         .requestMatchers("/user/**").hasRole("USER")
@@ -48,15 +48,27 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                //폼로그인
+                .formLogin(form -> form
+                        .loginPage("/login/login.html")
+                        .loginProcessingUrl("/api/v1/auth/login") // 실제 로그인 처리 POST URL
+                        .defaultSuccessUrl("/notice/notice.html", true)
+                        .failureUrl("/login/login.html?error=true")
+                        .permitAll()
+                )
+
 
                 // ✅ OAuth2 로그인 설정 (네이버용)
                 .oauth2Login(oauth -> oauth
-                        .loginPage("/login")
+                        .loginPage("/login/login.html")
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                         //.defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/notice/notice.html", true)
                         .failureUrl("/accessDenied") // 추가 권장
                 )
+
+
 
 
                 // ✅ JWT 필터 추가

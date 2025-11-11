@@ -60,6 +60,7 @@ public class AuthController {
         }
 
         String role = user.getUserRole().name();
+        System.out.println("✅ [DEBUG] 로그인 시 DB에서 가져온 Role: " + role);
         String accessToken = jwtTokenProvider.createAccessToken(userEmail, role);
         String refreshToken = jwtTokenProvider.createRefreshToken(userEmail,role);
 
