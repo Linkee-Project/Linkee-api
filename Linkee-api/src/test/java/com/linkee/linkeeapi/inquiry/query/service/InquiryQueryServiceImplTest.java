@@ -1,12 +1,12 @@
 package com.linkee.linkeeapi.inquiry.query.service;
 
-import com.linkee.linkeeapi.common.enums.Role;
+import com.linkee.linkeeapi.board.inquiry.query.service.InquiryQueryService;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.model.PageResponse;
-import com.linkee.linkeeapi.inquiry.command.domain.aggregate.Inquiry;
-import com.linkee.linkeeapi.inquiry.command.infrastructure.repository.JpaInquiryRepository;
-import com.linkee.linkeeapi.inquiry.query.dto.response.InquiryResponseDto;
+import com.linkee.linkeeapi.board.inquiry.command.domain.aggregate.Inquiry;
+import com.linkee.linkeeapi.board.inquiry.command.infrastructure.repository.JpaInquiryRepository;
+import com.linkee.linkeeapi.board.inquiry.query.dto.response.InquiryResponseDto;
 import com.linkee.linkeeapi.user.command.domain.entity.User;
 import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

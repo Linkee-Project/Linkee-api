@@ -34,6 +34,7 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(String userEmail, String role) {
+        System.out.println("✅ [DEBUG] createAccessToken() 전달받은 role: " + role);
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(userEmail)
