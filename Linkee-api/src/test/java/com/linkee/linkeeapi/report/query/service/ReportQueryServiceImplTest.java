@@ -1,15 +1,16 @@
 package com.linkee.linkeeapi.report.query.service;
 
+import com.linkee.linkeeapi.board.report.query.service.ReportQueryServiceImpl;
 import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
-import com.linkee.linkeeapi.report.query.dto.request.ReadReportListRequestDto;
-import com.linkee.linkeeapi.report.query.dto.response.ReportDetailResponseDto;
-import com.linkee.linkeeapi.report.query.dto.response.ReportListResponseDto;
-import com.linkee.linkeeapi.report.query.mapper.ReportMapper;
-import com.linkee.linkeeapi.users.command.domain.entity.User;
-import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.board.report.query.dto.request.ReadReportListRequestDto;
+import com.linkee.linkeeapi.board.report.query.dto.response.ReportDetailResponseDto;
+import com.linkee.linkeeapi.board.report.query.dto.response.ReportListResponseDto;
+import com.linkee.linkeeapi.board.report.query.mapper.ReportMapper;
+import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

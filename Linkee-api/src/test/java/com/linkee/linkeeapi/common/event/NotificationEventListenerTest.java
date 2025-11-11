@@ -6,7 +6,7 @@ import com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateRespo
 import com.linkee.linkeeapi.alarm_template.query.mapper.AlarmTemplateMapper;
 import com.linkee.linkeeapi.comment.command.domain.aggregate.Comment;
 import com.linkee.linkeeapi.common.sse.service.SseService;
-import com.linkee.linkeeapi.inquiry.command.domain.aggregate.Inquiry;
+import com.linkee.linkeeapi.board.inquiry.command.domain.aggregate.Inquiry;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.junit.jupiter.api.DisplayName;

@@ -1,16 +1,17 @@
 package com.linkee.linkeeapi.inquiry.command.application.service;
 
+import com.linkee.linkeeapi.board.inquiry.command.application.service.InquiryCommandServiceImpl;
 import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.event.InquiryAnsweredEvent;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
-import com.linkee.linkeeapi.inquiry.command.application.dto.request.CreateInquiryRequestDto;
-import com.linkee.linkeeapi.inquiry.command.application.dto.request.UpdateInquiryAnswerRequestDto;
-import com.linkee.linkeeapi.inquiry.command.domain.aggregate.Inquiry;
-import com.linkee.linkeeapi.inquiry.command.infrastructure.repository.JpaInquiryRepository;
-import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.board.inquiry.command.application.dto.request.CreateInquiryRequestDto;
+import com.linkee.linkeeapi.board.inquiry.command.application.dto.request.UpdateInquiryAnswerRequestDto;
+import com.linkee.linkeeapi.board.inquiry.command.domain.aggregate.Inquiry;
+import com.linkee.linkeeapi.board.inquiry.command.infrastructure.repository.JpaInquiryRepository;
+import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.user.command.domain.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
