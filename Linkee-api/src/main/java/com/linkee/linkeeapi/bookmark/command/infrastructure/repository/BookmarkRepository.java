@@ -2,7 +2,7 @@ package com.linkee.linkeeapi.bookmark.command.infrastructure.repository;
 
 import com.linkee.linkeeapi.bookmark.command.domain.aggregate.entity.Bookmark;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {

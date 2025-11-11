@@ -32,6 +32,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
+            String role = jwtTokenProvider.getRole(token);
+            System.out.println("✅ [DEBUG] JwtFilter 토큰 내 role: " + role);
 
             if (jwtTokenProvider.validateToken(token)) {
                 String username = jwtTokenProvider.getUsername(token);
@@ -39,6 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 // ✅ DB에서 CustomUserDetails 로드
                 CustomUser customUser = (CustomUser) customUserDetailsService.loadUserByUsername(username);
 
+                System.out.println("✅ [DEBUG] DB에서 불러온 role: " + customUser.getAuthorities());
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 customUser,

@@ -4,7 +4,7 @@ import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.BaseTimeEntity;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import jakarta.persistence.*;
 import lombok.*;

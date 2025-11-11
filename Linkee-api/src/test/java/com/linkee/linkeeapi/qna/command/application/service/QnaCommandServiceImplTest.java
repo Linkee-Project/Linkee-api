@@ -7,8 +7,8 @@ import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomReposito
 import com.linkee.linkeeapi.qna.command.application.dto.request.CreateQnaRequestDto;
 import com.linkee.linkeeapi.qna.command.domain.aggregate.Qna;
 import com.linkee.linkeeapi.qna.command.infrastructure.repository.JpaQnaRepository;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

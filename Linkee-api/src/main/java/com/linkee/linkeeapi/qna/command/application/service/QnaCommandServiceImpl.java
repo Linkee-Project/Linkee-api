@@ -7,7 +7,7 @@ import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomReposito
 import com.linkee.linkeeapi.qna.command.application.dto.request.CreateQnaRequestDto;
 import com.linkee.linkeeapi.qna.command.domain.aggregate.Qna;
 import com.linkee.linkeeapi.qna.command.infrastructure.repository.JpaQnaRepository;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

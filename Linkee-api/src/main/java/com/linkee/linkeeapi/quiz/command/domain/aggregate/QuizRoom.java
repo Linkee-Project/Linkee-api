@@ -5,7 +5,7 @@ import com.linkee.linkeeapi.common.enums.RoomMode;
 import com.linkee.linkeeapi.common.enums.RoomStatus;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.model.BaseTimeEntity;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

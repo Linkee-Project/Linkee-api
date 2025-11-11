@@ -8,8 +8,8 @@ import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMemberReposi
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoom;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoomType;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomRepository;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

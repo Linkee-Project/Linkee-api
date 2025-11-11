@@ -6,9 +6,9 @@ import com.linkee.linkeeapi.auth.mail.EmailService;
 import com.linkee.linkeeapi.auth.mail.EmailVerifyRequest;
 import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
 import com.linkee.linkeeapi.common.service.RedisRefreshTokenService;
-import com.linkee.linkeeapi.user.command.application.dto.request.UserCreateRequest;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.application.dto.request.UserCreateRequest;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +59,9 @@ public class AuthController {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
         }
 
+
         String role = user.getUserRole().name();
+
         String accessToken = jwtTokenProvider.createAccessToken(userEmail, role);
         String refreshToken = jwtTokenProvider.createRefreshToken(userEmail,role);
 

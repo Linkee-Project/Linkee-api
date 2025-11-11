@@ -7,8 +7,8 @@ import com.linkee.linkeeapi.chat.command.application.service.chat_service.ChatRo
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMessageMongo;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMessageMongoRepository;
 import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;

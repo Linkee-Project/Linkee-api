@@ -10,9 +10,9 @@ import com.linkee.linkeeapi.chat.command.application.service.services.ChatRoomCo
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomCreateRequestDto;
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomDeleteRequestDto;
 import com.linkee.linkeeapi.common.enums.Status;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

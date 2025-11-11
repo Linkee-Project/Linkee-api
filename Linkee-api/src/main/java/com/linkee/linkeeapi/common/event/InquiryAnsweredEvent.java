@@ -1,6 +1,6 @@
 package com.linkee.linkeeapi.common.event;
 
-import com.linkee.linkeeapi.inquiry.command.domain.aggregate.Inquiry;
+import com.linkee.linkeeapi.board.inquiry.command.domain.aggregate.Inquiry;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
