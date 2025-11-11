@@ -13,26 +13,26 @@ async function handleLogin(event) {
     }
 
     try {
-        const formData = new URLSearchParams();
-        formData.append("username", email); // ⚠️ Spring Security는 username, password 키를 기본으로 찾음
-        formData.append("password", password);
-
         const res = await fetch(API_BASE, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: formData.toString(),
+            body: new URLSearchParams({
+                userEmail: email,
+                password: password
+            }),
         });
 
-        if (res.redirected) {
-            // formLogin은 redirect 응답을 주기 때문에 바로 이동
-            window.location.href = res.url;
-            return;
-        }
+        // ✅ JWT 로그인에서는 JSON 응답을 받아야 하므로 추가
+        const data = await res.json();
 
-        if (!res.ok) {
+        if (!res.ok || !data.accessToken) {
             message.textContent = "로그인 실패: 이메일 또는 비밀번호를 확인해주세요.";
             return;
         }
+
+        // ✅ 토큰 저장
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
 
         message.style.color = "#0094F6";
         message.textContent = "로그인 성공! 페이지로 이동 중...";

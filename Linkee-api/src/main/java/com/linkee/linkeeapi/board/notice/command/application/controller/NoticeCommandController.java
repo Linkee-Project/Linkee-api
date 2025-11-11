@@ -22,7 +22,7 @@ public class NoticeCommandController {
 
     //공지사항 등록(관리자 전용)
     //admin아니면 오류 던지기
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<String> createNotice(@AuthenticationPrincipal CustomUser customUser,
                                                @RequestBody CreateNoticeRequestDto request) {

@@ -41,6 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 // ✅ DB에서 CustomUserDetails 로드
                 CustomUser customUser = (CustomUser) customUserDetailsService.loadUserByUsername(username);
 
+                System.out.println("✅ [DEBUG] DB에서 불러온 role: " + customUser.getAuthorities());
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 customUser,

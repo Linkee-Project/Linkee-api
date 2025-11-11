@@ -48,14 +48,16 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                //폼로그인
-                .formLogin(form -> form
-                        .loginPage("/login/login.html")
-                        .loginProcessingUrl("/api/v1/auth/login") // 실제 로그인 처리 POST URL
-                        .defaultSuccessUrl("/notice/notice.html", true)
-                        .failureUrl("/login/login.html?error=true")
-                        .permitAll()
-                )
+///*                //폼로그인
+//                .formLogin(form -> form
+//                        .loginPage("/login/login.html")
+//                        .loginProcessingUrl("/api/v1/auth/login") // 실제 로그인 처리 POST URL
+//                        .defaultSuccessUrl("/notice/notice.html", true)
+//                        .failureUrl("/login/login.html?error=true")
+//                        .permitAll()
+//                )*/
+
+                .formLogin(form -> form.disable())
 
 
                 // ✅ OAuth2 로그인 설정 (네이버용)

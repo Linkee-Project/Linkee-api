@@ -40,7 +40,7 @@
     </resultMap>
 
 
-    <select id="findById" parameterType="long" resultType="com.linkee.linkeeapi.board.notice.query.dto.response.NoticeDetailResponseDto">
+    <select id="findById" resultType="com.linkee.linkeeapi.board.notice.query.dto.response.NoticeDetailResponseDto">
         SELECT
             n.notice_title AS noticeTitle,
             n.notice_content AS noticeContent,
@@ -49,9 +49,10 @@
             n.admin_id AS adminId,
             u.user_nickname AS adminName
         FROM tb_notice n
-                 JOIN tb_user u ON n.admin_id = u.user_id
+                 LEFT JOIN tb_user u ON n.admin_id = u.user_id
         WHERE n.notice_id = #{noticeId}
     </select>
+
 
 
 
