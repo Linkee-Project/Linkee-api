@@ -3,7 +3,7 @@ const API_BASE = "/api/v1/auth/login";
 async function handleLogin(event) {
     event.preventDefault();
 
-    alert("1")
+
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
     const message = document.getElementById("message");
@@ -22,7 +22,7 @@ async function handleLogin(event) {
                 password: password
             }),
         });
-        alert("2")
+
 
         // ✅ JWT 로그인에서는 JSON 응답을 받아야 하므로 추가
         const data = await res.json();
