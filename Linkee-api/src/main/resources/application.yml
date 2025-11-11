@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/linkee
+    url: jdbc:mariadb://localhost:3307/linkee
     username: linkee
     password: linkee
 
