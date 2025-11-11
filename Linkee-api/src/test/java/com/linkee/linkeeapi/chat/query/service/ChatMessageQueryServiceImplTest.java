@@ -1,15 +1,14 @@
 package com.linkee.linkeeapi.chat.query.service;
 
-import com.linkee.linkeeapi.chat.command.domain.entity.ChatMessage;
-import com.linkee.linkeeapi.chat.command.domain.repository.ChatMessageRepository;
-import com.linkee.linkeeapi.chat.command.domain.dto.query_dto.request.ChatMessageSearchRequest;
-import com.linkee.linkeeapi.chat.command.domain.dto.query_dto.response.ChatMessageResponse;
-import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatRoom;
-import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatRoomType;
-import com.linkee.linkeeapi.chat.command.application.service.query_serivce.ChatMessageQueryService;
+import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMessage;
+import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMessageRepository;
+import com.linkee.linkeeapi.chat.query.dto.request.ChatMessageSearchRequest;
+import com.linkee.linkeeapi.chat.query.dto.response.ChatMessageResponse;
+import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoom;
+import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoomType;
 
 import com.linkee.linkeeapi.common.model.PageResponse;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

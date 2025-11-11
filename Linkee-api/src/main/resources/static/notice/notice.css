@@ -1,0 +1,329 @@
+:root {
+    --blue-main: #0094f6;
+    --blue-light: #b3e5fc;
+    --blue-dark: #0d47a1;
+    --coral: #ff7b54;
+    --bg: #f6f8fa;
+    --text: #1f2a44;
+    --border: #e3e8ef;
+    --white: #fff;
+    --shadow: 0 8px 24px rgba(13, 71, 161, 0.08);
+    --radius: 16px;
+}
+
+/* 기본 세팅 */
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: "Noto Sans KR", sans-serif;
+    background: linear-gradient(180deg, var(--blue-light), var(--bg) 40%);
+    color: var(--text);
+}
+
+/* 헤더 */
+.site-header {
+    background: var(--blue-main);
+    color: var(--white);
+    padding: 12px 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+.header-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+.logo-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue-main));
+}
+.actions .btn {
+    margin-left: 8px;
+}
+
+/* 버튼 */
+.btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.2s;
+}
+.btn-primary {
+    background: var(--blue-dark);
+    color: var(--white);
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-ghost {
+    background: transparent;
+    color: var(--white);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+.btn-clear {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+.btn-clear:hover {
+    background: var(--blue-light);
+}
+
+/* 카드 및 레이아웃 */
+.container {
+    max-width: 1080px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+.card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.hero {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(90deg, var(--blue-light), #e3f2fd);
+}
+.hero h1 {
+    margin: 0;
+    font-size: 1.6rem;
+}
+.hero p {
+    margin: 6px 0 0;
+    color: #475569;
+}
+
+/* 필터 영역 */
+.filters {
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.search {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+}
+.search input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+/* 리스트 */
+.notice-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+    padding: 20px;
+}
+.notice {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: 0.2s ease;
+}
+.notice:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+.badge {
+    display: inline-block;
+    background: var(--blue-light);
+    color: var(--blue-dark);
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+.title {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.meta {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+.actions {
+    margin-top: 6px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+.actions button {
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.actions .open {
+    background: var(--coral);
+    color: var(--white);
+}
+.actions .edit {
+    background: var(--blue-main);
+    color: var(--white);
+}
+.actions .delete {
+    background: #ef4444;
+    color: var(--white);
+}
+.actions button:hover { opacity: 0.9; }
+
+/* 페이지네이션 */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px 20px;
+}
+.page-btn {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.page-btn:hover {
+    background: var(--blue-light);
+}
+.page-info {
+    font-weight: 700;
+}
+
+/* 모달 공통 */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 999;
+}
+.modal.show { display: flex; }
+.modal-card {
+    width: 600px;
+    max-width: 90%;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    animation: pop 0.25s ease;
+}
+@keyframes pop {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+}
+.modal-head h2, .modal-head h3 {
+    margin: 0;
+}
+.modal-body {
+    padding: 20px;
+    white-space: pre-wrap;
+}
+.close {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.close:hover {
+    background: var(--blue-light);
+}
+
+/* 등록 모달 input 스타일 개선 */
+#createModal input, #createModal textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    resize: none;
+}
+#createModal textarea {
+    min-height: 150px;
+}
+#createModal .btn-primary {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    font-size: 1rem;
+}
+
+/* 토스트 */
+.toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #111827;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 10px;
+    display: none;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.toast.show {
+    display: block;
+    animation: fadein 0.3s ease, fadeout 0.3s ease 1.7s;
+}
+@keyframes fadein {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeout {
+    from { opacity: 1; }
+    to { opacity: 0; transform: translateY(10px); }
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .actions .btn {
+        font-size: 0.9rem;
+        padding: 6px 10px;
+    }
+    .notice-list {
+        grid-template-columns: 1fr;
+    }
+}

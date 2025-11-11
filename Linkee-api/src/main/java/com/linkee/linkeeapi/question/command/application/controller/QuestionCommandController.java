@@ -4,7 +4,7 @@ import com.linkee.linkeeapi.question.command.application.dto.request.CreateQuest
 import com.linkee.linkeeapi.question.command.application.dto.request.UpdateQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.request.VerifyQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.application.service.QuestionCommandService;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.relation.query.mapper.RelationMapper">
+<mapper namespace="com.linkee.linkeeapi.users.query.mapper.RelationMapper">
 
-    <select id="selectAllRelations" resultType="com.linkee.linkeeapi.relation.query.dto.response.RelationResponse">
+    <select id="selectAllRelations" resultType="com.linkee.linkeeapi.users.query.dto.response.RelationResponse">
         SELECT
         r.relation_id,
         r.requester_id,
@@ -32,7 +32,7 @@
 
 
 
-    <select id="selectRelationsByUserIdAndStatus" resultType="com.linkee.linkeeapi.relation.query.dto.response.RelationResponse">
+    <select id="selectRelationsByUserIdAndStatus" resultType="com.linkee.linkeeapi.users.query.dto.response.RelationResponse">
         SELECT
         r.relation_id,
         r.requester_id,
@@ -55,7 +55,7 @@
     </select>
 
     <select id="countRelationsByUserIdAndStatus"
-            parameterType="com.linkee.linkeeapi.relation.query.dto.request.RelationSearchRequest"
+            parameterType="com.linkee.linkeeapi.users.query.dto.request.RelationSearchRequest"
             resultType="int">
         SELECT COUNT(*)
         FROM tb_relation r

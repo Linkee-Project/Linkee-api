@@ -13,8 +13,8 @@ import com.linkee.linkeeapi.question.command.application.dto.request.VerifyQuest
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuestionRepository;
 import com.linkee.linkeeapi.question.command.domain.aggregate.QuestionOption;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;

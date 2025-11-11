@@ -54,7 +54,7 @@ public class OauthController {
         }
 
         model.addAttribute("oauth2AuthenticationUrls", oauth2AuthenticationUrls);
-        return "login";
+        return "login1";
     }
 
 

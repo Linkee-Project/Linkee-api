@@ -2,7 +2,7 @@ package com.linkee.linkeeapi.alarm_box.command.infrastructure.repository;
 
 import com.linkee.linkeeapi.alarm_box.command.domain.aggregate.entity.AlarmBox;
 import com.linkee.linkeeapi.common.enums.Status;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

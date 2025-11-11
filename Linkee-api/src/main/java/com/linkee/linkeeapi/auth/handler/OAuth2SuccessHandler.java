@@ -3,8 +3,8 @@ package com.linkee.linkeeapi.auth.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linkee.linkeeapi.auth.repository.AuthRedisRepository;
-import com.linkee.linkeeapi.common.security.jwt.JwtTokenProvider;
-import com.linkee.linkeeapi.common.security.service.CustomUserDetails;
+import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
+import com.linkee.linkeeapi.common.service.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         //JWT 발급
         String accessToken = jwtTokenProvider.createAccessToken(email, role);
-        String refreshToken = jwtTokenProvider.createRefreshToken(email);
+        String refreshToken = jwtTokenProvider.createRefreshToken(email,role);
 
         //응답
         Map<String, String> tokens = new HashMap<>();

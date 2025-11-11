@@ -1,6 +1,7 @@
 package com.linkee.linkeeapi.question.command.domain.aggregate;
 
-import com.linkee.linkeeapi.user.command.domain.entity.User;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

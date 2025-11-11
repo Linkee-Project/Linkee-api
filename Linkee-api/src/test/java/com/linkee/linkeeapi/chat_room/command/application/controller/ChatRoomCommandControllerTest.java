@@ -1,18 +1,18 @@
 package com.linkee.linkeeapi.chat_room.command.application.controller;
 
-import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatMember;
-import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatRoom;
-import com.linkee.linkeeapi.chat.chat_command.chat_domain.entity.ChatRoomType;
-import com.linkee.linkeeapi.chat.chat_command.chat_repository.ChatMemberRepository;
-import com.linkee.linkeeapi.chat.chat_command.chat_repository.ChatRoomRepository;
+import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMember;
+import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoom;
+import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoomType;
+import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMemberRepository;
+import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomRepository;
 
-import com.linkee.linkeeapi.chat.command.application.service.command_service.ChatRoomCommandServiceImpl;
-import com.linkee.linkeeapi.chat.command.domain.dto.command_dto.request.ChatRoomCreateRequestDto;
-import com.linkee.linkeeapi.chat.command.domain.dto.command_dto.request.ChatRoomDeleteRequestDto;
+import com.linkee.linkeeapi.chat.command.application.service.services.ChatRoomCommandServiceImpl;
+import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomCreateRequestDto;
+import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomDeleteRequestDto;
 import com.linkee.linkeeapi.common.enums.Status;
-import com.linkee.linkeeapi.user.command.application.service.util.UserFinder;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

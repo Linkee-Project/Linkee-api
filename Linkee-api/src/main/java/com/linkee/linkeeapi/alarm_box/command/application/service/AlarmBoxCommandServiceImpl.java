@@ -4,8 +4,8 @@ import com.linkee.linkeeapi.alarm_box.command.application.dto.request.AlarmBoxCr
 import com.linkee.linkeeapi.alarm_box.command.domain.aggregate.entity.AlarmBox;
 import com.linkee.linkeeapi.alarm_box.command.infrastructure.repository.AlarmBoxRepository;
 import com.linkee.linkeeapi.common.enums.Status;
-import com.linkee.linkeeapi.user.command.domain.entity.User;
-import com.linkee.linkeeapi.user.command.infrastructure.repository.UserRepository;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
