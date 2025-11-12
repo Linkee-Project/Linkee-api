@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.linkee.linkeeapi.alarm.command.application.dto.request.AlarmTemplateCreateRequest;
 import com.linkee.linkeeapi.alarm.command.domain.aggregate.entity.AlarmBox;
+import com.linkee.linkeeapi.alarm.command.domain.aggregate.entity.AlarmTemplate;
 import com.linkee.linkeeapi.alarm.query.dto.request.AlarmTemplateSearchRequest;
 import com.linkee.linkeeapi.alarm.command.application.service.AlarmTemplateCommandService;
 import com.linkee.linkeeapi.alarm.query.dto.response.AlarmTemplateResponse;
@@ -43,7 +44,7 @@ class AlarmTemplateServiceImplTest {
         service.createAlarmTemplate(request);
 
         // Repository로 실제 DB에 저장되었는지 확인
-        AlarmBox.AlarmTemplate saved = repository.findAll().get(0);
+        AlarmTemplate saved = repository.findAll().get(0);
 
         assertThat(saved.getTemplateContent()).isEqualTo(content);
     }
@@ -54,9 +55,9 @@ class AlarmTemplateServiceImplTest {
     @DisplayName("알람 템플릿 조회 및 페이징 확인")
     void selectAllAlarmTemplate() {
         // given - 목록조회를 위한 더미데이터
-        repository.save(new AlarmBox.AlarmTemplate(null, "템플릿1 바나나"));
-        repository.save(new AlarmBox.AlarmTemplate(null, "템플릿2 사과"));
-        repository.save(new AlarmBox.AlarmTemplate(null, "템플릿3 오렌지"));
+        repository.save(new AlarmTemplate(null, "템플릿1 바나나"));
+        repository.save(new AlarmTemplate(null, "템플릿2 사과"));
+        repository.save(new AlarmTemplate(null, "템플릿3 오렌지"));
 
         AlarmTemplateSearchRequest searchRequest = new AlarmTemplateSearchRequest(null, 0, 10 ,0);
         AlarmTemplateSearchRequest searchRequest1 = new AlarmTemplateSearchRequest("사과", 0, 10 ,0);
@@ -77,8 +78,8 @@ class AlarmTemplateServiceImplTest {
     @DisplayName("알람템플릿 아이디값 가지고 단건 조회")
     void selectById() {
         // given
-        AlarmBox.AlarmTemplate t1 = repository.save(new AlarmBox.AlarmTemplate(null, "가나다"));
-        repository.save(new AlarmBox.AlarmTemplate(null, "가나다라"));
+        AlarmTemplate t1 = repository.save(new AlarmTemplate(null, "가나다"));
+        repository.save(new AlarmTemplate(null, "가나다라"));
 
         ResponseEntity<AlarmTemplateResponse> result = queryService.selectAlarmTemplateByAlarmTemplateId(t1.getTemplateId());
 
@@ -92,8 +93,8 @@ class AlarmTemplateServiceImplTest {
     @DisplayName("알람템플릿 내용 변경 테스트")
     void modifyAlarmTemplateContent(){
         //given
-        AlarmBox.AlarmTemplate template = repository.save(new AlarmBox.AlarmTemplate(null,"변경전"));
-        AlarmBox.AlarmTemplate foundTemplate = repository.findById(template.getTemplateId()).orElseThrow();
+        AlarmTemplate template = repository.save(new AlarmTemplate(null,"변경전"));
+        AlarmTemplate foundTemplate = repository.findById(template.getTemplateId()).orElseThrow();
         AlarmTemplateCreateRequest request = new AlarmTemplateCreateRequest("변경후");
 
         service.modifyAlarmTemplateByAlarmTemplateId(foundTemplate.getTemplateId(),request);
