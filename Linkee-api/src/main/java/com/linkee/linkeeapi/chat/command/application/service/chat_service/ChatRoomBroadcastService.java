@@ -20,12 +20,13 @@ public class ChatRoomBroadcastService {
 
     @Transactional(readOnly = true)
     public void broadcastMemberList(Long roomId) {
-        ChatRoom room = chatRoomRepository.findById(roomId).orElseThrow();
-        List<ChatMemberDto> members = chatMemberRepository.findAllByChatRoomAndLeftAtIsNull(room)
-                .stream()
-                .map(cm -> new ChatMemberDto(cm.getUser().getUserId(), cm.getUser().getUserNickname(), cm.getJoinedAt()))
-                .toList();
+        chatRoomRepository.findById(roomId).ifPresent(room -> {
+            List<ChatMemberDto> members = chatMemberRepository.findAllByChatRoomAndLeftAtIsNull(room)
+                    .stream()
+                    .map(cm -> new ChatMemberDto(cm.getUser().getUserId(), cm.getUser().getUserNickname(), cm.getJoinedAt()))
+                    .toList();
 
-        messagingTemplate.convertAndSend("/topic/chatroom/" + roomId + "/members", members);
+            messagingTemplate.convertAndSend("/topic/chatroom/" + roomId + "/members", members);
+        });
     }
 }

@@ -91,15 +91,22 @@ public class ChatRoomInOutService {
 
         boolean isOwner = room.getRoomOwner().getUserId().equals(user.getUserId());
 
+        System.out.println("[leaveRoom] user: " + user.getUserNickname() + ", isOwner: " + isOwner);
+        System.out.println("[leaveRoom] roomId: " + roomId + ", joinedCount: " + room.getJoinedCount());
+
+
 
         if (isOwner) {
+            System.out.println("[leaveRoom] 방장 퇴장 -> 방 삭제 시도");
             // 방장 퇴장 → 방 + 모든 멤버 + Qna 안전 삭제
             chatRoomRepository.delete(room);
             chatRoomRepository.flush(); // DB 반영 강제
+            System.out.println("[leaveRoom] 방 삭제 완료");
         } else {
             // 일반 멤버 퇴장
             ChatMember member = chatMemberRepository.findByChatRoomAndUser(room, user)
                     .orElseThrow(() -> new RuntimeException("Member not found"));
+            System.out.println("[leaveRoom] 일반 멤버 퇴장 -> 멤버 삭제");
 
             // Cascade + orphanRemoval로 Qna 자동 삭제
             chatMemberRepository.delete(member);

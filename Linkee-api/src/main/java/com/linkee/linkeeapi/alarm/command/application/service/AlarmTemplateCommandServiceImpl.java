@@ -1,7 +1,7 @@
 package com.linkee.linkeeapi.alarm.command.application.service;
 
 import com.linkee.linkeeapi.alarm.command.application.dto.request.AlarmTemplateCreateRequest;
-import com.linkee.linkeeapi.alarm.command.domain.aggregate.entity.AlarmBox;
+import com.linkee.linkeeapi.alarm.command.domain.aggregate.entity.AlarmTemplate;
 import com.linkee.linkeeapi.alarm.command.instructure.repository.AlarmTemplateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class AlarmTemplateCommandServiceImpl implements AlarmTemplateCommandServ
     @Override
     public void createAlarmTemplate(AlarmTemplateCreateRequest request) {
 
-        AlarmBox.AlarmTemplate alarmTemplate = AlarmBox.AlarmTemplate.builder()
+        AlarmTemplate alarmTemplate =AlarmTemplate.builder()
                 .templateContent(request.templateContent())
                 .build();
 
@@ -25,7 +25,7 @@ public class AlarmTemplateCommandServiceImpl implements AlarmTemplateCommandServ
 
     @Override
     public void modifyAlarmTemplateByAlarmTemplateId(Long templateId, AlarmTemplateCreateRequest request) {
-        AlarmBox.AlarmTemplate foundTemplate = repository.findById(templateId).orElseThrow();
+        AlarmTemplate foundTemplate = repository.findById(templateId).orElseThrow();
 
         if(!(request.templateContent().isBlank() || request.templateContent() == null)){
             foundTemplate.modifyTemplateContent(request.templateContent());
