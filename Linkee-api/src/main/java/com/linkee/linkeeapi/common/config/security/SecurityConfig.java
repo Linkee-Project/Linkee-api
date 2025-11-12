@@ -67,7 +67,8 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                         //.defaultSuccessUrl("/", true)
-                        .defaultSuccessUrl("/notice/notice.html", true)
+                        //.defaultSuccessUrl("/notice/notice.html", true)
+                        .defaultSuccessUrl("/home/home.html", true)
                         .failureUrl("/accessDenied") // 추가 권장
                 )
 

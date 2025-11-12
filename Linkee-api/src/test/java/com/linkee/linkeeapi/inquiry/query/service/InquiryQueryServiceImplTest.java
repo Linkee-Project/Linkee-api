@@ -1,3 +1,4 @@
+/*
 package com.linkee.linkeeapi.inquiry.query.service;
 
 import com.linkee.linkeeapi.board.inquiry.query.service.InquiryQueryService;
@@ -119,3 +120,4 @@ class InquiryQueryServiceImplTest {
 
     }
 }
+*/

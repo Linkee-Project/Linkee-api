@@ -295,4 +295,12 @@ function showToast(msg) {
 document.addEventListener("DOMContentLoaded", () => {
     fetchList();
     setupAdminButtons();
+
+    // ✅ 홈으로 버튼 클릭 시 이동
+    const homeBtn = document.getElementById("homeBtn");
+    if (homeBtn) {
+        homeBtn.addEventListener("click", () => {
+            window.location.href = "/home/home.html";
+        });
+    }
 });

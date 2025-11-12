@@ -1,9 +1,11 @@
 package com.linkee.linkeeapi.common.model;
 
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -25,6 +27,13 @@ public class CustomUser extends User {
 
     public Long getUserId() {
         return userId;
+    }
+
+    //Role뽑아오려고 추가했습니다
+    public String getRole() {
+        Collection<GrantedAuthority> authorities = getAuthorities();
+        if (authorities.isEmpty()) return null;
+        return authorities.iterator().next().getAuthority();
     }
 
 }

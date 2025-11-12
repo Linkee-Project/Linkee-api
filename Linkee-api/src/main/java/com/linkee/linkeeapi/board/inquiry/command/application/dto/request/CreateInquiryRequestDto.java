@@ -12,6 +12,5 @@ import lombok.*;
 public class CreateInquiryRequestDto {
     @NotBlank private String inquiryTitle;
     @NotBlank private String inquiryContent;
-    @NotBlank private Long userId; //작성자 ID
     private Long adminId;
 }

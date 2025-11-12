@@ -6,6 +6,7 @@ import com.linkee.linkeeapi.board.inquiry.query.mapper.InquiryMapper;
 import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
@@ -25,29 +26,35 @@ public class InquiryQueryServiceImpl implements InquiryQueryService {
 
     //READ - 전체 목록조회
     @Override
-    public PageResponse<InquiryResponseDto> getInquiryList(int page, Integer size, User currentUser) {
+    public PageResponse<InquiryResponseDto> getInquiryList(int page, Integer size, CustomUser customUser) {
 
+        if (customUser == null) {
+            throw new BusinessException(ErrorCode.INVALID_USER_ID);
+        }
         int pageSize = (size != null) ? size : 10;
         int offset = page * pageSize;
 
         List<InquiryResponseDto> inquiries;
         int total;
 
-        if (currentUser == null) {
-            throw new BusinessException(ErrorCode.INVALID_USER_ID);
+
+        if ("ADMIN".equals(customUser.getRole())) {
+            inquiries = inquiryMapper.findAll(offset, pageSize);
+            total = inquiryMapper.countAll();
+        }else {
+            inquiries = inquiryMapper.findByUserId(customUser.getUserId(), offset, pageSize);
+            total = inquiryMapper.countByUserId(customUser.getUserId());
         }
-
-
-        if (currentUser.getUserRole() == Role.ADMIN) {
+        /*if (customUser.get() == Role.ADMIN) {
             inquiries = inquiryMapper.findAll(offset, pageSize);
             total = inquiryMapper.countAll();
         } else {
             inquiries = inquiryMapper.findByUserId(currentUser.getUserId(), offset, pageSize);
             total = inquiryMapper.countByUserId(currentUser.getUserId());
-        }
+        }*/
 
         return PageResponse.from(inquiries, page, pageSize, total);
     }
 
-    
+
 }
