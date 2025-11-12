@@ -1,9 +1,9 @@
 package com.linkee.linkeeapi.common.event;
 
-import com.linkee.linkeeapi.alarm_box.command.application.dto.request.AlarmBoxCreateRequest;
-import com.linkee.linkeeapi.alarm_box.command.application.service.AlarmBoxCommandService;
-import com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateResponse;
-import com.linkee.linkeeapi.alarm_template.query.mapper.AlarmTemplateMapper;
+import com.linkee.linkeeapi.alarm.command.application.dto.request.AlarmBoxCreateRequest;
+import com.linkee.linkeeapi.alarm.command.application.service.AlarmBoxCommandService;
+import com.linkee.linkeeapi.alarm.query.dto.response.AlarmTemplateResponse;
+import com.linkee.linkeeapi.alarm.query.mapper.AlarmTemplateMapper;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Comment;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.sse.service.SseService;

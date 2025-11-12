@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.linkee.linkeeapi.qna.query.mapper.QnaMapper">
+<mapper namespace="com.linkee.linkeeapi.chat.query.mapper.QnaMapper">
 
-    <select id="findAllByRoomId" parameterType="long" resultType="com.linkee.linkeeapi.qna.query.dto.response.QnaResponseDto">
+    <select id="findAllByRoomId" parameterType="long" resultType="com.linkee.linkeeapi.chat.query.dto.response.QnaResponseDto">
         SELECT
             qna_question AS qnaQuestion,
             qna_answer AS qnaAnswer

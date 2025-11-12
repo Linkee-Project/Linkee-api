@@ -1,8 +1,8 @@
 package com.linkee.linkeeapi.chat.command.application.controller;
 
 import com.linkee.linkeeapi.chat.command.application.service.chat_service.ChatRoomQnAService;
-import com.linkee.linkeeapi.qna.command.application.dto.request.CreateQnaRequestDto;
-import com.linkee.linkeeapi.qna.query.dto.response.QnaResponseDto;
+import com.linkee.linkeeapi.chat.command.application.dto.request.CreateQnaRequestDto;
+import com.linkee.linkeeapi.chat.query.dto.response.QnaResponseDto;
 import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
 import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import lombok.RequiredArgsConstructor;

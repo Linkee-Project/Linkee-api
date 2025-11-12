@@ -1,9 +1,9 @@
 package com.linkee.linkeeapi.chat.command.application.service.chat_service;
 
-import com.linkee.linkeeapi.qna.command.application.dto.request.CreateQnaRequestDto;
-import com.linkee.linkeeapi.qna.command.application.service.QnaCommandService;
-import com.linkee.linkeeapi.qna.query.dto.response.QnaResponseDto;
-import com.linkee.linkeeapi.qna.query.service.QnaQueryService;
+import com.linkee.linkeeapi.chat.command.application.dto.request.CreateQnaRequestDto;
+import com.linkee.linkeeapi.chat.command.application.service.services.QnaCommandService;
+import com.linkee.linkeeapi.chat.query.dto.response.QnaResponseDto;
+import com.linkee.linkeeapi.chat.query.service.QnaQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;

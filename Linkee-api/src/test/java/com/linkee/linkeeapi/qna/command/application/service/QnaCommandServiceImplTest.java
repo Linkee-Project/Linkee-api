@@ -1,12 +1,13 @@
 package com.linkee.linkeeapi.qna.command.application.service;
 
+import com.linkee.linkeeapi.chat.command.application.service.services.QnaCommandServiceImpl;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMember;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMemberRepository;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoom;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomRepository;
-import com.linkee.linkeeapi.qna.command.application.dto.request.CreateQnaRequestDto;
-import com.linkee.linkeeapi.qna.command.domain.aggregate.Qna;
-import com.linkee.linkeeapi.qna.command.infrastructure.repository.JpaQnaRepository;
+import com.linkee.linkeeapi.chat.command.application.dto.request.CreateQnaRequestDto;
+import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.Qna;
+import com.linkee.linkeeapi.chat.command.instructure.repository.JpaQnaRepository;
 import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import org.junit.jupiter.api.BeforeEach;
