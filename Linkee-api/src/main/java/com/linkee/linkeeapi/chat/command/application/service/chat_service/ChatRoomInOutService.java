@@ -29,6 +29,7 @@ public class ChatRoomInOutService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ChatRoomBroadcastService broadcastService;
 
     private User getUserFromToken(String token) {
         if (token.startsWith("Bearer ")) token = token.substring(7);
@@ -40,6 +41,7 @@ public class ChatRoomInOutService {
         String email = jwtTokenProvider.getUsername(token);
         return userRepository.findByUserEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
     }
+
 
     @Transactional
     public ChatMessageRequestDto joinRoom(Long roomId, String token, Integer inputRoomCode) {
@@ -69,6 +71,8 @@ public class ChatRoomInOutService {
             room.increaseJoinedCount();
             chatRoomRepository.save(room);
         }
+
+        broadcastService.broadcastMemberList(roomId);
 
 
 
@@ -108,6 +112,8 @@ public class ChatRoomInOutService {
             }
         }
 
+        broadcastService.broadcastMemberList(roomId);
+
 
 
         return ChatMessageRequestDto.builder()
@@ -136,11 +142,7 @@ public class ChatRoomInOutService {
                 .toList();
     }
 
-    // 참여자 목록 WebSocket 전송
-    public void broadcastMemberList(Long roomId) {
-        List<ChatMemberDto> members = getRoomMembers(roomId);
-        messagingTemplate.convertAndSend("/topic/chatroom/" + roomId + "/members", members);
-    }
+
 
 
 }

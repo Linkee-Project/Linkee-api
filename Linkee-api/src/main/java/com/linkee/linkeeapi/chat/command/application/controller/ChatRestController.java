@@ -103,9 +103,10 @@ public class ChatRestController {
     }
 
 
-    @GetMapping("/{roomId}/members")
+    @GetMapping("/rooms/{roomId}/members")
     public ResponseEntity<List<ChatMemberDto>> getRoomMembers(@PathVariable Long roomId) {
         List<ChatMemberDto> members = chatRoomInOutService.getRoomMembers(roomId);
         return ResponseEntity.ok(members);
     }
+
 }

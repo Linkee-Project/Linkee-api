@@ -107,6 +107,7 @@
     let stompClient = null;
     let selectedRoomId = null;
     let currentSubscription = null;
+    let memberSubscription = null;
     let token = null;
 
     // 방 타입 / 공개 여부 기본값
@@ -243,8 +244,15 @@
                     showMessage(msg.senderNickname + ": " + msg.message, msg.senderNickname === "SYSTEM");
                 });
 
+
+                memberSubscription = stompClient.subscribe('/topic/chatroom/' + roomId + '/members', function(memberMsg) {
+                    const members = JSON.parse(memberMsg.body); // [{nickname: '홍길동'}, ...]
+                    renderMembers(members);
+                });
+
                 // 기존 메시지 불러오기
                 loadMessages();
+                loadMembers();
                 highlightSelectedRoom();
             })
             .catch(err => {
@@ -295,37 +303,31 @@
             });
     }
 
-    function subscribeRoom() {
-        if(currentSubscription) {
-            currentSubscription.unsubscribe();
-        }
-        currentSubscription = stompClient.subscribe('/topic/chatroom/' + selectedRoomId, function(messageOutput) {
-            const msg = JSON.parse(messageOutput.body);
 
-            // ✅ QnA 메시지 처리
-            if (msg.type === "QNA_QUESTION") {
-                document.getElementById("qna-box").style.display = "block";
-                document.getElementById("current-question").textContent = msg.question;
-                document.getElementById("answer-section").style.display = "none";
-                showMessage("🧩 새 문제가 등록되었습니다!", true);
-                return;
-            }
+    // 멤버 리스트 REST로 불러오기
+    function loadMembers() {
+        if(!selectedRoomId) return;
+        fetch(`http://localhost:8080/chat/rooms/${selectedRoomId}/members`, {
+            headers: { 'Authorization': token }
+        })
+            .then(res => res.json())
+            .then(data => {
+                renderMembers(data);
+            });
+    }
 
-            if (msg.type === "QNA_ANSWER") {
-                document.getElementById("answer-section").style.display = "block";
-                document.getElementById("current-answer").textContent = msg.answer;
-                showMessage("✅ 정답이 공개되었습니다!", true);
-                return;
-            }
-
-            // 기존 메시지 처리
-            if(msg.senderNickname === "SYSTEM"){
-                showMessage(msg.message, true);
-            } else {
-                showMessage(msg.senderNickname + ": " + msg.message, false);
-            }
+    // 멤버 리스트 렌더링
+    function renderMembers(members) {
+        const ul = document.getElementById("member-list");
+        ul.innerHTML = "";
+        members.forEach(m => {
+            const li = document.createElement("li");
+            li.textContent = m.userNickname;
+            ul.appendChild(li);
         });
     }
+
+
 
     // 메시지 전송
     function sendMessage() {
@@ -494,6 +496,12 @@
             currentSubscription.unsubscribe();
             currentSubscription = null;
         }
+
+        if (memberSubscription) {
+            memberSubscription.unsubscribe();
+            memberSubscription = null;
+        }
+
 
         // UI 초기화
         showMessage("방을 나갔습니다.", true);
