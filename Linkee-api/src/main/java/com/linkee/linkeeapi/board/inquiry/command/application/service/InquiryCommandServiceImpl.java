@@ -30,10 +30,8 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
 
     //create - builer ver.
     @Override
-    public void createInquiry(CreateInquiryRequestDto request) {
-        if (request.getUserId() == null) {
-            throw new BusinessException(ErrorCode.INVALID_USER_ID);
-        }
+    public void createInquiry(Long userId,CreateInquiryRequestDto request) {
+        User user = userFinder.getById(userId);
         if (request.getInquiryTitle() == null || request.getInquiryTitle().isBlank()) {
             throw new BusinessException(ErrorCode.INVALID_REQUEST, "문의 제목은 필수 입력값입니다.");
         }
@@ -46,7 +44,7 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
         Inquiry inquiry = Inquiry.builder()
                 .inquiryTitle(request.getInquiryTitle())
                 .inquiryContent(request.getInquiryContent())
-                .user(userFinder.getById(request.getUserId()))
+                .user(user)
                 .admin(null)
                 .answerStatus(Status.N)
                 .createdAt(LocalDateTime.now())
@@ -78,7 +76,7 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.INQUIRY_NOT_FOUND));
 
         // 이미 답변된 문의인지 확인
-        if (inquiry.getAnswerStatus() == Status.N) {
+        if (inquiry.getAnswerStatus() == Status.Y) {
             throw new BusinessException(ErrorCode.ALREADY_ANSWERED);
         }
 

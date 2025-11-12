@@ -24,8 +24,11 @@ public class InquiryCommandController {
 
     //create
     @PostMapping
-    public ResponseEntity<String> createInquiry(@RequestBody CreateInquiryRequestDto request){
-        inquiryService.createInquiry(request);
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<String> createInquiry(
+            @AuthenticationPrincipal CustomUser customUser,
+            @RequestBody CreateInquiryRequestDto request){
+        inquiryService.createInquiry(customUser.getUserId(),request);
         return ResponseEntity.ok("문의사항 생성 완료");
     }
 

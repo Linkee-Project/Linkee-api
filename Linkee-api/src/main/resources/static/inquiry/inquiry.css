@@ -229,3 +229,12 @@ body {
     from { opacity: 1; }
     to { opacity: 0; transform: translateY(10px); }
 }
+
+/* 답변 등록 버튼 전용 스타일 */
+.btn-coral {
+    background: var(--coral);
+    color: var(--white);
+}
+.btn-coral:hover {
+    opacity: 0.9;
+}

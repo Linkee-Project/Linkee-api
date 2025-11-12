@@ -7,7 +7,7 @@ import com.linkee.linkeeapi.common.model.CustomUser;
 public interface InquiryCommandService {
 
     //CREATE
-    void createInquiry(CreateInquiryRequestDto createInquiryRequestDto);
+    void createInquiry(Long userId,CreateInquiryRequestDto createInquiryRequestDto);
 
     //UPDATE
      void updateInquiryAnswer(CustomUser customUser,UpdateInquiryAnswerRequestDto request);
