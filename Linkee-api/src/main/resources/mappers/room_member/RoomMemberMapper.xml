@@ -12,20 +12,28 @@
            - 닉네임을 위해 tb_user 조인을 추가(프론트에서 바로 표시 가능)
            - 방장은 항상 상단에 보이도록 정렬 */
         SELECT
-            m.room_member_id  AS roomMemberId,
-            m.member_id       AS memberId,
-            m.quiz_room_id    AS quizRoomId,
-            m.is_ready        AS isReady,
-            m.is_victory      AS isVictory,
-            m.joined_at       AS joinedAt,
-            m.lefted_at         AS leftedAt,
-            u.user_nickname   AS memberNickname      -- ✅ 닉네임 포함
+        m.room_member_id  AS roomMemberId,
+        m.member_id       AS memberId,
+        m.quiz_room_id    AS quizRoomId,
+        m.is_ready        AS isReady,
+        m.is_victory      AS isVictory,
+        m.joined_at       AS joinedAt,
+        m.lefted_at       AS leftedAt,
+        u.user_nickname   AS memberNickname
         FROM tb_room_member m
-                 JOIN tb_user u ON u.user_id = m.member_id
+        JOIN tb_user u ON u.user_id = m.member_id
         WHERE m.quiz_room_id = #{quizRoomId}
+        AND m.lefted_at IS NULL            <!-- ✅ 추가: 현재 방에 남아있는 멤버만 -->
         ORDER BY
-            (m.member_id = (SELECT room_owner FROM tb_quiz_room WHERE quiz_room_id = #{quizRoomId})) DESC,
-            m.room_member_id ASC
+        (m.member_id = (SELECT room_owner FROM tb_quiz_room WHERE quiz_room_id = #{quizRoomId})) DESC,
+        m.room_member_id ASC
+    </select>
+
+    <select id="countAliveMembersByRoomId" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_room_member
+        WHERE quiz_room_id = #{roomId}
+        AND lefted_at IS NULL               <!-- ✅ 나가지 않은 사람만 집계 -->
     </select>
 
 </mapper>

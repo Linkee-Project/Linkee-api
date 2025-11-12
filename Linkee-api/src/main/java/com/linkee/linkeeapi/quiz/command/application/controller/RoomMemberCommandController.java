@@ -52,8 +52,9 @@ public class RoomMemberCommandController {
      * @return 성공 응답
      */
     @PatchMapping("/{roomMemberId}/selfLeave")
-    public ApiResponse<Void> selfLeaveRoom(@PathVariable Long roomMemberId) {
-        roomMemberCommandService.selfLeaveRoom(roomMemberId);
+    public ApiResponse<Void> selfLeaveRoom(@PathVariable Long roomMemberId,
+                                           @AuthenticationPrincipal CustomUser user) {
+        roomMemberCommandService.selfLeaveRoom(roomMemberId, user.getUserId());
         return ApiResponse.success(null);
     }
 
@@ -63,8 +64,9 @@ public class RoomMemberCommandController {
      * @return 성공 응답
      */
     @PatchMapping("/{roomMemberId}/kick")
-    public ApiResponse<Void> kickRoomMember(@PathVariable Long roomMemberId) {
-        roomMemberCommandService.kickRoomMember(roomMemberId);
+    public ApiResponse<Void> kickRoomMember(@PathVariable Long roomMemberId,
+                                            @AuthenticationPrincipal CustomUser user) {
+        roomMemberCommandService.kickRoomMember(roomMemberId, user.getUserId());
         return ApiResponse.success(null);
     }
 }

@@ -3,6 +3,8 @@ package com.linkee.linkeeapi.quiz.query.mapper;
 import com.linkee.linkeeapi.quiz.query.dto.request.RoomMemberSearchRequest;
 import com.linkee.linkeeapi.quiz.query.dto.response.RoomMemberResponse;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 
 @Mapper
@@ -13,4 +15,6 @@ public interface RoomMemberMapper {
      * @return 퀴즈방 멤버 목록
      */
     List<RoomMemberResponse> selectAllRoomMember(RoomMemberSearchRequest request);
+
+    int countAliveMembersByRoomId(@Param("roomId") Long roomId);
 }

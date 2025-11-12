@@ -41,14 +41,19 @@ public class QuizRoomWebSocketController {
     private final RoomMemberRepository roomMemberRepository;
     private final QuizRoomRepository quizRoomRepository;
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @MessageMapping("/quiz-room/{roomId}")
     public void handleQuizMessage(@DestinationVariable Long roomId,
                                   @Payload QuizWebsocketRequest message,
                                   Principal principal) {
-        var auth = (UsernamePasswordAuthenticationToken) principal;
-        var customUser = (CustomUser) auth.getPrincipal();
+        // ✅ [1] 인증 방어 — principal null 또는 타입이 맞지 않을 수 있음
+        if (!(principal instanceof UsernamePasswordAuthenticationToken auth)
+                || !(auth.getPrincipal() instanceof CustomUser customUser)) {
+            log.warn("❌ Unauthenticated WebSocket access to roomId={}", roomId);
+            quizRoomSocketService.sendError(roomId, "UNAUTHORIZED_WS");
+            return;
+        }
+
         Long userId = customUser.getUserId();
 
         log.info("WS RECV: roomId={}, userId={}, type={}, payload={}", roomId, userId, message.getType(), message);
@@ -83,7 +88,6 @@ public class QuizRoomWebSocketController {
                         .orElseThrow(() -> new BusinessException(ErrorCode.ROOM_MEMBER_NOT_FOUND));
 
                 roomMemberCommandService.toggleReady(roomMember.getRoomMemberId());
-                quizRoomSocketService.broadcastMemberList(roomId);
             }
             case JOIN -> log.info("JOIN received (noop) roomId={}, userId={}", roomId, userId);
             case LEAVE -> log.info("LEAVE received (noop) roomId={}, userId={}", roomId, userId);

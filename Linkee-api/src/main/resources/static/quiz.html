@@ -194,19 +194,21 @@
 </div>
 
 <script>
-    // ====== 상수 / BASE 계산 ======
-    const HOST = window.location.hostname;
-    const VIEW_PORT = window.location.port;
-    const API_PORT = (VIEW_PORT === '63342' || VIEW_PORT === '5500') ? '8080' : (VIEW_PORT || '8080');
-    const BASE = `${location.protocol}//${HOST}:${API_PORT}`;
-    const WS_EP = "/ws-stomp";
-    const API_PREFIX = "/api/v1";
+    // ====== 하드코딩: 너의 백엔드 주소만 바꾸면 끝 ======
+    const BASE_URL   = 'http://192.168.2.76:8080';  // ← 여기만 네 주소로 변경
+    const WS_EP      = '/ws-stomp';
+    const API_PREFIX = '/api/v1';
 
     // ====== 상태 ======
     let stompClient = null;
     let currentRoomId = null;
     let roomSubscription = null;
     let timerInterval = null;
+
+    // 내 식별자(방 상세 응답에서 세팅)
+    let currentUserId = null;
+    let currentUserRoomMemberId = null;
+    let isRoomOwner = false;
 
     // ====== UI 유틸 ======
     function log(msg, isErr=false){
@@ -218,10 +220,7 @@
         c.appendChild(div);
         c.scrollTop = c.scrollHeight;
     }
-    function clearLog(){
-        document.getElementById('logContainer').innerHTML = '';
-        log('로그 초기화');
-    }
+    function clearLog(){ document.getElementById('logContainer').innerHTML = ''; log('로그 초기화'); }
     function show(el){ el.classList.remove('hidden'); }
     function hide(el){ el.classList.add('hidden'); }
 
@@ -233,9 +232,7 @@
     async function safeJson(res){
         const ct = res.headers.get('content-type') || '';
         const text = await res.text();
-        if (!ct.includes('application/json')) {
-            throw new Error(`JSON 아님(status=${res.status}): ${text.slice(0,120)}`);
-        }
+        if (!ct.includes('application/json')) throw new Error(`JSON 아님(status=${res.status}): ${text.slice(0,120)}`);
         try { return JSON.parse(text); } catch { throw new Error('JSON 파싱 실패'); }
     }
     function wsHeaders(){
@@ -248,8 +245,8 @@
         const raw = (document.getElementById('jwtToken').value || '').trim();
         if(!raw){ return alert('JWT 토큰을 입력하세요'); }
 
-        log(`WS 연결 시도 → ${BASE}${WS_EP}`);
-        const sock = new SockJS(`${BASE}${WS_EP}`, null, {transports:['websocket','xhr-streaming','xhr-polling']});
+        log(`WS 연결 시도 → ${BASE_URL}${WS_EP}`);
+        const sock = new SockJS(`${BASE_URL}${WS_EP}`, null, {transports:['websocket','xhr-streaming','xhr-polling']});
         stompClient = Stomp.over(sock);
         stompClient.debug = null;
 
@@ -277,18 +274,15 @@
 
     // 공통: 방 활성화 + 구독
     function activateRoom(roomId, roomTitle){
-        // 이전 구독 해제
         if (roomSubscription){
             try{ roomSubscription.unsubscribe(); }catch{}
             roomSubscription = null;
         }
         currentRoomId = roomId;
 
-        // UI 활성화
         document.getElementById('currentRoomTitle').textContent = roomTitle || `룸 #${roomId}`;
         show(document.getElementById('quizRoomSection'));
 
-        // 구독
         roomSubscription = stompClient.subscribe(`/sub/quiz-room/${roomId}`, (message) => {
             try {
                 const data = JSON.parse(message.body);
@@ -299,7 +293,7 @@
         });
         log(`📡 구독 시작: /sub/quiz-room/${roomId}`);
 
-        // ✅ 초기 멤버 스냅샷
+        // 초기 멤버/내 memberId 확보
         fetchParticipants(roomId).catch(e => log(`초기 멤버 조회 실패: ${e.message}`, true));
     }
 
@@ -307,7 +301,7 @@
     async function loadCategories(){
         try{
             log('카테고리 목록 조회…');
-            const res = await fetch(`${BASE}${API_PREFIX}/categories`, {headers:getHeaders()});
+            const res = await fetch(`${BASE_URL}${API_PREFIX}/categories`, {headers:getHeaders()});
             if(!res.ok) throw new Error(`HTTP ${res.status}`);
             const payload = await safeJson(res);
             const categories = Array.isArray(payload) ? payload : (payload?.data ?? []);
@@ -320,7 +314,7 @@
     async function loadRooms(){
         try{
             log('방 목록 조회…');
-            const res = await fetch(`${BASE}${API_PREFIX}/quiz-rooms`, {headers:getHeaders()});
+            const res = await fetch(`${BASE_URL}${API_PREFIX}/quiz-rooms`, {headers:getHeaders()});
             if(!res.ok) throw new Error(`HTTP ${res.status}`);
             const result = await safeJson(res);
             const rooms = result?.data?.content ?? result?.data ?? result;
@@ -346,21 +340,43 @@
         }catch(e){ log(`❌ 방 목록 실패: ${e.message}`, true); }
     }
 
-    // ✅ 현재 방 멤버 스냅샷 가져오기 (API 경로는 너희 서버에 맞춰 하나 고정)
+    // ✅ 현재 방 상세 + 멤버 스냅샷(내 roomMemberId 계산)
     async function fetchParticipants(roomId){
-        // 1) 방 상세가 멤버 포함이면 이걸로:
-        const res = await fetch(`${BASE}${API_PREFIX}/quiz-rooms/${roomId}`, { headers:getHeaders() });
+        const res = await fetch(`${BASE_URL}${API_PREFIX}/quiz-rooms/${roomId}`, { headers:getHeaders() });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const payload = await safeJson(res);
 
-        const participants =
-            payload?.data?.participants ??
-            payload?.participants ??
-            payload?.data?.members ??
-            payload?.members ?? [];
+        // 상세 응답 표준화
+        const detail = payload?.data ?? payload ?? {};
+        currentUserId = detail.currentUserId ?? currentUserId;
+        isRoomOwner   = !!detail.isOwner;
 
-        updateParticipants(Array.isArray(participants) ? participants : []);
-        log(`👥 초기 멤버 ${participants.length}명`);
+        const members = detail.members ?? detail.participants ?? [];
+        currentUserRoomMemberId = findMyRoomMemberId(members, currentUserId);
+
+        updateParticipants(normalizeMembers(members));
+        log(`👥 초기 멤버 ${members.length}명 (myRoomMemberId=${currentUserRoomMemberId ?? 'unknown'})`);
+    }
+
+    function findMyRoomMemberId(members, myUserId){
+        if (!Array.isArray(members) || myUserId == null) return null;
+        const me = members.find(m => (m.memberId ?? m.userId) === myUserId);
+        return me ? (me.roomMemberId ?? null) : null;
+    }
+
+    // 멤버 데이터 정규화(ready/owner가 불리언/문자 혼용 대비)
+    function normalizeMembers(members){
+        return (members || []).map(m => {
+            const ready = typeof m.ready === 'boolean' ? m.ready
+                : (typeof m.isReady === 'string' ? m.isReady === 'Y' : !!m.isReady);
+            const owner = typeof m.owner === 'boolean' ? m.owner
+                : (m.isOwner === true);
+            return {
+                memberNickname: m.memberNickname ?? m.userNickname ?? '(닉네임)',
+                owner,
+                ready
+            };
+        });
     }
 
     async function createRoom(){
@@ -375,7 +391,7 @@
         };
         try{
             log('방 생성 요청…');
-            const res = await fetch(`${BASE}${API_PREFIX}/quiz-rooms`, {
+            const res = await fetch(`${BASE_URL}${API_PREFIX}/quiz-rooms`, {
                 method:'POST', headers:getHeaders(), body:JSON.stringify(payload)
             });
             const data = await safeJson(res);
@@ -384,10 +400,8 @@
             const newRoomId = data.data;
             log(`✅ 방 생성 완료 (id=${newRoomId})`);
 
-            // 생성자는 이미 멤버이므로 즉시 UI 활성화 + 구독
             activateRoom(newRoomId, payload.roomTitle);
 
-            // 목록 새로고침 + 초기 멤버 로드
             loadRooms();
             fetchParticipants(newRoomId).catch(()=>{});
         }catch(e){ log(`❌ 생성 실패: ${e.message}`, true); }
@@ -399,27 +413,27 @@
         const body = { quizRoomId: roomId, roomCode: maybeCode };
         try{
             log(`방 입장 요청… (roomId=${roomId})`);
-            const res = await fetch(`${BASE}${API_PREFIX}/room_members`, {
+            const res = await fetch(`${BASE_URL}${API_PREFIX}/room_members`, {
                 method:'POST', headers:getHeaders(), body:JSON.stringify(body)
             });
             const data = await safeJson(res);
             if(!data?.success) throw new Error(data?.message || '입장 실패');
 
-            // 정상 입장
             activateRoom(roomId, roomTitle);
 
-            // ✅ 입장 직후 방 상세 정보 조회 → 참가자 목록 즉시 표시
             try {
-                const res = await fetch(`${BASE}${API_PREFIX}/quiz-rooms/${roomId}`, { headers: getHeaders() });
-                const payload = await safeJson(res);
-                const members = payload?.data?.members || [];
-                updateParticipants(members);
-                log(`✅ 참가자 ${members.length}명 로드 완료`);
+                const res2 = await fetch(`${BASE_URL}${API_PREFIX}/quiz-rooms/${roomId}`, { headers: getHeaders() });
+                const payload = await safeJson(res2);
+                const detail = payload?.data ?? payload ?? {};
+                currentUserId = detail.currentUserId ?? currentUserId;
+                isRoomOwner = !!detail.isOwner;
+                currentUserRoomMemberId = findMyRoomMemberId(detail.members ?? [], currentUserId);
+                updateParticipants(normalizeMembers(detail.members ?? []));
+                log(`✅ 참가자 ${ (detail.members ?? []).length }명 로드 완료`);
             } catch(e) {
                 log(`❌ 참가자 목록 로드 실패: ${e.message}`, true);
             }
 
-            // ✅ 숫자/멤버 즉시 갱신
             loadRooms();
             fetchParticipants(roomId).catch(()=>{});
         }catch(e){
@@ -435,17 +449,40 @@
         }
     }
 
-    function leaveRoom(){
-        if (roomSubscription){ try{ roomSubscription.unsubscribe(); }catch{} roomSubscription=null; }
-        currentRoomId = null;
+    // ====== 나가기(내 roomMemberId가 있으면 selfLeave 호출 후 UI 초기화)
+    async function selfLeaveIfPossible(){
+        if (!currentUserRoomMemberId) return false;
+        try{
+            const res = await fetch(`${BASE_URL}${API_PREFIX}/room_members/${currentUserRoomMemberId}/selfLeave`, {
+                method:'PATCH', headers:getHeaders()
+            });
+            if(!res.ok){
+                const t = await res.text();
+                throw new Error(`HTTP ${res.status}: ${t.slice(0,120)}`);
+            }
+            log('🚪 selfLeave 처리 완료');
+            return true;
+        }catch(e){
+            log(`⚠️ selfLeave 호출 실패: ${e.message}`, true);
+            return false;
+        }
+    }
 
-        hide(document.getElementById('quizRoomSection'));
-        hide(document.getElementById('quizArea'));
-        hide(document.getElementById('resultArea'));
-        hide(document.getElementById('rankingArea'));
-        stopTimer();
-        log('🚪 방 나가기(프론트 상태 초기화)');
-        loadRooms();
+    function leaveRoom(){
+        // 백엔드에 내 퇴장 기록(가능하면)
+        selfLeaveIfPossible().finally(()=>{
+            if (roomSubscription){ try{ roomSubscription.unsubscribe(); }catch{} roomSubscription=null; }
+            currentRoomId = null;
+            currentUserRoomMemberId = null;
+
+            hide(document.getElementById('quizRoomSection'));
+            hide(document.getElementById('quizArea'));
+            hide(document.getElementById('resultArea'));
+            hide(document.getElementById('rankingArea'));
+            stopTimer();
+            log('🚪 방 나가기(프론트 상태 초기화)');
+            loadRooms();
+        });
     }
 
     // ====== WS Publish ======
@@ -479,8 +516,12 @@
             case 'PARTICIPANT_LIST':
             case 'ROOM_STATE': {
                 const d = data.data ?? data;
-                const list = d.participants ?? d.members ?? d.roomMembers ?? [];
-                updateParticipants(Array.isArray(list) ? list : []);
+                const members = d.participants ?? d.members ?? d.roomMembers ?? [];
+                // 이벤트 페이로드에 currentUserId/owner가 오면 갱신
+                if (d.currentUserId != null) currentUserId = d.currentUserId;
+                if (typeof d.isOwner === 'boolean') isRoomOwner = d.isOwner;
+                currentUserRoomMemberId = findMyRoomMemberId(members, currentUserId);
+                updateParticipants(normalizeMembers(members));
                 break;
             }
             case 'QUESTION_STARTED':  displayQuestion(data.data); break;
@@ -575,29 +616,18 @@
             if (remain<=0) stopTimer();
         }, 1000);
     }
-    function stopTimer(){
-        if (timerInterval){ clearInterval(timerInterval); timerInterval=null; }
-    }
+    function stopTimer(){ if (timerInterval){ clearInterval(timerInterval); timerInterval=null; } }
 
     // 초기 진입
     window.addEventListener('load', ()=>{
         log('🎮 테스트 페이지 로드 완료');
         log('순서: JWT 입력 → WS 연결 → 방 만들기/입장 → 진행');
-        // 카테고리만 먼저 볼 수 있도록 호출(401이면 로그에 안내)
-        loadCategories();
+        loadCategories(); // 401이면 로그로만 안내
     });
-    window.addEventListener('beforeunload', ()=>{
-        if (stompClient?.connected) stompClient.disconnect();
-    });
-
-    /* 테스트 체크리스트:
-     1) JWT 입력 → WS 연결 (상단 배지 녹색 확인)
-     2) 카테고리/방 목록 조회(401/403이면 로그에서 원인 확인)
-     3) 방 만들기 → 즉시 오른쪽 영역 활성화 + 구독되는지 확인
-     4) 방 목록 클릭 → 이미 참여중이어도 UI 강제 활성화되는지 확인
-     5) READY_TOGGLE/START_QUIZ/정답 제출 후 WS 수신 로그 확인
-    */
+    window.addEventListener('beforeunload', ()=>{ if (stompClient?.connected) stompClient.disconnect(); });
 </script>
+
+
 
 </body>
 </html>

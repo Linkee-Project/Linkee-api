@@ -11,4 +11,6 @@ public interface RoomMemberQueryService {
      * @return 멤버 목록
      */
     List<RoomMemberResponse> selectAllRoomMember(RoomMemberSearchRequest request);
+
+    int countAliveMembers(Long roomId);
 }
