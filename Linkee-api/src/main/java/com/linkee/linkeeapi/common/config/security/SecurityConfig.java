@@ -40,11 +40,11 @@ public class SecurityConfig {
 
                 // ✅ 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(/*"/**",*/ "/login/**", "/oauth2/**", "/error", "/accessDenied").permitAll()
+                        .requestMatchers( "/login/**", "/oauth2/**", "/error", "/accessDenied").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/chat/**").permitAll()
                         .requestMatchers("/quiz.html").permitAll()
                         .requestMatchers("/ws-stomp/**").permitAll()
+                        .requestMatchers("/ws-chat/**","/chat/**","/notice/**").permitAll()
                         .requestMatchers("/ws/**", "/sockjs/**").permitAll() // 웹소켓 연결 테스트
                         .requestMatchers("/user/**").hasAuthority("USER")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
@@ -69,7 +69,8 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                         //.defaultSuccessUrl("/", true)
-                        .defaultSuccessUrl("/notice/notice.html", true)
+                        //.defaultSuccessUrl("/notice/notice.html", true)
+                        .defaultSuccessUrl("/home/home.html", true)
                         .failureUrl("/accessDenied") // 추가 권장
                 )
 

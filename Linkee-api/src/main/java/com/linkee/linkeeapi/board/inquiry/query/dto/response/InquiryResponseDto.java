@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class InquiryResponseDto {
-
+    private Long inquiryId;   // ✅ 추가
     private String inquiryTitle;
     private String inquiryContent;
     private LocalDateTime createdAt;
@@ -20,5 +20,6 @@ public class InquiryResponseDto {
     private Status answerStatus;
     private Long userId;
     private Long adminId;
+    private String userEmail;
 
 }

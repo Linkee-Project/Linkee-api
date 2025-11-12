@@ -1,6 +1,7 @@
 package com.linkee.linkeeapi.chat.command.application.service.chat_service;
 
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatMessageRequestDto;
+import com.linkee.linkeeapi.chat.command.application.dto.response.ChatMemberDto;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMember;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatRoom;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMemberRepository;
@@ -28,6 +29,7 @@ public class ChatRoomInOutService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ChatRoomBroadcastService broadcastService;
 
     private User getUserFromToken(String token) {
         if (token.startsWith("Bearer ")) token = token.substring(7);
@@ -39,6 +41,7 @@ public class ChatRoomInOutService {
         String email = jwtTokenProvider.getUsername(token);
         return userRepository.findByUserEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
     }
+
 
     @Transactional
     public ChatMessageRequestDto joinRoom(Long roomId, String token, Integer inputRoomCode) {
@@ -69,6 +72,10 @@ public class ChatRoomInOutService {
             chatRoomRepository.save(room);
         }
 
+        broadcastService.broadcastMemberList(roomId);
+
+
+
         return ChatMessageRequestDto.builder()
                 .roomId(roomId)
                 .message(user.getUserNickname() + "님이 입장했습니다.")
@@ -84,18 +91,37 @@ public class ChatRoomInOutService {
 
         boolean isOwner = room.getRoomOwner().getUserId().equals(user.getUserId());
 
+        System.out.println("[leaveRoom] user: " + user.getUserNickname() + ", isOwner: " + isOwner);
+        System.out.println("[leaveRoom] roomId: " + roomId + ", joinedCount: " + room.getJoinedCount());
+
+
+
         if (isOwner) {
-            List<ChatMember> members = chatMemberRepository.findByChatRoom(room);
-            members.forEach(ChatMember::modifyLeftAt);
-            chatMemberRepository.deleteAll(members);
-            chatRoomRepository.deleteById(roomId);
+            System.out.println("[leaveRoom] 방장 퇴장 -> 방 삭제 시도");
+            // 방장 퇴장 → 방 + 모든 멤버 + Qna 안전 삭제
+            chatRoomRepository.delete(room);
+            chatRoomRepository.flush(); // DB 반영 강제
+            System.out.println("[leaveRoom] 방 삭제 완료");
         } else {
-            ChatMember member = chatMemberRepository.findByChatRoomAndUser(room, user).orElseThrow();
+            // 일반 멤버 퇴장
+            ChatMember member = chatMemberRepository.findByChatRoomAndUser(room, user)
+                    .orElseThrow(() -> new RuntimeException("Member not found"));
+            System.out.println("[leaveRoom] 일반 멤버 퇴장 -> 멤버 삭제");
+
+            // Cascade + orphanRemoval로 Qna 자동 삭제
             chatMemberRepository.delete(member);
+
             room.decreaseJoinedCount();
-            if (room.getJoinedCount() == 0) chatRoomRepository.deleteById(roomId);
-            else chatRoomRepository.save(room);
+            if (room.getJoinedCount() == 0) {
+                chatRoomRepository.delete(room);
+            } else {
+                chatRoomRepository.save(room);
+            }
         }
+
+        broadcastService.broadcastMemberList(roomId);
+
+
 
         return ChatMessageRequestDto.builder()
                 .roomId(roomId)
@@ -104,4 +130,26 @@ public class ChatRoomInOutService {
                 .sentAt(LocalDateTime.now())
                 .build();
     }
+
+
+
+    // 입장 시 참여자 리스트 가져오기
+    @Transactional(readOnly = true)
+    public List<ChatMemberDto> getRoomMembers(Long roomId) {
+        ChatRoom room = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
+
+        return chatMemberRepository.findAllByChatRoomAndLeftAtIsNull(room)
+                .stream()
+                .map(cm -> new ChatMemberDto(
+                        cm.getUser().getUserId(),
+                        cm.getUser().getUserNickname(),
+                        cm.getJoinedAt()
+                ))
+                .toList();
+    }
+
+
+
+
 }

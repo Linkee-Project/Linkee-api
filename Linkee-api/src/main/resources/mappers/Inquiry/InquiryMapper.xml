@@ -7,55 +7,65 @@
 
     <!-- InquiryResponseDto에 맞춘 매핑 -->
     <resultMap id="InquiryResponseMap" type="com.linkee.linkeeapi.board.inquiry.query.dto.response.InquiryResponseDto">
+        <result property="inquiryId" column="inquiry_id"/>
         <result property="inquiryTitle" column="inquiry_title"/>
         <result property="inquiryContent" column="inquiry_content"/>
         <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
         <result property="answerStatus" column="answer_status"/>
-        <result property="answerContent" column="answer_content"/> <!-- 추가 -->
+        <result property="answerContent" column="answer_content"/>
         <result property="userId" column="user_id"/>
-        <result property="adminId" column="admin_id"/> <!-- 추가 -->
+        <result property="adminId" column="admin_id"/>
+        <result property="userEmail" column="user_email"/> <!-- ✅ 추가 -->
     </resultMap>
 
     <!-- 관리자 전체 조회 -->
     <select id="findAll" resultMap="InquiryResponseMap">
-        SELECT i.inquiry_title,
-               i.inquiry_content,
-               i.created_at,
-               i.answer_status,
-               i.answer_content,
-               i.user_id,
-               i.admin_id
+        SELECT
+        i.inquiry_id,
+        i.inquiry_title,
+        i.inquiry_content,
+        i.created_at,
+        i.updated_at,
+        i.answer_status,
+        i.answer_content,
+        i.user_id,
+        i.admin_id,
+        u.user_email
         FROM tb_inquiry i
+        JOIN tb_user u ON i.user_id = u.user_id   <!-- ✅ 조인 추가 -->
         ORDER BY i.created_at DESC
-            LIMIT #{offset}, #{limit}
+        LIMIT #{offset}, #{limit}
     </select>
 
     <!-- 일반 유저 본인 문의 조회 -->
     <select id="findByUserId" resultMap="InquiryResponseMap">
-        SELECT i.inquiry_title,
-               i.inquiry_content,
-               i.created_at,
-               i.answer_status,
-               i.answer_content,
-               i.user_id,
-               i.admin_id
+        SELECT
+        i.inquiry_id,
+        i.inquiry_title,
+        i.inquiry_content,
+        i.created_at,
+        i.updated_at,
+        i.answer_status,
+        i.answer_content,
+        i.user_id,
+        i.admin_id,
+        u.user_email
         FROM tb_inquiry i
+        JOIN tb_user u ON i.user_id = u.user_id   <!-- ✅ 조인 추가 -->
         WHERE i.user_id = #{userId}
         ORDER BY i.created_at DESC
-            LIMIT #{offset}, #{limit}
+        LIMIT #{offset}, #{limit}
     </select>
 
     <!-- 전체 개수 -->
     <select id="countAll" resultType="int">
-        SELECT COUNT(*)
-        FROM tb_inquiry
+        SELECT COUNT(*) FROM tb_inquiry
     </select>
 
     <!-- 특정 유저 개수 -->
     <select id="countByUserId" resultType="int">
-        SELECT COUNT(*)
-        FROM tb_inquiry
-        WHERE user_id = #{userId}
+        SELECT COUNT(*) FROM tb_inquiry WHERE user_id = #{userId}
     </select>
 
 </mapper>

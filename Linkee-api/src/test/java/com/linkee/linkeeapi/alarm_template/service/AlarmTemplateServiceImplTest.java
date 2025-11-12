@@ -2,13 +2,14 @@ package com.linkee.linkeeapi.alarm_template.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.linkee.linkeeapi.alarm_template.command.application.dto.request.AlarmTemplateCreateRequest;
-import com.linkee.linkeeapi.alarm_template.query.dto.reqeust.AlarmTemplateSearchRequest;
-import com.linkee.linkeeapi.alarm_template.command.application.service.AlarmTemplateCommandService;
-import com.linkee.linkeeapi.alarm_template.query.dto.response.AlarmTemplateResponse;
-import com.linkee.linkeeapi.alarm_template.command.domain.aggregate.entity.AlarmTemplate;
-import com.linkee.linkeeapi.alarm_template.query.service.AlarmTemplateQueryService;
-import com.linkee.linkeeapi.alarm_template.command.infrastructure.repository.AlarmTemplateRepository;
+import com.linkee.linkeeapi.alarm.command.application.dto.request.AlarmTemplateCreateRequest;
+import com.linkee.linkeeapi.alarm.command.domain.aggregate.entity.AlarmBox;
+import com.linkee.linkeeapi.alarm.command.domain.aggregate.entity.AlarmTemplate;
+import com.linkee.linkeeapi.alarm.query.dto.request.AlarmTemplateSearchRequest;
+import com.linkee.linkeeapi.alarm.command.application.service.AlarmTemplateCommandService;
+import com.linkee.linkeeapi.alarm.query.dto.response.AlarmTemplateResponse;
+import com.linkee.linkeeapi.alarm.query.service.AlarmTemplateQueryService;
+import com.linkee.linkeeapi.alarm.command.instructure.repository.AlarmTemplateRepository;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

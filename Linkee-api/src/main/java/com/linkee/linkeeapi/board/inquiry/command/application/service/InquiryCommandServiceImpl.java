@@ -9,6 +9,7 @@ import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.event.InquiryAnsweredEvent;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,8 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
 
     //create - builer ver.
     @Override
-    public void createInquiry(CreateInquiryRequestDto request) {
-        if (request.getUserId() == null) {
-            throw new BusinessException(ErrorCode.INVALID_USER_ID);
-        }
+    public void createInquiry(Long userId,CreateInquiryRequestDto request) {
+        User user = userFinder.getById(userId);
         if (request.getInquiryTitle() == null || request.getInquiryTitle().isBlank()) {
             throw new BusinessException(ErrorCode.INVALID_REQUEST, "문의 제목은 필수 입력값입니다.");
         }
@@ -45,7 +44,7 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
         Inquiry inquiry = Inquiry.builder()
                 .inquiryTitle(request.getInquiryTitle())
                 .inquiryContent(request.getInquiryContent())
-                .user(userFinder.getById(request.getUserId()))
+                .user(user)
                 .admin(null)
                 .answerStatus(Status.N)
                 .createdAt(LocalDateTime.now())
@@ -60,14 +59,14 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
     //Update -답변등록
     @Override
     @Transactional(readOnly = false)
-    public void updateInquiryAnswer(UpdateInquiryAnswerRequestDto request) {
+    public void updateInquiryAnswer(CustomUser customUser, UpdateInquiryAnswerRequestDto request) {
 
         if (request.getInquiryId() == null) {
             throw new BusinessException(ErrorCode.INVALID_INQUIRY_ID);
         }
 
         //관리자 조회
-        User adminUser = userFinder.getById(request.getAdminId()); // 없는 경우 INVALID_ADMIN_ID로 처리
+        User adminUser = userFinder.getById(customUser.getUserId()); // 없는 경우 INVALID_ADMIN_ID로 처리
         if (adminUser.getUserRole() != Role.ADMIN) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS);
         }

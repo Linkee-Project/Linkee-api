@@ -3,6 +3,7 @@ const API_BASE = "/api/v1/auth/login";
 async function handleLogin(event) {
     event.preventDefault();
 
+
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
     const message = document.getElementById("message");
@@ -22,6 +23,7 @@ async function handleLogin(event) {
             }),
         });
 
+
         // ✅ JWT 로그인에서는 JSON 응답을 받아야 하므로 추가
         const data = await res.json();
 
@@ -36,8 +38,14 @@ async function handleLogin(event) {
 
         message.style.color = "#0094F6";
         message.textContent = "로그인 성공! 페이지로 이동 중...";
-        setTimeout(() => window.location.href = "/notice/notice.html", 1000);
+
+        setTimeout(() => window.location.href = "/home/home.html", 1000);
+
+
+
     } catch (err) {
+        alert("err"+err)
+
         console.error(err);
         message.textContent = "서버 연결 오류가 발생했습니다.";
     }

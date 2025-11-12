@@ -4,10 +4,14 @@ import com.linkee.linkeeapi.board.inquiry.command.application.dto.request.Create
 import com.linkee.linkeeapi.board.inquiry.command.application.dto.request.UpdateInquiryAnswerRequestDto;
 import com.linkee.linkeeapi.board.inquiry.command.application.service.InquiryCommandService;
 
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -20,17 +24,23 @@ public class InquiryCommandController {
 
     //create
     @PostMapping
-    public ResponseEntity<String> createInquiry(@RequestBody CreateInquiryRequestDto request){
-        inquiryService.createInquiry(request);
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<String> createInquiry(
+            @AuthenticationPrincipal CustomUser customUser,
+            @RequestBody CreateInquiryRequestDto request){
+        inquiryService.createInquiry(customUser.getUserId(),request);
         return ResponseEntity.ok("문의사항 생성 완료");
     }
 
     //update
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PatchMapping("/answer")
     public ResponseEntity<String> updateInquiryAnswer(
+            @AuthenticationPrincipal CustomUser customUser,
             @RequestBody UpdateInquiryAnswerRequestDto request) {
 
-        inquiryService.updateInquiryAnswer(request);
+        request.setAdminId(customUser.getUserId());
+        inquiryService.updateInquiryAnswer(customUser,request);
         return ResponseEntity.ok("답변 등록 완료");
     }
 }

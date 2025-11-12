@@ -6,6 +6,9 @@ import com.linkee.linkeeapi.users.command.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "tb_chat_room")
 @Getter
@@ -47,11 +50,13 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(name = "room_capacity")
     private Integer roomCapacity;
 
-
     @Enumerated(EnumType.STRING)
     @Builder.Default
     @Column(name = "room_status", nullable = false, columnDefinition = "ENUM('Y','N') DEFAULT 'Y'" )
     private Status roomStatus = Status.Y;
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMember> chatMembers = new ArrayList<>();
 
 
     public void decreaseJoinedCount() {
