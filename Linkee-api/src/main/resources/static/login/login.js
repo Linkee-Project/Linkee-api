@@ -39,7 +39,7 @@ async function handleLogin(event) {
         message.style.color = "#0094F6";
         message.textContent = "로그인 성공! 페이지로 이동 중...";
 
-        setTimeout(() => window.location.href = "/notice/notice.html", 1000);
+        setTimeout(() => window.location.href = "/home/home.html", 1000);
 
 
 

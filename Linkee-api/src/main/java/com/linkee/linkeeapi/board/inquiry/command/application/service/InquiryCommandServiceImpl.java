@@ -9,6 +9,7 @@ import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.event.InquiryAnsweredEvent;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -60,14 +61,14 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
     //Update -답변등록
     @Override
     @Transactional(readOnly = false)
-    public void updateInquiryAnswer(UpdateInquiryAnswerRequestDto request) {
+    public void updateInquiryAnswer(CustomUser customUser, UpdateInquiryAnswerRequestDto request) {
 
         if (request.getInquiryId() == null) {
             throw new BusinessException(ErrorCode.INVALID_INQUIRY_ID);
         }
 
         //관리자 조회
-        User adminUser = userFinder.getById(request.getAdminId()); // 없는 경우 INVALID_ADMIN_ID로 처리
+        User adminUser = userFinder.getById(customUser.getUserId()); // 없는 경우 INVALID_ADMIN_ID로 처리
         if (adminUser.getUserRole() != Role.ADMIN) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
@@ -77,7 +78,7 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.INQUIRY_NOT_FOUND));
 
         // 이미 답변된 문의인지 확인
-        if (inquiry.getAnswerStatus() == Status.Y) {
+        if (inquiry.getAnswerStatus() == Status.N) {
             throw new BusinessException(ErrorCode.ALREADY_ANSWERED);
         }
 

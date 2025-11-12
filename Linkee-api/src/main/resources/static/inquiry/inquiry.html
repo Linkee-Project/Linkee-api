@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Linkee 문의 게시판</title>
+    <link rel="stylesheet" href="inquiry.css" />
+</head>
+<body>
+<header class="site-header">
+    <div class="header-inner">
+        <div class="logo">
+            <div class="logo-mark"></div>
+            <span>Linkee 문의 게시판</span>
+        </div>
+        <div class="actions">
+            <button class="btn btn-ghost" onclick="reloadInquiries()">새로고침</button>
+            <a class="btn btn-primary" href="/home/home.html">홈으로</a>
+            <button id="createBtn" class="btn btn-ghost" style="display:none" onclick="openCreateModal()">문의 등록</button>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <section class="card">
+        <div class="hero">
+            <h1>문의 목록</h1>
+            <p>궁금한 점이나 건의사항을 남겨주세요.</p>
+        </div>
+
+        <div class="filters">
+            <div class="search">
+                <input id="q" type="search" placeholder="제목 검색 (클라이언트 필터)" oninput="filterClient()">
+                <button class="btn btn-clear" onclick="clearSearch()">지우기</button>
+            </div>
+            <select id="size" class="select" onchange="changeSize(this.value)">
+                <option value="10" selected>10개씩</option>
+                <option value="20">20개씩</option>
+                <option value="30">30개씩</option>
+            </select>
+        </div>
+
+        <div id="list" class="inquiry-list"></div>
+
+        <div class="pagination">
+            <button class="page-btn" id="prev" onclick="goPage(-1)">이전</button>
+            <div class="page-info" id="pageInfo">0 / 0</div>
+            <button class="page-btn" id="next" onclick="goPage(1)">다음</button>
+        </div>
+    </section>
+</main>
+
+<!-- 문의 등록 모달 -->
+<div id="createModal" class="modal">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3>문의 등록</h3>
+            <button class="close" onclick="closeCreateModal()">닫기</button>
+        </div>
+        <div class="modal-body">
+            <input id="createTitle" type="text" placeholder="문의 제목">
+            <textarea id="createContent" placeholder="문의 내용을 입력하세요"></textarea>
+            <button class="btn btn-primary" onclick="createInquiry()">등록</button>
+        </div>
+    </div>
+</div>
+
+<!-- 답변 등록 모달 -->
+<div id="answerModal" class="modal">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3>답변 등록</h3>
+            <button class="close" onclick="closeAnswerModal()">닫기</button>
+        </div>
+        <div class="modal-body">
+            <textarea id="answerContent" placeholder="답변 내용을 입력하세요"></textarea>
+            <button class="btn btn-primary" onclick="submitAnswer()">등록</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">문제가 발생했습니다.</div>
+<script src="inquiry.js"></script>
+</body>
+</html>
