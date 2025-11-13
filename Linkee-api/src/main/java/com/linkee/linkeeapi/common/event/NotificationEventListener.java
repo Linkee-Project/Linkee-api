@@ -4,10 +4,11 @@ import com.linkee.linkeeapi.alarm.command.application.dto.request.AlarmBoxCreate
 import com.linkee.linkeeapi.alarm.command.application.service.AlarmBoxCommandService;
 import com.linkee.linkeeapi.alarm.query.dto.response.AlarmTemplateResponse;
 import com.linkee.linkeeapi.alarm.query.mapper.AlarmTemplateMapper;
-import com.linkee.linkeeapi.question.command.domain.aggregate.Comment;
+import com.linkee.linkeeapi.board.inquiry.command.domain.aggregate.Inquiry;
+import com.linkee.linkeeapi.common.enums.AlarmType;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.sse.service.SseService;
-import com.linkee.linkeeapi.board.inquiry.command.domain.aggregate.Inquiry;
+import com.linkee.linkeeapi.question.command.domain.aggregate.Comment;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,9 @@ public class NotificationEventListener {
         User requester = event.getRequester();
         User receiver = event.getReceiver();
 
-        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectAlarmTemplateById(1L);
-        String alarmContent = String.format("%s%s", requester.getUserNickname(), alarmTemplate.templateContent());
+        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectByTemplateCode(AlarmType.FRIEND_REQUEST.getCode());
+        String alarmContent = alarmTemplate.templateContent()
+                .replace("{userNickname}", requester.getUserNickname());
 
         AlarmBoxCreateRequest alarmBoxCreateRequest = AlarmBoxCreateRequest.builder()
                 .alarmBoxContent(alarmContent)
@@ -52,8 +54,9 @@ public class NotificationEventListener {
         Inquiry inquiry = event.getInquiry();
         User inquirer = inquiry.getUser(); // 문의를 작성한 사용자
 
-        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectAlarmTemplateById(3L);
-        String alarmContent = alarmTemplate.templateContent();
+        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectByTemplateCode(AlarmType.INQUIRY_ANSWERED.getCode());
+        String alarmContent = alarmTemplate.templateContent()
+                .replace("{inquiryTitle}", inquiry.getInquiryTitle());
 
         AlarmBoxCreateRequest alarmBoxCreateRequest = AlarmBoxCreateRequest.builder()
                 .alarmBoxContent(alarmContent)
@@ -70,8 +73,9 @@ public class NotificationEventListener {
         Question question = event.getQuestion();
         User questionOwner = question.getUser();
 
-        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectAlarmTemplateById(4L);
-        String alarmContent = alarmTemplate.templateContent();
+        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectByTemplateCode(AlarmType.QUESTION_VERIFIED.getCode());
+        String alarmContent = alarmTemplate.templateContent()
+                .replace("{questionTitle}", question.getQuestionTitle());
 
         AlarmBoxCreateRequest alarmBoxCreateRequest = AlarmBoxCreateRequest.builder()
                 .alarmBoxContent(alarmContent)
@@ -149,9 +153,11 @@ public class NotificationEventListener {
         String inviterNickname = event.getInviterNickname();
         String roomTitle = event.getRoomTitle();
         // 2. 알림 템플릿 조회
-        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectAlarmTemplateById(2L);
+        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectByTemplateCode(AlarmType.QUIZ_INVITE.getCode());
         // 3. 알림 내용 구성
-        String alarmContent = String.format(alarmTemplate.templateContent(), inviterNickname, roomTitle);
+        String alarmContent = alarmTemplate.templateContent()
+                .replace("{inviterNickname}", inviterNickname)
+                .replace("{roomTitle}", roomTitle);
         // 4. AlarmBox에 알림 저장(영속화)
         AlarmBoxCreateRequest alarmBoxCreateRequest = AlarmBoxCreateRequest.builder()
                 .alarmBoxContent(alarmContent)

@@ -15,4 +15,6 @@ public interface AlarmTemplateMapper {
 
     AlarmTemplateResponse selectAlarmTemplateById(Long templateId);
 
+    AlarmTemplateResponse selectByTemplateCode(String templateCode);
+
 }
