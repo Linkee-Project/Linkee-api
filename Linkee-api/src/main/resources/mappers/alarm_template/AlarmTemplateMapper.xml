@@ -41,4 +41,14 @@
         WHERE template_id = #{templateId}
     </select>
 
+    <select id="selectByTemplateCode" resultType="com.linkee.linkeeapi.alarm.query.dto.response.AlarmTemplateResponse">
+        SELECT
+            template_id AS templateId,
+            template_content AS templateContent,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM tb_alarm_template
+        WHERE template_code = #{templateCode}
+    </select>
+
 </mapper>
