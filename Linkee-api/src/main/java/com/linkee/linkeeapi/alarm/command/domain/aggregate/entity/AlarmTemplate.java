@@ -15,6 +15,10 @@ public class AlarmTemplate extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long templateId;
+
+    @Column(name = "template_code", nullable = false, unique = true)
+    private String templateCode;
+
     private String templateContent;
 
     public void modifyTemplateContent(String content) {
