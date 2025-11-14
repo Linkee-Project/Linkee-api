@@ -41,20 +41,45 @@ public class QuizRoomWebSocketController {
     private final RoomMemberRepository roomMemberRepository;
     private final QuizRoomRepository quizRoomRepository;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @MessageMapping("/quiz-room/{roomId}")
     public void handleQuizMessage(@DestinationVariable Long roomId,
                                   @Payload QuizWebsocketRequest message,
+                                  @Header(value = "Authorization", required = false) String authHeader,
                                   Principal principal) {
-        // ✅ [1] 인증 방어 — principal null 또는 타입이 맞지 않을 수 있음
-        if (!(principal instanceof UsernamePasswordAuthenticationToken auth)
-                || !(auth.getPrincipal() instanceof CustomUser customUser)) {
-            log.warn("❌ Unauthenticated WebSocket access to roomId={}", roomId);
-            quizRoomSocketService.sendError(roomId, "UNAUTHORIZED_WS");
-            return;
+
+        Long userId = null;
+
+        // 1) 먼저 principal 쪽에서 꺼냄
+        if (principal instanceof UsernamePasswordAuthenticationToken token
+                && token.getPrincipal() instanceof CustomUser customUser) {
+            userId = customUser.getUserId();
         }
 
-        Long userId = customUser.getUserId();
+        // 2) principal 없으면 → 헤더에서 JWT 파싱 (fallback)
+        if (userId == null) {
+            if (authHeader == null || authHeader.isBlank()) {
+                quizRoomSocketService.sendError(roomId, "UNAUTHORIZED_WS");
+                log.warn("❌ WS 메시지에 Authorization 헤더 없음 (roomId={})", roomId);
+                return;
+            }
+
+            String raw = authHeader.trim();
+            String tokenStr = raw.startsWith("Bearer ") ? raw.substring(7) : raw;
+
+            if (!jwtTokenProvider.validateToken(tokenStr)) {
+                quizRoomSocketService.sendError(roomId, "UNAUTHORIZED_WS");
+                log.warn("❌ WS 메시지 JWT 검증 실패 (roomId={})", roomId);
+                return;
+            }
+
+
+            String email = jwtTokenProvider.getUsername(tokenStr);
+            User user = userRepository.findByUserEmail(email)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
+            userId = user.getUserId();
+        }
 
         log.info("WS RECV: roomId={}, userId={}, type={}, payload={}", roomId, userId, message.getType(), message);
 

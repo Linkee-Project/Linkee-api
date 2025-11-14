@@ -81,7 +81,7 @@ public class QuizRoomWebSocketService {
                 .questionContent(firstQuestion.getQuestionQuestion())
                 .categoryName(firstQuestion.getCategory().getCategoryName())
                 .options(options)
-                .timeLimit(30)
+                .timeLimit(20)
                 .serverStartTime(LocalDateTime.now())
                 .build();
 
@@ -134,7 +134,7 @@ public class QuizRoomWebSocketService {
         log.info("✅ Answer submission broadcasted to roomId={}", roomId);
     }
     /*
-     * 문제 결과 브로드캐스트 (30초 후 스케줄러에서 호출)
+     * 문제 결과 브로드캐스트 (20초 후 스케줄러에서 호출)
      */
     @Transactional(readOnly = true)
     public void broadcastQuestionResult(Long roomId, Integer questionNumber) {
@@ -213,7 +213,7 @@ public class QuizRoomWebSocketService {
                 .questionContent(question.getQuestionQuestion())
                 .categoryName(question.getCategory().getCategoryName())
                 .options(options)
-                .timeLimit(30)
+                .timeLimit(20)
                 .serverStartTime(LocalDateTime.now())
                 .build();
 

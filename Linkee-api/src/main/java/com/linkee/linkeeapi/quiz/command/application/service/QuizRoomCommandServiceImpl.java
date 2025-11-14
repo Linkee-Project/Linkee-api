@@ -263,7 +263,7 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         quizCurrentIndexRepository.save(newQuizIndex);
 
         // 첫 번째 문제의 타이머를 스케줄링 합니다.
-        quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 30 * 1000L);
+        quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 20 * 1000L);
 
         // WS 첫 문제 브로드캐스트 (SocketService에서 QUESTION_STARTED 전송)
         quizRoomWebSocketService.startQuiz(quizRoomId, userId);
@@ -320,8 +320,8 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         // ✅ 다음 문제 브로드캐스트
         quizRoomWebSocketService.broadcastNextQuestion(quizRoomId, quizIndex.getCurrentQuizIndex());
 
-        //  7. 다음 문제의 타이머를 스케줄링 합니다 (30초)
-        quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 30 * 1000L);
+        //  7. 다음 문제의 타이머를 스케줄링 합니다 (20초)
+        quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 20 * 1000L);
     }
 
     @Override

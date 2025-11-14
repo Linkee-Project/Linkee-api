@@ -85,9 +85,13 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
 
         roomMemberRepository.save(roomMember);
 
-        //  퀴즈방의 현재 인원 수 1 증가
-        quizRoom.setJoinedCount(quizRoom.getJoinedCount() + 1);
-        quizRoomRepository.save(quizRoom);
+        // 인원 수 재집계(감소 -1 대신 '남아있는 인원'을 다시 계산)
+        Long roomId = roomMember.getQuizRoom().getQuizRoomId();
+        int alive = roomMemberQueryService.countAliveMembers(roomId);
+        roomMember.getQuizRoom().setJoinedCount(alive);
+
+        // 멤버 목록 브로드캐스트
+        quizRoomWebSocketService.broadcastMemberList(quizRoom.getQuizRoomId(), false);
 
         return RoomMemberCreateResponse.builder()
                 .quizRoomId(quizRoom.getQuizRoomId())
@@ -168,7 +172,7 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
 
         // 2) 인원 수 재집계(감소 -1 대신 '남아있는 인원'을 다시 계산)
         Long roomId = roomMember.getQuizRoom().getQuizRoomId();
-        int alive = roomMemberQueryService.countAliveMembers(roomId);  // ✅ CQRS 준수
+        int alive = roomMemberQueryService.countAliveMembers(roomId);
         roomMember.getQuizRoom().setJoinedCount(alive);
 
         // 3) 변경된 내용 브로드캐스트
