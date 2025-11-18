@@ -41,6 +41,14 @@ public class SecurityConfig {
                 // ✅ 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/login/**", "/oauth2/**", "/error", "/accessDenied").permitAll()
+                        .requestMatchers("/signup/**").permitAll()
+                        .requestMatchers(
+                                //swagger
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/ws-chat/**","/chat/**","/notice/**").permitAll()
                         .requestMatchers("/ws/**", "/sockjs/**").permitAll() // 웹소켓 연결 테스트
