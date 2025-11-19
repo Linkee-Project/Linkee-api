@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 /* 퀴즈방 내 사용자의 문제 풀이 결과(정답 여부 등)를 기록 */
 @RestController
-@RequestMapping("/api/v1/room_user_logs")
+@RequestMapping("/api/v1/quiz/rooms/user-log")
 @RequiredArgsConstructor
 @Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class RoomUserLogCommandController {
