@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/relations")
+@RequestMapping("/api/v1/users/relation")
 @Tag(name = "커뮤니케이션", description = "친구 및 채팅 기능 관련 API")
 public class RelationCommandController {
 
