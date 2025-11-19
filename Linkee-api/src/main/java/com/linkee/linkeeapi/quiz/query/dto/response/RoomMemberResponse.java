@@ -20,4 +20,5 @@ public class RoomMemberResponse {
     private String isVictory;   // 승리 여부
     private LocalDateTime joinedAt; // 참여 시각
     private LocalDateTime leftAt;   // 나간 시각
+    private String memberNickname; // 닉네임 표시용
 }

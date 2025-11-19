@@ -50,6 +50,8 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/quiz.html").permitAll()
+                        .requestMatchers("/ws-stomp/**").permitAll()
                         .requestMatchers("/ws-chat/**","/chat/**","/notice/**").permitAll()
                         .requestMatchers("/ws/**", "/sockjs/**").permitAll() // 웹소켓 연결 테스트
                         .requestMatchers("/user/**").hasAuthority("USER")

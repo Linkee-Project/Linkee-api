@@ -1,7 +1,6 @@
 package com.linkee.linkeeapi.quiz.command.application.service;
 
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomCreateRequestDto;
-import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomDeleteRequestDto;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomSubmitAnswerRequestDto;
 
 /*
@@ -16,8 +15,7 @@ public interface QuizRoomCommandService {
      * @return 생성된 퀴즈룸의 고유 ID
      */
     Long create(QuizRoomCreateRequestDto request, Long userId);
-
-    void leaveQuizRoom(QuizRoomDeleteRequestDto request);
+    
 
     void startGame(Long quizRoomId, Long userId);
 
@@ -30,4 +28,6 @@ public interface QuizRoomCommandService {
     * @param request 답안 제출 정보 (quizRoomId, 선택한 보기 인덱스)
     * @param userId 답안을 제출하는 사용자 ID*/
     void submitAnswer(QuizRoomSubmitAnswerRequestDto request, Long userId);
+
+    void leaveQuizRoom(Long quizRoomId, Long userId);
 }

@@ -18,4 +18,7 @@ public class RoomMemberQueryServiceImpl implements RoomMemberQueryService {
         // Mapper를 통해 데이터베이스에서 멤버 목록을 바로 조회하여 반환
         return roomMemberMapper.selectAllRoomMember(request);
     }
+    public int countAliveMembers(Long roomId) {
+        return roomMemberMapper.countAliveMembersByRoomId(roomId);
+    }
 }

@@ -50,8 +50,8 @@ public class QuizGameAdvanceScheduler {
                 // 2. 문제 결과 브로드캐스트
                 quizRoomWebSocketService.broadcastQuestionResult(quizRoomId, index.getCurrentQuizIndex());
 
-                // 3. 15초 대기 (결과 표시)
-                Thread.sleep(15000);
+                // 3. 10초 대기 (결과 표시)
+                Thread.sleep(10000);
 
                 // 4. 다음 문제로 진행
                 quizRoomCommandService.advanceNextQuestion(quizRoomId);

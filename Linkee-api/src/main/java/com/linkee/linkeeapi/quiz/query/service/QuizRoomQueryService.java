@@ -1,10 +1,7 @@
 package com.linkee.linkeeapi.quiz.query.service;
 
 import com.linkee.linkeeapi.common.model.PageResponse;
-import com.linkee.linkeeapi.quiz.query.dto.response.PlayStateResponseDto;
-import com.linkee.linkeeapi.quiz.query.dto.response.QuizRoomListResponseDto;
-import com.linkee.linkeeapi.quiz.query.dto.response.QuizRoomResponseDto;
-import com.linkee.linkeeapi.quiz.query.dto.response.ResultRowResponseDto;
+import com.linkee.linkeeapi.quiz.query.dto.response.*;
 
 import java.util.List;
 
@@ -21,4 +18,7 @@ public interface QuizRoomQueryService {
 
     // 결과 조회
     List<ResultRowResponseDto> getResultsByRoom(Long roomId, int page, int size);
+
+    // 방 상세 조회
+    QuizRoomDetailResponseDto getRoomDetail(Long roomId, Long currentUserId);
 }

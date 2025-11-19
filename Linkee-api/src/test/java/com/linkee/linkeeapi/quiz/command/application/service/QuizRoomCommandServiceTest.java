@@ -11,7 +11,6 @@ import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaQuesti
 import com.linkee.linkeeapi.quiz.command.domain.aggregate.QuizCurrentIndex;
 import com.linkee.linkeeapi.quiz.command.infrastructure.repository.QuizCurrentIndexRepository;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomCreateRequestDto;
-import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomDeleteRequestDto;
 import com.linkee.linkeeapi.quiz.command.domain.aggregate.QuizRoom;
 import com.linkee.linkeeapi.quiz.command.infrastructure.repository.QuizRoomRepository;
 import com.linkee.linkeeapi.quiz.command.infrastructure.scheduler.QuizGameAdvanceScheduler;

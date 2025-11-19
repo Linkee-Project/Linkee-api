@@ -81,7 +81,7 @@ public class QuizRoomWebSocketService {
                 .questionContent(firstQuestion.getQuestionQuestion())
                 .categoryName(firstQuestion.getCategory().getCategoryName())
                 .options(options)
-                .timeLimit(30)
+                .timeLimit(20)
                 .serverStartTime(LocalDateTime.now())
                 .build();
 
@@ -134,7 +134,7 @@ public class QuizRoomWebSocketService {
         log.info("✅ Answer submission broadcasted to roomId={}", roomId);
     }
     /*
-     * 문제 결과 브로드캐스트 (30초 후 스케줄러에서 호출)
+     * 문제 결과 브로드캐스트 (20초 후 스케줄러에서 호출)
      */
     @Transactional(readOnly = true)
     public void broadcastQuestionResult(Long roomId, Integer questionNumber) {
@@ -166,7 +166,7 @@ public class QuizRoomWebSocketService {
                             .userName(member.getMember().getUserNickname())
                             .selectedOptionId(null) // 선택값 저장 안함
                             .isCorrect(log != null && log.getIsCorrected() == Status.Y)
-                            .responseTime(15) // 결과 표시 시간
+                            .responseTime(5) // 결과 표시 시간
                             .build();
                 })
                 .toList();
@@ -213,7 +213,7 @@ public class QuizRoomWebSocketService {
                 .questionContent(question.getQuestionQuestion())
                 .categoryName(question.getCategory().getCategoryName())
                 .options(options)
-                .timeLimit(30)
+                .timeLimit(20)
                 .serverStartTime(LocalDateTime.now())
                 .build();
 
@@ -278,25 +278,53 @@ public class QuizRoomWebSocketService {
 
 
     /*
-     * 멤버 목록 갱신 브로드캐스트 (준비 상태 변경 시)
+     * 멤버 목록 갱신 브로드캐스트 (준비 상태 변경, 나가기, 강퇴 시 )
      */
     @Transactional(readOnly = true)
-    public void broadcastMemberList(Long roomId) {
-        log.info("Broadcasting member list update: roomId={}", roomId);
+    public void broadcastMemberList(Long roomId, boolean kicked) {
+        log.info("Broadcasting member list update: roomId={}, kicked={}", roomId, kicked);
 
-        // RoomMemberQueryService 사용해서 멤버 목록 조회
-        List<RoomMemberResponse> members = roomMemberQueryService.selectAllRoomMember(
+        // ⚠️ RoomMemberSearchRequest/selectAllRoomMember가
+        //     lefted_at IS NULL 기준(현재 남아있는 멤버만)으로 조회하는지 꼭 확인!
+        var members = roomMemberQueryService.selectAllRoomMember(
                 RoomMemberSearchRequest.builder().quizRoomId(roomId).build()
         );
 
-        QuizWebSocketResponse response = QuizWebSocketResponse.builder()
+        // data에 members + kicked를 함께 담아 보냄
+        var payload = java.util.Map.of(
+                "members", members,
+                "kicked", kicked
+        );
+
+        var response = QuizWebSocketResponse.builder()
                 .type(QuizMessageType.MEMBER_UPDATED)
                 .success(true)
-                .message("멤버 목록이 갱신되었습니다.")
-                .data(members)
+                .message(kicked ? "멤버 목록이 갱신되었습니다. (강퇴)" : "멤버 목록이 갱신되었습니다.")
+                .data(payload)   // ← members만 주던 것을 payload로 교체
                 .build();
 
         messagingTemplate.convertAndSend("/sub/quiz-room/" + roomId, response);
-        log.info("✅ Member list broadcasted to roomId={}", roomId);
+        log.info("✅ Member list broadcasted to roomId={}, kicked={}", roomId, kicked);
+    }
+
+    /*
+     * ❌ 인증되지 않은 유저 / 기타 WebSocket 에러 전송용
+     * @param roomId 대상 퀴즈방 ID
+     * @param message 에러 메시지 내용
+     */
+    @Transactional(readOnly = true)
+    public void sendError(Long roomId, String message) {
+        QuizWebSocketResponse errorResponse = QuizWebSocketResponse.builder()
+                .type(QuizMessageType.ERROR)
+                .success(false)
+                .message(message)
+                .data(null)
+                .build();
+
+        // 모든 방 참가자에게 에러 브로드캐스트
+        String dest = "/sub/quiz-room/" + roomId;
+        messagingTemplate.convertAndSend(dest, errorResponse);
+
+        log.warn("⚠️ WS Error broadcasted to roomId={}, message={}", roomId, message);
     }
 }
