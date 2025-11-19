@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/quiz-rooms") // 퀴즈방 관련 API 아래에 중첩
+@RequestMapping("/api/v1/quiz/rooms") // 퀴즈방 관련 API 아래에 중첩
 @RequiredArgsConstructor
 @Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행, 초대 관련 API")
 public class QuizRoomInviteController {
@@ -23,7 +23,7 @@ public class QuizRoomInviteController {
      * @param request 초대 요청 정보를 담은 DTO
      * @return 성공 응답
      */
-    @PostMapping("/invite") // POST /api/v1/quiz-rooms/invite
+    @PostMapping("/invite") // POST /api/v1/quiz/rooms/invite
     public ApiResponse<Void> inviteToQuizRoom(@RequestBody QuizRoomInviteRequestDto request) {
         quizRoomInviteService.sendInvite(request);
         return ApiResponse.success(null); // 성공 시 별도 데이터 없이 성공 응답

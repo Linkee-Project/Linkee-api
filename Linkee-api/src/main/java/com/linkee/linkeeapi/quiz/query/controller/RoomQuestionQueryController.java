@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/quiz_rooms/{roomId}/questions")
+@RequestMapping("/api/v1/quiz/rooms/{roomId}/question")
 @Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class RoomQuestionQueryController {
 

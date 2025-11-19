@@ -43,7 +43,7 @@ public class QuizRoomWebSocketController {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @MessageMapping("/quiz-room/{roomId}")
+    @MessageMapping("/quiz/rooms/{roomId}")
     public void handleQuizMessage(@DestinationVariable Long roomId,
                                   @Payload QuizWebsocketRequest message,
                                   @Header(value = "Authorization", required = false) String authHeader,

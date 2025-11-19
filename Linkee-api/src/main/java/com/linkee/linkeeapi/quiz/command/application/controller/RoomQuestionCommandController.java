@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/room_questions")
+@RequestMapping("/api/v1/quiz/rooms/question")
 @RequiredArgsConstructor
 @Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class RoomQuestionCommandController {

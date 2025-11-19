@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/quiz-rooms")
+@RequestMapping("/api/v1/quiz/rooms")
 @RequiredArgsConstructor
 @Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class QuizRoomQueryController {
