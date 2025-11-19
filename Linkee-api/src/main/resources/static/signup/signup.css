@@ -1,95 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&family=Noto+Sans+KR:wght@400;700&display=swap');
+
 body {
     margin: 0;
-    font-family: "Noto Sans KR", sans-serif;
-    background: linear-gradient(135deg, #b3e5fc, #ffffff);
+    font-family: "Poppins", "Noto Sans KR", sans-serif;
+    background: linear-gradient(135deg, #0094f6, #4fc3f7, #e1f5fe);
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
-.signup-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+/* ✨ 움직이는 반짝 배경 */
+body::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.3), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.25), transparent 40%);
+    animation: floatBg 15s infinite alternate;
+    z-index: 0;
 }
 
+@keyframes floatBg {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-10%, -10%); }
+}
+
+/* 🧊 회원가입 카드 */
 .signup-card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 6px 15px rgba(0, 148, 246, 0.15);
+    position: relative;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 148, 246, 0.25);
     padding: 3rem 2.5rem;
     text-align: center;
     width: 380px;
+    z-index: 1;
+    animation: fadeIn 1.2s ease-in-out;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🔗 로고 */
 .logo {
-    font-size: 2rem;
+    font-size: 2.5rem;
     color: #0094f6;
     font-weight: 800;
     margin-bottom: 0.5rem;
+    text-shadow: 0 0 15px rgba(0, 148, 246, 0.4);
 }
 
+/* 💬 부제 */
 .subtitle {
-    color: #666;
-    font-size: 0.9rem;
+    color: #555;
+    font-size: 1rem;
     margin-bottom: 2rem;
 }
 
+/* ✏️ 입력창 스타일 */
 input {
     width: 100%;
     padding: 0.9rem;
     margin-bottom: 1rem;
     border-radius: 8px;
-    border: 1px solid #b3e5fc;
+    border: 1.5px solid #b3e5fc;
+    background: rgba(255, 255, 255, 0.85);
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
 }
 
 input:focus {
     border-color: #0094f6;
+    box-shadow: 0 0 8px rgba(0, 148, 246, 0.3);
 }
 
+/* 🚨 에러 메시지 */
+.error-message {
+    color: #ff5252;
+    font-size: 0.85rem;
+    margin-top: -0.8rem;
+    margin-bottom: 0.5rem;
+    height: 0.9rem;
+}
+
+/* 💎 회원가입 버튼 */
 .btn-primary {
     width: 100%;
     padding: 0.9rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary.glow {
     background-color: #0094f6;
     color: #fff;
     border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 148, 246, 0.6);
 }
 
-.btn-primary:hover {
-    background-color: #0d47a1;
+.btn-primary.glow:hover {
+    background-color: #0072d2;
+    transform: scale(1.03);
+    box-shadow: 0 0 25px rgba(0, 148, 246, 0.9);
 }
 
+/* ✅ 메시지 표시 */
 .message {
     margin-top: 1rem;
-    color: #ff7b54;
     font-size: 0.9rem;
     height: 1.2rem;
 }
 
-.login-link {
-    margin-top: 2rem;
-    font-size: 0.9rem;
-}
-
-.login-link a {
-    color: #0094f6;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
-}
-/* 네이버 회원가입 영역 */
+/* 🌐 SNS 로그인 영역 */
 .social-login {
     text-align: center;
     margin-top: 1.8rem;
@@ -101,6 +133,7 @@ input:focus {
     margin-bottom: 0.8rem;
 }
 
+/* 🟢 네이버 버튼 */
 .naver-btn {
     display: inline-flex;
     align-items: center;
@@ -122,4 +155,21 @@ input:focus {
 .naver-btn img {
     width: 20px;
     height: 20px;
+}
+
+/* 🔗 로그인 링크 */
+.login-link {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.login-link a {
+    color: #0094f6;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
 }
