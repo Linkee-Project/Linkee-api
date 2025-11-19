@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/chat/qna")
+@RequestMapping("/api/v1/chat/qna")
 @RequiredArgsConstructor
 public class ChatQnAController {
 

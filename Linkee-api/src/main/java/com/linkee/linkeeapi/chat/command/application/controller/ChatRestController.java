@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/api/v1/chat/rooms")
 @RequiredArgsConstructor
 public class ChatRestController {
 
@@ -35,7 +35,7 @@ public class ChatRestController {
     private final ChatRoomCreateService chatRoomCreateService;
 
     // 전체 방 조회
-    @GetMapping("/rooms")
+    @GetMapping
     public ResponseEntity<?> getAllRooms(@RequestHeader("Authorization") String token) {
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(401).body("Unauthorized");
@@ -55,7 +55,7 @@ public class ChatRestController {
     }
 
     // 특정 방 메시지 조회
-    @GetMapping("/rooms/{roomId}/messages")
+    @GetMapping("/{roomId}/messages")
     public ResponseEntity<?> getRoomMessages(@PathVariable Long roomId,
                                              @RequestHeader("Authorization") String token) {
         if (!jwtTokenProvider.validateToken(token)) {
@@ -65,7 +65,7 @@ public class ChatRestController {
     }
 
     // 새 방 만들기
-    @PostMapping("/rooms")
+    @PostMapping
     public ResponseEntity<?> createRoom(
             @RequestHeader("Authorization") String token,
             @RequestBody ChatRoomCreateRequestDto request) {
@@ -84,7 +84,7 @@ public class ChatRestController {
 
 
     // 방입장 ( 비밀번호있을시 검증 완료됐을때만 구독 )
-    @PostMapping("/rooms/{roomId}/join")
+    @PostMapping("/{roomId}/join")
     public ResponseEntity<?> joinRoom(
             @PathVariable Long roomId,
             @RequestHeader("Authorization") String token,
@@ -103,7 +103,7 @@ public class ChatRestController {
     }
 
 
-    @GetMapping("/rooms/{roomId}/members")
+    @GetMapping("/{roomId}/members")
     public ResponseEntity<List<ChatMemberDto>> getRoomMembers(@PathVariable Long roomId) {
         List<ChatMemberDto> members = chatRoomInOutService.getRoomMembers(roomId);
         return ResponseEntity.ok(members);
