@@ -36,11 +36,9 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
 
     //문제 등록
     @Override
-    public void createQuestion(CreateQuestionRequestDto request) {
+    public void createQuestion(CreateQuestionRequestDto request,Long userId) {
 
-        if (request.getUserId() == null) {
-            throw new BusinessException(ErrorCode.INVALID_USER_ID);
-        }
+        User user = userFinder.getById(userId);
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
@@ -51,7 +49,7 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
                 .questionTitle(request.getQuestionTitle())
                 .questionQuestion(request.getQuestionQuestion())
                 .questionAnswer(request.getQuestionAnswer())
-                .user(userFinder.getById(request.getUserId()))
+                .user(user)
                 .isQualified(Status.N)
                 .isDeleted(Status.N)
                 .questionViews(0L)
@@ -74,8 +72,8 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
     }
     // 문제 수정
     @Override
-    public void updateQuestion(Long questionId, UpdateQuestionRequestDto request) {
-        User user = userFinder.getById(request.getUserId());
+    public void updateQuestion(Long questionId, UpdateQuestionRequestDto request,Long userId) {
+        User user = userFinder.getById(userId);
 
         Question question = jpaQuestionRepository.findByIdWithOptions(questionId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));

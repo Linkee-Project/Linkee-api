@@ -1,5 +1,6 @@
 package com.linkee.linkeeapi.question.command.application.controller;
 
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.question.command.application.dto.request.CreateQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.request.UpdateQuestionRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.request.VerifyQuestionRequestDto;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +24,10 @@ public class QuestionCommandController {
 
     // 문제 등록
     @PostMapping
-    public ResponseEntity<String> create(@Valid @RequestBody CreateQuestionRequestDto request) {
-        questionCommandService.createQuestion(request);
+    public ResponseEntity<String> create(@Valid @RequestBody CreateQuestionRequestDto request,
+                                         @AuthenticationPrincipal CustomUser user) {
+        Long userId = user.getUserId();
+        questionCommandService.createQuestion(request, userId);
         return ResponseEntity.ok("문제 등록 완료");
     }
     //문제 검증 변경(관리자)
@@ -39,16 +43,18 @@ public class QuestionCommandController {
     //문제 수정
     @PatchMapping("/{questionId}")
     public ResponseEntity<String> update(@PathVariable Long questionId,
-                                         @Valid @RequestBody UpdateQuestionRequestDto request) {
-
-        questionCommandService.updateQuestion(questionId, request);
+                                         @Valid @RequestBody UpdateQuestionRequestDto request,
+                                         @AuthenticationPrincipal CustomUser user) {
+        Long userId = user.getUserId();
+        questionCommandService.updateQuestion(questionId, request,userId);
         return ResponseEntity.ok("문제 수정 완료");
     }
 
     //문제 삭제
     @DeleteMapping("/{questionId}")
     public ResponseEntity<String> delete(@PathVariable Long questionId,
-                                         @RequestParam Long userId) {
+                                         @AuthenticationPrincipal CustomUser user) {
+        Long userId = user.getUserId();
         questionCommandService.deleteQuestion(questionId, userId);
         return ResponseEntity.ok("문제 삭제 완료");
     }

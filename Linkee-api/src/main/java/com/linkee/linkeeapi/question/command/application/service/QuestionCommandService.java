@@ -5,9 +5,9 @@ import com.linkee.linkeeapi.question.command.application.dto.request.UpdateQuest
 import com.linkee.linkeeapi.question.command.application.dto.request.VerifyQuestionRequestDto;
 
 public interface QuestionCommandService {
-    void createQuestion(CreateQuestionRequestDto request);
+    void createQuestion(CreateQuestionRequestDto request,Long userId);
 
-    void updateQuestion(Long questionId, UpdateQuestionRequestDto request);
+    void updateQuestion(Long questionId, UpdateQuestionRequestDto request,Long userId);
 
 
     void deleteQuestion(Long questionId, Long userId);

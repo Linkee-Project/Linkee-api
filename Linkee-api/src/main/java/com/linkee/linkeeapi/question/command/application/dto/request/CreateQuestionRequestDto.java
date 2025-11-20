@@ -15,8 +15,6 @@ import java.util.List;
 @Builder
 public class CreateQuestionRequestDto {
 
-    @NotNull
-    private Long userId; //작성자 ID
 
     @NotNull
     private Long categoryId;
