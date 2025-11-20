@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/inquiry")
+@RequestMapping("/api/v1")
 @Tag(name = "문의", description = "문의 및 답변 관리 API")
 public class InquiryCommandController {
     private final InquiryCommandService inquiryService;
     private final UserRepository userRepository;
 
     //create
-    @PostMapping
+    @PostMapping("/board/inquiries/new")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<String> createInquiry(
             @AuthenticationPrincipal CustomUser customUser,
@@ -33,14 +33,14 @@ public class InquiryCommandController {
     }
 
     //update
+    @PatchMapping("/admin/board/inquiries/{id}/reply")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PatchMapping("/answer")
     public ResponseEntity<String> updateInquiryAnswer(
             @AuthenticationPrincipal CustomUser customUser,
+            @PathVariable("id") Long inquiryId,
             @RequestBody UpdateInquiryAnswerRequestDto request) {
 
-        request.setAdminId(customUser.getUserId());
-        inquiryService.updateInquiryAnswer(customUser,request);
+        inquiryService.updateInquiryAnswer(customUser, inquiryId, request);
         return ResponseEntity.ok("답변 등록 완료");
     }
 }
