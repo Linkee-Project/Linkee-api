@@ -35,27 +35,40 @@ public class SecurityConfig {
                 // ✅ JWT 구조이므로 세션 비활성화
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 // ✅ 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/login/**", "/oauth2/**", "/error", "/accessDenied").permitAll()
+
+                        // 1. 완전 공개 경로 먼저
+                        .requestMatchers("/oauth2/**", "/error", "/accessDenied").permitAll()
                         .requestMatchers("/signup/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        // swagger 공개
                         .requestMatchers(
-                                //swagger
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
-                                "/webjars/**").permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/quiz.html").permitAll()
-                        .requestMatchers("/ws-stomp/**").permitAll()
-                        .requestMatchers("/ws-chat/**","/chat/**","/notice/**").permitAll()
-                        .requestMatchers("/ws/**", "/sockjs/**").permitAll() // 웹소켓 연결 테스트
-                        .requestMatchers("/user/**").hasAuthority("USER")
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                                "/webjars/**"
+                        ).permitAll()
+
+                        // WebSocket 공개
+                        .requestMatchers(
+                                "/quiz.html",
+                                "/ws-stomp/**",
+                                "/ws-chat/**",
+                                "/chat/**",
+                                "/notice/**",
+                                "/ws/**",
+                                "/sockjs/**"
+                        ).permitAll()
+
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/**").hasAnyAuthority("USER", "ADMIN")
+
                         .anyRequest().authenticated()
                 )
 
@@ -73,12 +86,11 @@ public class SecurityConfig {
 
                 // ✅ OAuth2 로그인 설정 (네이버용)
                 .oauth2Login(oauth -> oauth
-                        .loginPage("/login/login.html")
+                        //.loginPage("/login/login.html")
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                         //.defaultSuccessUrl("/", true)
                         //.defaultSuccessUrl("/notice/notice.html", true)
-                        .defaultSuccessUrl("/home/home.html", true)
                         .failureUrl("/accessDenied") // 추가 권장
                 )
 

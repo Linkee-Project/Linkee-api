@@ -10,7 +10,7 @@ public interface InquiryCommandService {
     void createInquiry(Long userId,CreateInquiryRequestDto createInquiryRequestDto);
 
     //UPDATE
-     void updateInquiryAnswer(CustomUser customUser,UpdateInquiryAnswerRequestDto request);
+    void updateInquiryAnswer(CustomUser adminUser, Long inquiryId, UpdateInquiryAnswerRequestDto request);
 
 
 }
