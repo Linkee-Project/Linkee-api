@@ -50,4 +50,16 @@
     </select>
 
 
+    <select id="selectAlarmBoxByUserId" resultType="com.linkee.linkeeapi.alarm.query.dto.response.AlarmBoxResponse">
+        SELECT
+            alarm_box_id,
+            alarm_box_content,
+            is_checked,
+            created_at,
+            user_id
+        FROM tb_alarm_box
+        WHERE user_id = #{userId}
+    </select>
+
+
 </mapper>
