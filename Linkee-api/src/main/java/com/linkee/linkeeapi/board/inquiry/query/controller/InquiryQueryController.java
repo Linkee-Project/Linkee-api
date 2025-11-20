@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/inquiry")
+@RequestMapping("/api/v1/board/inquiries")
 @Tag(name = "문의", description = "문의 및 답변 관리 API")
 public class InquiryQueryController {
     private final UserRepository userRepository;

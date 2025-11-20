@@ -9,6 +9,5 @@ import lombok.*;
 @Builder
 public class UpdateReportActionRequestDto {
     private Long reportId;
-    private Long adminId;
     private String reportAction;
 }

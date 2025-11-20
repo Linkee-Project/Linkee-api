@@ -58,38 +58,38 @@ public class InquiryCommandServiceImpl implements InquiryCommandService {
 
     //Update -답변등록
     @Override
-    @Transactional(readOnly = false)
-    public void updateInquiryAnswer(CustomUser customUser, UpdateInquiryAnswerRequestDto request) {
+    @Transactional
+    public void updateInquiryAnswer(CustomUser adminUser, Long inquiryId, UpdateInquiryAnswerRequestDto request) {
 
-        if (request.getInquiryId() == null) {
-            throw new BusinessException(ErrorCode.INVALID_INQUIRY_ID);
-        }
+        User admin = validateAdmin(adminUser.getUserId());
+        Inquiry inquiry = validateInquiryAvailable(inquiryId);
 
-        //관리자 조회
-        User adminUser = userFinder.getById(customUser.getUserId()); // 없는 경우 INVALID_ADMIN_ID로 처리
-        if (adminUser.getUserRole() != Role.ADMIN) {
+        inquiry.setAnswerContent(request.getAnswerContent());
+        inquiry.setAnswerStatus(Status.Y);
+        inquiry.setAdmin(admin);
+        inquiry.setUpdatedAt(LocalDateTime.now());
+
+        eventPublisher.publishEvent(new InquiryAnsweredEvent(this, inquiry));
+    }
+
+    /** 관리자 권한 체크 */
+    private User validateAdmin(Long adminId) {
+        User admin = userFinder.getById(adminId);
+        if (admin.getUserRole() != Role.ADMIN) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
+        return admin;
+    }
 
-        //문의 조회
-        Inquiry inquiry = inquiryRepository.findById(request.getInquiryId())
+    /** 문의 존재 여부 및 답변 가능 여부 체크 */
+    private Inquiry validateInquiryAvailable(Long inquiryId) {
+        Inquiry inquiry = inquiryRepository.findById(inquiryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INQUIRY_NOT_FOUND));
 
-        // 이미 답변된 문의인지 확인
         if (inquiry.getAnswerStatus() == Status.Y) {
             throw new BusinessException(ErrorCode.ALREADY_ANSWERED);
         }
 
-        //답변 등록
-        //mapper 사용 x (mapper로 들어갈게 answerContent 뿐임)
-        inquiry.setAnswerContent(request.getAnswerContent());
-        inquiry.setAnswerStatus(Status.Y);
-        inquiry.setAdmin(adminUser);
-        inquiry.setUpdatedAt(LocalDateTime.now());
-
-        inquiryRepository.save(inquiry);
-
-        // 이벤트 발생 추가 (알림)
-        eventPublisher.publishEvent(new InquiryAnsweredEvent(this, inquiry));
+        return inquiry;
     }
 }

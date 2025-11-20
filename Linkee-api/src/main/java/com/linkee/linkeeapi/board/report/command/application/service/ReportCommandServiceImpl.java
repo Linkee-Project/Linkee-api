@@ -24,9 +24,9 @@ public class ReportCommandServiceImpl implements ReportCommandService {
 
     //신고 등록
     @Override
-    public void createReport(CreateReportRequestDto request) {
+    public void createReport(Long reporterId, CreateReportRequestDto request) {
         // 신고자 및 피신고자 조회
-        User reporter = userFinder.getById(request.getReporterId());
+        User reporter = userFinder.getById(reporterId);
         User reported = userFinder.getById(request.getReportedId());
 
         // Report 엔티티 생성 (Builder 사용)
@@ -46,9 +46,10 @@ public class ReportCommandServiceImpl implements ReportCommandService {
 
     // 신고 처리 입력
     @Override
-    public void updateReportAnswer(UpdateReportActionRequestDto request) {
+    @Transactional
+    public void updateReportAction(Long adminId, UpdateReportActionRequestDto request) {
         // 관리자 조회
-        User adminUser = userFinder.getById(request.getAdminId());
+        User adminUser = userFinder.getById(adminId);
 
         // 권한 확인
         if (adminUser.getUserRole() != Role.ADMIN) { throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS); }

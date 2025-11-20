@@ -15,6 +15,7 @@
         WHERE cm.user_id = #{userId}
           AND cr.chat_room_type = 'CHAT'
           AND cr.room_status = 'Y'
+          AND cm.left_at IS NULL
         ORDER BY cr.created_at DESC
             LIMIT #{size} OFFSET #{offset}
     </select>
@@ -24,6 +25,7 @@
         FROM tb_chat_room cr
                  JOIN tb_chat_member cm ON cr.chat_room_id = cm.chat_room_id
         WHERE cm.user_id = #{userId}
+          AND cm.left_at IS NULL
           AND cr.chat_room_type = 'CHAT'
           AND cr.room_status = 'Y'
     </select>

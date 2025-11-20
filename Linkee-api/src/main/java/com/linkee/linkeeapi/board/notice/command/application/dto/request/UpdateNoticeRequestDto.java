@@ -10,8 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateNoticeRequestDto {
-    private Long noticeId;
-    private Long adminId;
     private String noticeTitle;
     private String noticeContent;
 }
