@@ -26,9 +26,9 @@ public class ReportQueryServiceImpl implements ReportQueryService {
 
     //신고 목록 조회
     //페이징, 관리자(전체조회)/일반유저(자기 신고만 조회), (시간순, reportStatus, reportType)정렬방식도 추가
-    public List<ReportListResponseDto> getReportList (ReadReportListRequestDto request) {
+    public List<ReportListResponseDto> getReportList (Long userId, ReadReportListRequestDto request) {
 
-        User user = userFinder.getById(request.getUserId());  // DB에서 user 조회
+        User user = userFinder.getById(userId);  // DB에서 user 조회
         boolean isAdmin = false;
         if(user.getUserRole() == Role.ADMIN){
              isAdmin = true;
@@ -41,7 +41,7 @@ public class ReportQueryServiceImpl implements ReportQueryService {
         if (isAdmin) {
             return reportMapper.findAllReports(offset, size);
         } else {
-            return reportMapper.findReportsByUser(request.getUserId(), offset, size);
+            return reportMapper.findReportsByUser(userId, offset, size);
         }
 
     }

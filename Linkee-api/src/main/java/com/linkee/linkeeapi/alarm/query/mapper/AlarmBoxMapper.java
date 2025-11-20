@@ -14,4 +14,6 @@ public interface AlarmBoxMapper {
     int countAlarmBox(AlarmBoxSearchRequest requestMapper);
 
     AlarmBoxResponse selectAlarmBoxByBoxId(Long alarmBoxId);
+
+    List<AlarmBoxResponse> selectAlarmBoxByUserId(long userId);
 }

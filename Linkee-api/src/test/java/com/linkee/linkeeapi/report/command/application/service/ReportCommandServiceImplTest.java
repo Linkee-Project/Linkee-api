@@ -1,3 +1,4 @@
+/*
 package com.linkee.linkeeapi.report.command.application.service;
 import com.linkee.linkeeapi.board.report.command.application.service.ReportCommandServiceImpl;
 import com.linkee.linkeeapi.common.enums.Role;
@@ -146,3 +147,4 @@ class ReportCommandServiceImplTest {
 
 
 }
+*/

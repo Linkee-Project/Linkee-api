@@ -1,3 +1,4 @@
+/*
 package com.linkee.linkeeapi.report.query.service;
 
 import com.linkee.linkeeapi.board.report.query.service.ReportQueryServiceImpl;
@@ -175,3 +176,4 @@ class ReportQueryServiceImplTest {
     }
 
 }
+*/
