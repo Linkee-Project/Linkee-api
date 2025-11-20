@@ -35,6 +35,7 @@ public class RelationQueryController {
     ) {
         Long userId = customUser.getUserId();
         request.setUserId(userId);
+        request.setRelationStatus("A");
         return relationQueryService.selectRelationsByUser(request);
     }
 }
