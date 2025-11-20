@@ -11,7 +11,7 @@ public interface NoticeCommandService {
     void createNotice(CustomUser customUser, CreateNoticeRequestDto request);
 
     //UPDATE
-    void updateNotice(CustomUser customUser,UpdateNoticeRequestDto request);
+    void updateNotice(CustomUser customUser,Long noticeId, UpdateNoticeRequestDto request);
 
     //DELETE
     void deleteNotice(CustomUser customUser, Long noticeId);
