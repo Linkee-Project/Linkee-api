@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,6 +52,16 @@ public class AlarmBoxQueryServiceImpl implements AlarmBoxQueryService {
         AlarmBoxResponse alarmBox = alarmBoxMapper.selectAlarmBoxByBoxId(alarmBoxId);
 
         return ResponseEntity.ok(alarmBox);
+    }
+
+    // 로그인 유저의 자기 알람 조회
+    @Override
+    public ResponseEntity<List<AlarmBoxResponse>> selectAlarmBoxByUserId(Long userId) {
+        List<AlarmBoxResponse> alarmBoxes = alarmBoxMapper.selectAlarmBoxByUserId(userId);
+        if (alarmBoxes == null) {
+            alarmBoxes = new ArrayList<>(); // 빈 리스트로 초기화
+        }
+        return ResponseEntity.ok(alarmBoxes);
     }
 
 

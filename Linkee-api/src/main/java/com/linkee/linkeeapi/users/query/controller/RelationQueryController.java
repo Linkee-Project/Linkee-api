@@ -1,12 +1,14 @@
 package com.linkee.linkeeapi.users.query.controller;
 
 
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.common.model.PageResponse;
 import com.linkee.linkeeapi.users.query.dto.request.RelationSearchRequest;
 import com.linkee.linkeeapi.users.query.dto.response.RelationResponse;
 import com.linkee.linkeeapi.users.query.service.RelationQueryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
