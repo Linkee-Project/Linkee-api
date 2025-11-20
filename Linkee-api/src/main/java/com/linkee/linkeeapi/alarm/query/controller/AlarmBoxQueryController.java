@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/alarm_boxes")
+@RequestMapping("/api/v1/alarm/boxes")
 @Tag(name = "알림", description = "알림 템플릿 및 발송 관리 API")
 public class AlarmBoxQueryController {
 

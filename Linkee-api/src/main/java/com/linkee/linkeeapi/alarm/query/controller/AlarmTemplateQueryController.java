@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ap1/v1/alarm_templates")
+@RequestMapping("/ap1/v1/alarm/templates")
 @Tag(name = "알림", description = "알림 템플릿 및 발송 관리 API")
 public class AlarmTemplateQueryController {
 

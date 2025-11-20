@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ap1/v1/alarm_templates")
+@RequestMapping("/ap1/v1")
 @Tag(name = "알림", description = "알림 템플릿 및 발송 관리 API")
 public class AlarmTemplateCommandController {
 
     private final AlarmTemplateCommandService service;
 
     // create
-    @PostMapping
+    @PostMapping("/admin/alarm/templates")
     public ResponseEntity<String> createAlarmTemplate(@RequestBody String content){
         AlarmTemplateCreateRequest request = new AlarmTemplateCreateRequest(content);
         service.createAlarmTemplate(request);
@@ -28,7 +28,7 @@ public class AlarmTemplateCommandController {
 
     // update
     @Transactional
-    @PatchMapping("/modify/{templateId}")
+    @PatchMapping("/admin/alarm/templates/modify/{templateId}")
     public ResponseEntity<String> modifyAlarmTemplate(@PathVariable long templateId , @RequestBody AlarmTemplateCreateRequest request ){
 
         service.modifyAlarmTemplateByAlarmTemplateId(templateId,request);
