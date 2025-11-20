@@ -10,6 +10,9 @@ import com.linkee.linkeeapi.chat.command.application.service.chat_service.ChatRo
 import com.linkee.linkeeapi.chat.command.application.service.chat_service.ChatRoomInOutService;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMessageMongoRepository;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomRepository;
+import com.linkee.linkeeapi.chat.query.dto.request.ChatRoomListRequestDto;
+import com.linkee.linkeeapi.chat.query.dto.request.GameRoomListRequestDto;
+import com.linkee.linkeeapi.chat.query.service.ChatRoomQueryService;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
@@ -33,6 +36,57 @@ public class ChatRestController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ChatRoomInOutService chatRoomInOutService;
     private final ChatRoomCreateService chatRoomCreateService;
+
+    //유한세가 추가함
+    //내 채팅방 조회
+    private final ChatRoomQueryService chatRoomQueryService;
+    @GetMapping("/chat/my")
+    public ResponseEntity<?> getMyChatRooms(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+        String pureToken = token.replace("Bearer ", "").trim();
+
+        if (!jwtTokenProvider.validateToken(pureToken)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        String userEmail = jwtTokenProvider.getUsername(pureToken);
+
+
+        Long userId = userRepository.findByUserEmail(userEmail)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID))
+                .getUserId();
+
+        ChatRoomListRequestDto request = new ChatRoomListRequestDto(userId, page, size);
+
+        return ResponseEntity.ok(chatRoomQueryService.getMyChatRoomList(request));
+    }
+
+    //유한세가 추가함
+    // 전체 게임방 목록 조회
+    @GetMapping("/game")
+    public ResponseEntity<?> getGameRooms(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
+    ) {
+        String pureToken = token.replace("Bearer ", "").trim();
+
+        if (!jwtTokenProvider.validateToken(pureToken)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        GameRoomListRequestDto request = new GameRoomListRequestDto(page, size);
+
+        // PageResponse<GameRoomListResponseDto> 그대로 반환
+        return ResponseEntity.ok(
+                chatRoomQueryService.getGameRoomList(request)
+        );
+    }
+
+
 
     // 전체 방 조회
     @GetMapping
