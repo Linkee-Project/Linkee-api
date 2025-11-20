@@ -10,7 +10,7 @@ public interface ReportQueryService {
 
 
     //Read
-    List<ReportListResponseDto> getReportList(ReadReportListRequestDto request);
+    List<ReportListResponseDto> getReportList(Long userId, ReadReportListRequestDto request);
 
     ReportDetailResponseDto getReportDetail(Long reportId, Long userId);
 
