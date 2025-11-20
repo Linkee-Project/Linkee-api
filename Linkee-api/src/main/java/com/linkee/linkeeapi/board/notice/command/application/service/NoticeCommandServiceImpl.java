@@ -46,8 +46,8 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
     // ✅ 공지사항 수정 (관리자만)
     @Override
     @Transactional
-    public void updateNotice(CustomUser customUser, UpdateNoticeRequestDto request) {
-        Notice notice = noticeRepository.findById(request.getNoticeId())
+    public void updateNotice(CustomUser customUser,Long noticeId, UpdateNoticeRequestDto request) {
+        Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOTICE_NOT_FOUND));
 
         User adminUser = userFinder.getById(customUser.getUserId());

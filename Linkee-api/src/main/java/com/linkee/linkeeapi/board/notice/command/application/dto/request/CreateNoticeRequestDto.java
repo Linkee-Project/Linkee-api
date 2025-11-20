@@ -11,5 +11,4 @@ import lombok.*;
 public class CreateNoticeRequestDto {
     @NotBlank String noticeTitle;
     @NotBlank String noticeContent;
-    @NotBlank Long adminId; //작성자 ID
 }

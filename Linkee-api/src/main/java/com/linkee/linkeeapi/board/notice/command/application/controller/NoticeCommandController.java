@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/notice")
+@RequestMapping("/api/v1/admin/board/notices")
 @Tag(name = "공지", description = "공지사항 관리 API")
 public class NoticeCommandController {
 
@@ -23,23 +23,22 @@ public class NoticeCommandController {
     //공지사항 등록(관리자 전용)
     //admin아니면 오류 던지기
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping
+    @PostMapping("/new")
     public ResponseEntity<String> createNotice(@AuthenticationPrincipal CustomUser customUser,
                                                @RequestBody CreateNoticeRequestDto request) {
         noticeService.createNotice(customUser, request);
-        return ResponseEntity.ok("공지사항 생성 완료 (관리자 ID: " + customUser.getUserId() + ")");
+        return ResponseEntity.ok("공지사항 생성 완료");
     }
 
     //공지사항 수정 (관리자 전용)
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping("/{noticeId}")
+    @PutMapping("/{noticeId}/edit")
     public ResponseEntity<Void> updateNotice(
             @AuthenticationPrincipal CustomUser customUser,
             @PathVariable Long noticeId,
             @RequestBody UpdateNoticeRequestDto request) {
 
-        request.setNoticeId(noticeId);
-        noticeService.updateNotice(customUser, request);
+        noticeService.updateNotice(customUser, noticeId, request);
         return ResponseEntity.ok().build();
     }
 
