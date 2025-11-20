@@ -20,8 +20,4 @@ public class CommentQueryServiceImpl implements CommentQueryService {
         return mapper.findAllByQuestionIdWithUser(questionId, Status.N);
     }
 
-    @Override
-    public List<CommentListResponseDto> listChildren(Long parentId) {
-        return mapper.findChildCommentsByParentId(parentId, Status.N);
-    }
 }

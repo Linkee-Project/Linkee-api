@@ -17,15 +17,10 @@ public class CommentQueryController {
 
     private final CommentQueryService service;
 
-    /** 문제별 전체 댓글 조회 (부모+자식 포함) */
+    /*문제별 전체 댓글 조회 (부모+자식 포함) */
     @GetMapping("/questions/{questionId}")
     public ResponseEntity<List<CommentListResponseDto>> listByQuestion(@PathVariable Long questionId) {
         return ResponseEntity.ok(service.listAllForQuestion(questionId));
     }
 
-    /** 특정 부모 댓글의 대댓글 조회 */
-    @GetMapping("/parents/{parentId}/children")
-    public ResponseEntity<List<CommentListResponseDto>> listChildren(@PathVariable Long parentId) {
-        return ResponseEntity.ok(service.listChildren(parentId));
-    }
 }
