@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class CreateCommentRequestDto {
-    private Long userId;
 
     //null이면 루트 댓글(부모)
     private Long parentCommentId;

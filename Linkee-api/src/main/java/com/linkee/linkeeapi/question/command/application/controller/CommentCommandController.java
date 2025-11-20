@@ -1,5 +1,6 @@
 package com.linkee.linkeeapi.question.command.application.controller;
 
+import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.question.command.application.dto.request.CreateCommentRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.request.UpdateCommentRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.response.CreateCommentResponseDto;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,9 +27,9 @@ public class CommentCommandController {
     @PostMapping
     public ResponseEntity<CreateCommentResponseDto> create(
             @PathVariable Long questionId,
-            @RequestParam Long userId,
+            @AuthenticationPrincipal CustomUser user,
             @Valid @RequestBody CreateCommentRequestDto request) {
-
+        Long userId = user.getUserId();
         CreateCommentResponseDto response = commentCommandService.createComment(questionId, userId, request);
         return ResponseEntity.ok(response);
     }
@@ -36,9 +38,10 @@ public class CommentCommandController {
     public ResponseEntity<UpdateCommentResponseDto> update(
             @PathVariable Long questionId,
             @PathVariable Long commentId,
-            @RequestParam Long userId,
+            @AuthenticationPrincipal CustomUser user,
             @Valid @RequestBody UpdateCommentRequestDto request
     ) {
+        Long userId = user.getUserId();
         UpdateCommentResponseDto response =
                 commentCommandService.updateComment(questionId, commentId, userId, request);
         return ResponseEntity.ok(response);
@@ -49,10 +52,12 @@ public class CommentCommandController {
     public ResponseEntity<String> delete(
             @PathVariable Long questionId,
             @PathVariable Long commentId,
-            @RequestParam Long userId
+            @AuthenticationPrincipal CustomUser user
     ) {
+        Long userId = user.getUserId();
         commentCommandService.deleteComment(questionId, commentId, userId);
         return ResponseEntity.ok("댓글 삭제 완료");
     }
+
 
 }
