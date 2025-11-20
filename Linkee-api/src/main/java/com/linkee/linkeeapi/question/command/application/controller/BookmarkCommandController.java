@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/bookmarks")
+@RequestMapping("/api/v1/question/bookmarks")
 @RequiredArgsConstructor
 @Tag(name = "회원", description = "회원가입, 로그인, 계정, 프로필 관련 API")
 public class BookmarkCommandController {

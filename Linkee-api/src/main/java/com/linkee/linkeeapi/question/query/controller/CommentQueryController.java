@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/comments")
+@RequestMapping("/api/v1/question/comments")
 @Tag(name = "문제", description = "문제 게시판 및 댓글 관리 API")
 public class CommentQueryController {
 
