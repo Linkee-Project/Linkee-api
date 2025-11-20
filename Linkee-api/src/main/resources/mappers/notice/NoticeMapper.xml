@@ -28,7 +28,9 @@
     <select id="countAll" resultType="int">
         SELECT COUNT(*)
         FROM tb_notice
+        WHERE is_deleted = 'N'
     </select>
+
 
     <!-- 상세조회 -->
     <resultMap id="NoticeDetailResponseMap" type="com.linkee.linkeeapi.board.notice.query.dto.response.NoticeDetailResponseDto">
@@ -51,9 +53,8 @@
         FROM tb_notice n
                  LEFT JOIN tb_user u ON n.admin_id = u.user_id
         WHERE n.notice_id = #{noticeId}
+          AND n.is_deleted = 'N'
     </select>
-
-
 
 
     <!-- 조회수 증가 -->
@@ -61,6 +62,8 @@
         UPDATE tb_notice
         SET notice_views = notice_views + 1
         WHERE notice_id = #{noticeId}
+          AND is_deleted = 'N'
     </update>
+
 
 </mapper>
