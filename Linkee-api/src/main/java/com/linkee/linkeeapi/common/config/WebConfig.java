@@ -17,15 +17,15 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                // Vue dev 서버 출처
-                .allowedOrigins("http://localhost:5173")
-                // 필요한 메서드만 열어도 되지만, 여기서는 기본 CRUD 모두 허용
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(false)
-                .maxAge(3600);
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                // Vue dev 서버 출처
+//                .allowedOrigins("http://localhost:5173")
+//                // 필요한 메서드만 열어도 되지만, 여기서는 기본 CRUD 모두 허용
+//                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//                .allowedHeaders("*")
+//                .allowCredentials(false)
+//                .maxAge(3600);
+//    }
 }
