@@ -10,13 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/relations")
+@RequestMapping("/api/v1/users/relations")
 @Tag(name = "커뮤니케이션", description = "친구 및 채팅 기능 관련 API")
 public class RelationQueryController {
 
@@ -29,14 +28,14 @@ public class RelationQueryController {
     }
 
     // 내 id 기준
-    @GetMapping("/my/{userId}")
+    @GetMapping("/my")
     public PageResponse<RelationResponse> getMyRelations(
-            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUser customUser,
             RelationSearchRequest request
     ) {
-
+        Long userId = customUser.getUserId();
         request.setUserId(userId);
+        request.setRelationStatus("A");
         return relationQueryService.selectRelationsByUser(request);
     }
-
 }
