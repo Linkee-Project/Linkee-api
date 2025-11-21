@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -102,20 +104,22 @@ public class SecurityConfig {
 
         return http.build();
     }
-    //퀴즈방 웹소켓 테스트시 필요 설정
-    // ✅ CORS 설정(127.0.0.1:5500, localhost:* 모두 허용 + Authorization 헤더 허용)
+    // 퀴즈방 웹소켓 테스트시 필요 설정
+    // ✅ CORS 설정(127.0.0.1:5500, localhost:* ,http://localhost:5173(VueJS) 모두 허용 + Authorization 헤더 허용)
     @Bean
-    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-        var c = new org.springframework.web.cors.CorsConfiguration();
+    public CorsConfigurationSource corsConfigurationSource() {
+        var c = new CorsConfiguration();
         // VSCode Live Server / 로컬 프론트들
         c.setAllowedOriginPatterns(java.util.List.of(
                 "http://localhost:*",
-                "http://127.0.0.1:*"
+                "http://127.0.0.1:*",
+                "http://localhost:5173"
         ));
         c.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         c.setAllowedHeaders(java.util.List.of("Authorization","Content-Type","X-Requested-With"));
         c.setExposedHeaders(java.util.List.of("Authorization")); // 필요시
         c.setAllowCredentials(true);
+        c.setMaxAge(3600L);
 
         var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", c);

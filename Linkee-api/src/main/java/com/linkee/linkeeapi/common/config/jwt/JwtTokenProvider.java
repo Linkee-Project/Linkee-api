@@ -33,23 +33,26 @@ public class JwtTokenProvider {
         this.refreshTokenValidity = refreshTokenValidity;
     }
 
+    // AccessToken
     public String createAccessToken(String userEmail, String role) {
-        System.out.println("✅ [DEBUG] createAccessToken() 전달받은 role: " + role);
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(userEmail)
                 .claim("role", role)
+                .claim("type", "access") // 🔹 추가
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + accessTokenValidity))
                 .signWith(key)
                 .compact();
     }
 
-    public String createRefreshToken(String userEmail,String role) {
+    // RefreshToken
+    public String createRefreshToken(String userEmail, String role) {
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(userEmail)
-                .claim("role",role)
+                .claim("role", role)
+                .claim("type", "refresh") // 🔹 추가
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + refreshTokenValidity))
                 .signWith(key)
@@ -64,6 +67,23 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
+            
+        } catch (JwtException e) {
+            return null;
+        }
+    }
+
+
+
+
+    public String getTokenType(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("type", String.class);
         } catch (JwtException e) {
             return null;
         }
