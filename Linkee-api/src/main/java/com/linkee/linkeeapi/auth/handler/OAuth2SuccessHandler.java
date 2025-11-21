@@ -46,6 +46,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         authRedisRepository.save(email, refreshToken);
 
         // ✅ 로그인 성공 후 프론트로 리다이렉트
+        //프론트(2567 포트 등)로 redirect 하고 싶다면 successHandler redirect URL만 변경하면 됨:
+        /*
+        * String redirectUrl = "http://localhost:5173/oauth/callback?token=" + accessToken;
+          response.sendRedirect(redirectUrl);
+        * */
         String redirectUrl = "http://localhost:8080/?token=" + accessToken + "&email=" + email;
 
         response.sendRedirect(redirectUrl);
