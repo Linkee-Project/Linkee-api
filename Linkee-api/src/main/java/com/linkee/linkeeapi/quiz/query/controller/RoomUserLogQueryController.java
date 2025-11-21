@@ -19,7 +19,7 @@ import java.util.List;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1/quiz/rooms")
 @Tag(name = "퀴즈", description = "퀴즈방 생성, 입장, 진행 관련 API")
 public class RoomUserLogQueryController {
 
@@ -36,7 +36,7 @@ public class RoomUserLogQueryController {
      * - 사용 시점:
      *   참가자가 게임이 끝난 후 자신의 풀이 결과를 확인할 때 사용한다.
      */
-    @GetMapping("/room_user_log/my_history")
+    @GetMapping("/user-log/history")
     public ApiResponse<List<RoomUserLogResponse>> getMyAnswerHistory(@RequestParam Long roomMemberId) {
         List<RoomUserLogResponse> response = roomUserLogQueryService.getRoomUserLogs(roomMemberId);
         return ApiResponse.success(response);
@@ -53,7 +53,7 @@ public class RoomUserLogQueryController {
      * - 사용 시점:
      *   게임 종료 후 결과 페이지를 보여줄 때 사용한다.
      */
-    @GetMapping("/quiz_rooms/{roomId}/result")
+    @GetMapping("/{roomId}/result")
     public ApiResponse<List<RoomUserRankResponse>> getQuizResult(@PathVariable Long roomId) {
         List<RoomUserRankResponse> response =  roomUserLogQueryService.getQuizResult(roomId);
         return ApiResponse.success(response);
