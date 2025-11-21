@@ -9,4 +9,6 @@ public interface CommentCommandService {
     CreateCommentResponseDto createComment(Long questionId, Long userId, CreateCommentRequestDto req);
     UpdateCommentResponseDto updateComment(Long questionId, Long commentId, Long userId, UpdateCommentRequestDto request);
     void deleteComment(Long questionId, Long commentId, Long userId);
+
+    void adminDeleteComment(Long questionId, Long commentId, Long adminId);
 }

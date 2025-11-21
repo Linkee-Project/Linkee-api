@@ -44,23 +44,4 @@
         c.comment_id ASC
     </select>
 
-    <!-- 특정 부모의 자식(대댓글)만 조회 -->
-    <select id="findChildCommentsByParentId" resultMap="CommentListMap">
-        SELECT
-        c.comment_id,
-        c.parent_comment_id,
-        c.question_id,
-        c.user_id,
-        u.user_nickname,
-        c.comment_content,
-        c.is_deleted,
-        c.created_at,
-        0 AS child_count
-        FROM tb_comment c
-        LEFT JOIN tb_user u ON u.user_id = c.user_id
-        WHERE c.parent_comment_id = #{parentCommentId}
-        AND c.is_deleted = #{status}
-        ORDER BY c.comment_id ASC
-    </select>
-
 </mapper>

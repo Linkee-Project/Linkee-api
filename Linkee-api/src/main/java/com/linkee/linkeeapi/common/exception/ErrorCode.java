@@ -40,6 +40,7 @@ public enum ErrorCode {
     INVALID_ANSWER_INDEX("5004", "정답 인덱스가 옵션과 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     QUESTION_ALREADY_QUALIFIED("5005","이미 검증된 문제입니다.",HttpStatus.CONFLICT),
     INSUFFICIENT_QUESTIONS("5006","퀴즈를 시작하기에 문제가 충분하지 않습니다.",HttpStatus.BAD_REQUEST),
+    QUESTION_ALREADY_DELETED("5007","이미 삭제된 문제입니다.",HttpStatus.CONFLICT),
 
     //카데고리 관련 오류(6000번대 사용)
     CATEGORY_NOT_FOUND("6000","해당 카테고리를 찾을 수 없습니다.",HttpStatus.NOT_FOUND),

@@ -9,6 +9,5 @@ public interface CommentQueryService {
 
     List<CommentListResponseDto> listAllForQuestion(Long questionId);
 
-    List<CommentListResponseDto> listChildren(Long parentId);
 
 }

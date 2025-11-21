@@ -1,5 +1,6 @@
 package com.linkee.linkeeapi.question.command.application.service;
 
+import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.question.command.application.dto.request.CreateCommentRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.request.UpdateCommentRequestDto;
 import com.linkee.linkeeapi.question.command.application.dto.response.CreateCommentResponseDto;
@@ -92,7 +93,7 @@ public class CommentCommandServiceImpl implements CommentCommandService {
         // 1) 이 댓글이 해당 질문에 속한 댓글인지 확인
         // 예: 질문1의 댓글을 질문2에서 삭제하려는 것 방지
         if (!target.getQuestion().getQuestionId().equals(questionId)) {
-            throw new BusinessException(ErrorCode.INVALID_REQUEST,"해당 질문의 댓글이 아닙니다.");
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,"해당 문제게시글의 댓글이 아닙니다.");
         }
 
         // 2) 댓글 작성자 본인만 삭제 가능
@@ -107,13 +108,45 @@ public class CommentCommandServiceImpl implements CommentCommandService {
             return;
         }
 
+        deleteRules(target);
+
+        }
+    /* 관리자 - 댓글 삭제*/
+    @Override
+    public void adminDeleteComment(Long questionId, Long commentId, Long adminId) {
+        // 1) 관리자 조회
+        User admin = userFinder.getById(adminId);
+        // 2) ROLE 검사
+        if (admin.getUserRole() != Role.ADMIN) {
+            throw new BusinessException(ErrorCode.FORBIDDEN_QUESTION_ACCESS);
+        }
+        // 3) 댓글 조회
+        Comment target = jpaCommentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
+
+        // 4) 해당 질문의 댓글인지 검증
+        if (!target.getQuestion().getQuestionId().equals(questionId)) {
+            throw new BusinessException(ErrorCode.INVALID_REQUEST, "해당 문제게시글의 댓글이 아닙니다.");
+        }
+
+        // 5) 이미 삭제된 상태면 종료
+        if (target.getIsDeleted() == Status.Y) {
+            return;
+        }
+
+        // 6) 공통 삭제 규칙 적용
+        deleteRules(target);
+
+
+    }
+    /* 유저, 관리자 공통 삭제 규칙 메서드 */
+    private void deleteRules(Comment target) {
 
         // [4. 댓글 구조 파악]
         boolean isRoot = (target.getParent() == null);  // 원댓글인지
         boolean hasChildren = target.getChildren() != null && !target.getChildren().isEmpty();  // 대댓글이 달려있는지
 
-
-        // [5 .삭제 로직 실행]
+        // [5. 삭제 로직 실행]
         if (isRoot) {
             // case A: 원댓글 삭제
             if (hasChildren) {
@@ -128,8 +161,7 @@ public class CommentCommandServiceImpl implements CommentCommandService {
             Comment parent = target.getParent();  // 부모 댓글 찾기
 
             // B-1) 대댓글 삭제 (항상 완전 삭제)
-            // orphanRemoval=true -> 부모의 children 컬렉션에서 제거만 하면 JPA가 자동으로 DB에서 삭제
-            parent.removeChild(target);
+            parent.removeChild(target);   // orphanRemoval=true 라면 DB에서도 제거됨
 
             // B-2) 부모 댓글 정리 체크
             // 조건: 부모가 이미 "삭제된 댓글입니다" 상태 AND 남은 대댓글이 하나도 없음
@@ -140,4 +172,4 @@ public class CommentCommandServiceImpl implements CommentCommandService {
         }
     }
 
-}
+    }

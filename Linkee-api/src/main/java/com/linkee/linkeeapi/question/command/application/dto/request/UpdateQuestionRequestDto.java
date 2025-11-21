@@ -16,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateQuestionRequestDto {
     @NotNull
-    private Long userId;
     private String questionTitle;
     private String questionQuestion;
     private Integer questionAnswer;
