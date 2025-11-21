@@ -33,7 +33,7 @@ public class OauthController {
         return "user";
     }
 
-    @GetMapping("/login")
+    @GetMapping("/api/v1/oauth/login")
     public String getLoginPage(Model model) {
         Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
 

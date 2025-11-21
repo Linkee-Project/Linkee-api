@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/**", "/error", "/accessDenied").permitAll()
                         .requestMatchers("/signup/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/oauth/**").permitAll()
 
                         // swagger 공개
                         .requestMatchers(
