@@ -20,6 +20,6 @@ public class InquiryResponseDto {
     private Status answerStatus;
     private Long userId;
     private Long adminId;
-    private String userEmail;
+    private String userNickname;
 
 }
