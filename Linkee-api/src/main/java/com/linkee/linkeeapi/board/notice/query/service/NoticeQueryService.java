@@ -9,7 +9,7 @@ public interface NoticeQueryService {
 
 
     //READ
-    PageResponse<NoticeListResponseDto> getNoticeList(int page, Integer size);
+    PageResponse<NoticeListResponseDto> getNoticeList(String active, int page, Integer size);
 
     NoticeDetailResponseDto getNoticeDetail(Long noticeId);
 

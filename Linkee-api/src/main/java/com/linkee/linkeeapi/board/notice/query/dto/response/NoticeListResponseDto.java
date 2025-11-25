@@ -14,8 +14,11 @@ public class NoticeListResponseDto {
 
     private Long noticeId;
     private String noticeTitle;
-    //private String noticeContent;
     private Long noticeViews;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private String adminName;
+    private String isActive;
+
 
 }

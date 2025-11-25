@@ -57,6 +57,12 @@ public class NoticeCommandServiceImpl implements NoticeCommandService {
         }
 
         notice.updateNotice(request.getNoticeTitle(), request.getNoticeContent());
+
+        if (request.getIsActive() != null) {
+            notice.updateActive(request.getIsActive());
+        }
+        noticeRepository.save(notice);
+
     }
 
     // ✅ 공지사항 삭제 (관리자만)

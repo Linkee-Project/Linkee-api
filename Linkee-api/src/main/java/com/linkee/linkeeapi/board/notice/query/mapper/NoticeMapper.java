@@ -17,4 +17,9 @@ public interface NoticeMapper {
     int increaseViewCount(@Param("noticeId") Long noticeId);
 
     NoticeDetailResponseDto findById(@Param("noticeId") Long noticeId);
+    List<NoticeListResponseDto> findByActive(@Param("active") String active,
+                                             @Param("offset") int offset,
+                                             @Param("pageSize") int pageSize);
+    int countByActive(@Param("active") String active);
+
 }
