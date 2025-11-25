@@ -19,6 +19,10 @@ public class ReportDetailResponseDto {
     private Long reporterId;
     private Long reportedId;
 
+    private String reporterNickname;
+    private String reportedNickname;
+    private String adminNickname;
+
     private String reportAction;
     private Status reportStatus;
 
