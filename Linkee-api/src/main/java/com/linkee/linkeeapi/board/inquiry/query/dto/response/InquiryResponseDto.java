@@ -21,5 +21,6 @@ public class InquiryResponseDto {
     private Long userId;
     private Long adminId;
     private String userNickname;
+    private String adminNickname;
 
 }

@@ -80,6 +80,11 @@ public class InquiryQueryServiceImpl implements InquiryQueryService {
                 .userId(inquiry.getUser().getUserId())
                 .adminId(inquiry.getAdmin() != null ? inquiry.getAdmin().getUserId() : null)
                 .userNickname(inquiry.getUser().getUserNickname())
+                .adminNickname(
+                        inquiry.getAdmin() != null
+                                ? inquiry.getAdmin().getUserNickname()
+                                : null
+                )
                 .build();
     }
 
