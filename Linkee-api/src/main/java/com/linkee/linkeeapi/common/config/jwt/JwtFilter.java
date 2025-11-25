@@ -21,7 +21,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -33,37 +32,40 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
 
-            // 토큰 유효성 검증
-            if (jwtTokenProvider.validateToken(token)) {
-                // 토큰 타입 확인 (accessToken만 SecurityContext 세팅)
-                String tokenType = jwtTokenProvider.getTokenType(token);
-                if ("access".equals(tokenType)) {
+            // 유효하지 않은 AccessToken → 즉시 401 반환
+            if (!jwtTokenProvider.validateToken(token)) {
+                System.out.println("⚠️ [DEBUG] JwtFilter: 토큰 유효하지 않음 → 401 반환");
 
-                    String username = jwtTokenProvider.getUsername(token);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return; // 🔥 더 이상 진행하지 않음
+            }
 
-                    // DB에서 CustomUserDetails 로드
-                    CustomUser customUser = (CustomUser) customUserDetailsService.loadUserByUsername(username);
+            // -------- 토큰이 유효한 경우에만 아래 진행 --------
+            String tokenType = jwtTokenProvider.getTokenType(token);
+            if ("access".equals(tokenType)) {
 
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    customUser,
-                                    null,
-                                    customUser.getAuthorities()
-                            );
+                String username = jwtTokenProvider.getUsername(token);
 
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                CustomUser customUser =
+                        (CustomUser) customUserDetailsService.loadUserByUsername(username);
 
-                    System.out.println("✅ [DEBUG] JwtFilter 인증 성공, user: " + username);
-                } else {
-                    // refreshToken이면 인증 안 함
-                    System.out.println("⚠️ [DEBUG] JwtFilter: refreshToken으로 접근 시도, 인증 불가");
-                }
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                customUser,
+                                null,
+                                customUser.getAuthorities()
+                        );
+
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                System.out.println("✅ [DEBUG] JwtFilter 인증 성공, user: " + username);
             } else {
-                System.out.println("⚠️ [DEBUG] JwtFilter: 토큰 유효하지 않음");
+                System.out.println("⚠️ [DEBUG] JwtFilter: refreshToken 접근 시도");
             }
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

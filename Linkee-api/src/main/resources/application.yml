@@ -59,7 +59,7 @@ spring:
 
 jwt:
   secret: rA/4r9fDxHVDBouXITwYw4nxNgmgshmA72NnxVpassNqZ038QCTpWznTn1UbekAwApd6oOA3/wixuu+4i0g2ww==
-  access-expiration: 600000      # 10분
+  access-expiration: 900000   # 15분
   refresh-expiration: 3600000    # 1시간
 
 auth:

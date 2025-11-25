@@ -118,7 +118,7 @@ public class SecurityConfig {
         ));
         c.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         c.setAllowedHeaders(java.util.List.of("Authorization","Content-Type","X-Requested-With"));
-        c.setExposedHeaders(java.util.List.of("Authorization")); // 필요시
+        c.setExposedHeaders(java.util.List.of("Authorization", "Set-Cookie"));
         c.setAllowCredentials(true);
         c.setMaxAge(3600L);
 

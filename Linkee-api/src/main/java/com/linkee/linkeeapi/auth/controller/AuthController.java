@@ -221,7 +221,7 @@ public class AuthController {
     ) {
         if (refreshToken == null || refreshToken.isBlank()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure("AUTH-001", "Refresh token is missing"));
+                    .body(ApiResponse.failure("AUTH-001", "토큰이 없어요"));
         }
 
         // refreshToken에서 userEmail 추출 (토큰 페이로드에 이메일 넣어뒀다는 전제)
@@ -231,7 +231,7 @@ public class AuthController {
         if (!redisRefreshTokenService.isValid(userEmail, refreshToken)
                 || !jwtTokenProvider.validateToken(refreshToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure("AUTH-002", "Invalid refresh token"));
+                    .body(ApiResponse.failure("AUTH-002", "토큰이 안맞아요"));
         }
 
         // 새 토큰 생성
