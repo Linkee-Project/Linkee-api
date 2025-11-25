@@ -1,9 +1,9 @@
 package com.linkee.linkeeapi.users.command.application.controller;
 
 import com.linkee.linkeeapi.common.model.CustomUser;
-import com.linkee.linkeeapi.users.command.application.dto.request.DeleteUserRequest;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserNickNameRequest;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleRequest;
+import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserStatusRequest;
 import com.linkee.linkeeapi.users.command.application.service.UserCommandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +29,7 @@ public class UserCommandController {
         return ResponseEntity.ok("닉네임 변경 성공");
     }
 
+// ... imports
     @PatchMapping("/admin/users/user/role")
     public ResponseEntity<?> updateUserRole(
             @RequestBody UpdateUserRoleRequest request
@@ -37,15 +38,15 @@ public class UserCommandController {
         return ResponseEntity.ok("권한 변경 완료");
     }
 
-    @DeleteMapping("/admin/users/user/delete")
-    public ResponseEntity<?> deleteUserAdmin(@RequestBody DeleteUserRequest request
-    ) {
-        userCommandService.deleteUser(request.getUserId());
-        return ResponseEntity.ok("유저 삭제 성공(비활성화)");
+    @PatchMapping("/admin/users/user/status")
+    public ResponseEntity<?> updateUserStatus(@RequestBody UpdateUserStatusRequest request) {
+        userCommandService.updateUserStatus(request);
+        return ResponseEntity.ok("사용자 상태 변경 완료");
     }
 
     @DeleteMapping("/users/user/delete")
     public ResponseEntity<String> deleteUserById(@AuthenticationPrincipal CustomUser customUser){
+// ...
 
         userCommandService.deleteUser(customUser.getUserId());
 
