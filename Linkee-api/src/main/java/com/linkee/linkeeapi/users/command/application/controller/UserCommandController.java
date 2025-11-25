@@ -29,7 +29,7 @@ public class UserCommandController {
         return ResponseEntity.ok("닉네임 변경 성공");
     }
 
-    @PatchMapping("/admin/users/role")
+    @PatchMapping("/admin/users/user/role")
     public ResponseEntity<?> updateUserRole(
             @RequestBody UpdateUserRoleRequest request
     ) {
@@ -37,7 +37,7 @@ public class UserCommandController {
         return ResponseEntity.ok("권한 변경 완료");
     }
 
-    @DeleteMapping("/admin/users/delete")
+    @DeleteMapping("/admin/users/user/delete")
     public ResponseEntity<?> deleteUserAdmin(@RequestBody DeleteUserRequest request
     ) {
         userCommandService.deleteUser(request.getUserId());
