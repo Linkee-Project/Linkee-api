@@ -53,6 +53,13 @@ public class Notice extends BaseTimeEntity {
             this.noticeContent = content;
         }
     }
+    public void updateActive(String activeFlag) {
+        if (activeFlag.equals("Y")) {
+            this.isDeleted = Status.N;
+        } else {
+            this.isDeleted = Status.Y;
+        }
+    }
 
     public void deleteNotice() {
         this.isDeleted = Status.Y;

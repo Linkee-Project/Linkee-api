@@ -20,11 +20,12 @@ public class NoticeQueryController {
     //공지사항 목록 조회
     @GetMapping
     public ResponseEntity<PageResponse<NoticeListResponseDto>> getNoticeList(
+            @RequestParam(required = false) String active,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size
     ){
         PageResponse<NoticeListResponseDto> response =
-                noticeQueryService.getNoticeList(page, size);
+                noticeQueryService.getNoticeList(active,page, size);
 
         return ResponseEntity.ok(response);
     }
