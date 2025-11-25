@@ -7,17 +7,23 @@
 
     <!-- 방 목록 조회 (페이징 적용) -->
     <select id="findAllRoomsPaginated" resultType="com.linkee.linkeeapi.quiz.query.dto.response.QuizRoomListResponseDto">
-        SELECT quiz_room_id AS quizRoomId,
-               room_title AS roomTitle,
-               category_id AS categoryId,
-               room_status AS roomStatus,
-               joined_count AS joinedCount,
-               room_capacity AS roomCapacity
-        FROM tb_quiz_room
-        WHERE is_private = 'N'
-          AND room_status = 'W'
-        ORDER BY quiz_room_id DESC
-        LIMIT #{limit} OFFSET #{offset}
+        SELECT
+            qr.quiz_room_id AS quizRoomId,
+            qr.room_title   AS roomTitle,
+            qr.joined_count AS joinedCount,
+            qr.room_capacity AS roomCapacity,
+            qr.room_status  AS roomStatus,
+            qr.is_private   AS isPrivate,
+
+            c.category_id   AS categoryId,
+            c.category_name AS categoryName
+
+        FROM tb_quiz_room qr
+                 JOIN tb_category c ON qr.category_id = c.category_id
+        WHERE qr.is_private = 'N'
+          AND qr.room_status = 'W'
+        ORDER BY qr.quiz_room_id DESC
+            LIMIT #{limit} OFFSET #{offset}
     </select>
     <!-- 방 상세 조회 -->
     <select id="findRoomHeader"
