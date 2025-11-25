@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GameRoomListResponseDto {
-
+    private Long chatRoomId;
     private String chatRoomName;
     private Status isPrivate;
     private Long ownerId;

@@ -98,4 +98,12 @@ public class User extends BaseTimeEntity {
     public void changePassword(String encode) {
         this.userPassword = encode;
     }
+
+    public void changeUserRole(String newRole) {
+        if(newRole.equals("USER")){
+            this.userRole = Role.USER;
+        } else if (newRole.equals("ADMIN")) {
+            this.userRole = Role.ADMIN;
+        }
+    }
 }

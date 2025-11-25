@@ -29,7 +29,7 @@ public class ChatRoomQueryServiceImpl implements ChatRoomQueryService{
         List<ChatRoomListResponseDto> chatRooms = chatRoomMapper.findMyChatRooms(request.getUserId(),  offset, size);
         int total = chatRoomMapper.countMyChatRooms(request.getUserId());
 
-        return PageResponse.from(chatRooms, offset, size, total);
+        return PageResponse.from(chatRooms, page, size, total);
     }
 
     //전체 게임방 목록 조회
@@ -42,6 +42,6 @@ public class ChatRoomQueryServiceImpl implements ChatRoomQueryService{
         List<GameRoomListResponseDto> gameRooms = chatRoomMapper.findAllGameRooms(offset,size);
         int total = chatRoomMapper.countAllGameRooms();
 
-        return PageResponse.from(gameRooms, offset, size, total);
+        return PageResponse.from(gameRooms, page, size, total);
     }
 }

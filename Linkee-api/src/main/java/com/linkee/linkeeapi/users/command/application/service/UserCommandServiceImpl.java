@@ -3,6 +3,7 @@ package com.linkee.linkeeapi.users.command.application.service;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleRequest;
 import com.linkee.linkeeapi.users.command.infrastructure.repository.RelationRepository;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
@@ -43,6 +44,14 @@ public class UserCommandServiceImpl implements UserCommandService{
         // relation에 receiver 나 requester 정보있으면 삭제
         relationRepository.deleteByReceiverOrRequester(user,user);
 
+    }
+
+    @Override
+    public void updateUserRole(UpdateUserRoleRequest request) {
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
+
+        user.changeUserRole(request.getNewRole());
     }
 
 

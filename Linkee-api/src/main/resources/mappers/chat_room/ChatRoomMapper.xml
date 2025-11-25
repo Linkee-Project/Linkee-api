@@ -7,6 +7,7 @@
     <!-- 자신의 채팅방 목록 -->
     <select id="findMyChatRooms" resultType="com.linkee.linkeeapi.chat.query.dto.response.ChatRoomListResponseDto">
         SELECT
+            cr.chat_room_id AS chatRoomId,
             cr.chat_room_name As chatRoomName,
             cr.room_owner AS ownerId,
             cr.joined_count As joinedCount
@@ -33,6 +34,7 @@
     <!-- 전체 게임방 목록 -->
     <select id="findAllGameRooms" resultType="com.linkee.linkeeapi.chat.query.dto.response.GameRoomListResponseDto">
         SELECT
+            cr.chat_room_id AS chatRoomId,
             cr.chat_room_name AS chatRoomName,
             cr.is_private AS isPrivate,
             cr.room_owner AS ownerId,

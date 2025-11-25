@@ -36,6 +36,6 @@ public class PageResponse<T> { //<ResponseDTO> 어떤 ResponseDto든 넣어서 �
 
     public static <T> PageResponse<T> from(List<T> content, int page, int size, int totalElements) {
         int totalPages = (int) Math.ceil((double) totalElements / size);
-        return new PageResponse<>(content, page, size, totalElements, totalPages);
+        return new PageResponse<>(content, page, totalPages, totalElements, size);
     }
 }
