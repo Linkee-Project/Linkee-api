@@ -4,6 +4,8 @@ import com.linkee.linkeeapi.chat.command.application.dto.request.CreateQnaReques
 import com.linkee.linkeeapi.chat.command.application.service.services.QnaCommandService;
 import com.linkee.linkeeapi.chat.query.dto.response.QnaResponseDto;
 import com.linkee.linkeeapi.chat.query.service.QnaQueryService;
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -17,48 +19,56 @@ import java.util.Map;
 public class ChatRoomQnAService {
 
     private final QnaCommandService qnaCommandService;
-    private final QnaQueryService  qnaQueryService;
+    private final QnaQueryService qnaQueryService;
+    private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-
     /**
-     * 게임방 내에서 멤버가 문제와 답을 등록
+     * 문제 등록 (QNA)
      */
+    @Transactional
     public void registerQuestion(CreateQnaRequestDto requestDto, Long userId) {
-        qnaCommandService.createQna(requestDto, userId); // ✅ userId 전달 추가
+
+        // 문제 생성
+        qnaCommandService.createQna(requestDto, userId);
+
+        // 🔥 출제자 닉네임 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user"));
 
         messagingTemplate.convertAndSend(
                 "/topic/chatroom/" + requestDto.getRoomId(),
                 Map.of(
                         "type", "QNA_QUESTION",
-                        "question", requestDto.getQuestion()
+                        "question", requestDto.getQuestion(),
+                        "senderNickname", user.getUserNickname()
                 )
         );
     }
 
-
     /**
-     * 답 공개
+     * 정답 공개
      */
+    @Transactional
     public QnaResponseDto revealAnswer(Long roomId) {
+
         List<QnaResponseDto> qnaList = qnaQueryService.getQnaListByRoomId(roomId);
         if (qnaList.isEmpty()) {
             throw new IllegalArgumentException("등록된 문제가 없습니다.");
         }
 
-        QnaResponseDto latestQna = qnaList.get(qnaList.size() - 1);
+        QnaResponseDto latest = qnaList.get(qnaList.size() - 1);
 
-        // 🔹 채팅방 구독자들에게 답 공개
         messagingTemplate.convertAndSend(
                 "/topic/chatroom/" + roomId,
                 Map.of(
                         "type", "QNA_ANSWER",
-                        "question", latestQna.getQnaQuestion(),
-                        "answer", latestQna.getQnaAnswer()
+                        "question", latest.getQnaQuestion(),
+                        "answer", latest.getQnaAnswer()
                 )
         );
 
-        return latestQna;
+        return latest;
     }
 
     /**
@@ -66,8 +76,7 @@ public class ChatRoomQnAService {
      */
     @Transactional(readOnly = true)
     public QnaResponseDto getCurrentQna(Long roomId) {
-        List<QnaResponseDto> qnaList = qnaQueryService.getQnaListByRoomId(roomId);
-        return qnaList.isEmpty() ? null : qnaList.get(qnaList.size() - 1);
+        List<QnaResponseDto> list = qnaQueryService.getQnaListByRoomId(roomId);
+        return list.isEmpty() ? null : list.get(list.size() - 1);
     }
-
 }

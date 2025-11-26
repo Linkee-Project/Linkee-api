@@ -21,6 +21,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+
+        return path.startsWith("/ws-stomp")
+                || path.startsWith("/ws-chat")
+                || path.startsWith("/sockjs")
+                || path.startsWith("/ws");  // WebSocket 관련 모두 제외
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -34,16 +45,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
             // 유효하지 않은 AccessToken → 즉시 401 반환
             if (!jwtTokenProvider.validateToken(token)) {
-                System.out.println("⚠️ [DEBUG] JwtFilter: 토큰 유효하지 않음 → 401 반환");
-
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return; // 🔥 더 이상 진행하지 않음
+                return;
             }
 
-            // -------- 토큰이 유효한 경우에만 아래 진행 --------
             String tokenType = jwtTokenProvider.getTokenType(token);
-            if ("access".equals(tokenType)) {
 
+            if ("access".equals(tokenType)) {
                 String username = jwtTokenProvider.getUsername(token);
 
                 CustomUser customUser =
@@ -58,14 +66,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                System.out.println("✅ [DEBUG] JwtFilter 인증 성공, user: " + username);
-            } else {
-                System.out.println("⚠️ [DEBUG] JwtFilter: refreshToken 접근 시도");
             }
         }
 
         filterChain.doFilter(request, response);
     }
-
 }
+

@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/v1/chat/rooms")
 @RequiredArgsConstructor
@@ -36,10 +35,11 @@ public class ChatRestController {
     private final JwtTokenProvider jwtTokenProvider;
     private final ChatRoomInOutService chatRoomInOutService;
     private final ChatRoomCreateService chatRoomCreateService;
-
-    //유한세가 추가함
-    //내 채팅방 조회
     private final ChatRoomQueryService chatRoomQueryService;
+
+    /* ------------------------------------------------------
+     * 내 채팅방 목록
+     * ------------------------------------------------------ */
     @GetMapping("/chat/my")
     public ResponseEntity<?> getMyChatRooms(
             @RequestHeader("Authorization") String token,
@@ -54,7 +54,6 @@ public class ChatRestController {
 
         String userEmail = jwtTokenProvider.getUsername(pureToken);
 
-
         Long userId = userRepository.findByUserEmail(userEmail)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID))
                 .getUserId();
@@ -64,8 +63,9 @@ public class ChatRestController {
         return ResponseEntity.ok(chatRoomQueryService.getMyChatRoomList(request));
     }
 
-    //유한세가 추가함
-    // 전체 게임방 목록 조회
+    /* ------------------------------------------------------
+     * 게임방 목록 조회
+     * ------------------------------------------------------ */
     @GetMapping("/game")
     public ResponseEntity<?> getGameRooms(
             @RequestHeader("Authorization") String token,
@@ -80,15 +80,12 @@ public class ChatRestController {
 
         GameRoomListRequestDto request = new GameRoomListRequestDto(page, size);
 
-        // PageResponse<GameRoomListResponseDto> 그대로 반환
-        return ResponseEntity.ok(
-                chatRoomQueryService.getGameRoomList(request)
-        );
+        return ResponseEntity.ok(chatRoomQueryService.getGameRoomList(request));
     }
 
-
-
-    // 전체 방 조회
+    /* ------------------------------------------------------
+     * 전체 방 조회
+     * ------------------------------------------------------ */
     @GetMapping
     public ResponseEntity<?> getAllRooms(@RequestHeader("Authorization") String token) {
         if (!jwtTokenProvider.validateToken(token)) {
@@ -108,38 +105,47 @@ public class ChatRestController {
         return ResponseEntity.ok(rooms);
     }
 
-    // 특정 방 메시지 조회
+    /* ------------------------------------------------------
+     * 특정 방 메시지 조회
+     * ------------------------------------------------------ */
     @GetMapping("/{roomId}/messages")
-    public ResponseEntity<?> getRoomMessages(@PathVariable Long roomId,
-                                             @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getRoomMessages(
+            @PathVariable Long roomId,
+            @RequestHeader("Authorization") String token) {
+
         String pureToken = token.replace("Bearer ", "").trim();
 
         if (!jwtTokenProvider.validateToken(pureToken)) {
-            throw new BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND ,"유효하지 않은 토큰입니다");
+            throw new BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND, "유효하지 않은 토큰입니다");
         }
-        return ResponseEntity.ok(chatMessageMongoRepository.findAllByRoomIdOrderBySentAtAsc(roomId));
+
+        return ResponseEntity.ok(
+                chatMessageMongoRepository.findAllByRoomIdOrderBySentAtAsc(roomId)
+        );
     }
 
-    // 새 방 만들기
+    /* ------------------------------------------------------
+     * 방 생성
+     * ------------------------------------------------------ */
     @PostMapping
     public ResponseEntity<?> createRoom(
             @RequestHeader("Authorization") String token,
             @RequestBody ChatRoomCreateRequestDto request) {
 
-        String pureToken = token.replace("Bearer ", "");
-        String userEmail = jwtTokenProvider.getUsername(pureToken); // ✅ 이메일 꺼내기
+        String pureToken = token.replace("Bearer ", "").trim();
+        String userEmail = jwtTokenProvider.getUsername(pureToken);
 
         User user = userRepository.findByUserEmail(userEmail)
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
 
-        request.setRoomOwnerId(user.getUserId()); // ✅ DB에서 찾은 ID 주입
+        request.setRoomOwnerId(user.getUserId());
 
         return chatRoomCreateService.createRoom(request);
     }
 
-
-
-    // 방입장 ( 비밀번호있을시 검증 완료됐을때만 구독 )
+    /* ------------------------------------------------------
+     * 방 입장
+     * ------------------------------------------------------ */
     @PostMapping("/{roomId}/join")
     public ResponseEntity<?> joinRoom(
             @PathVariable Long roomId,
@@ -147,22 +153,37 @@ public class ChatRestController {
             @RequestBody(required = false) ChatRoomJoinRequestDto request) {
 
         Integer roomCode = request != null ? request.getRoomCode() : null;
+        String pureToken = token.replace("Bearer ", "").trim();
+
+        if (!jwtTokenProvider.validateToken(pureToken)) {
+            throw new BusinessException(ErrorCode.REPORT_NO_ACCESS, "유효하지 않은 토큰입니다.");
+        }
+
+        String email = jwtTokenProvider.getUsername(pureToken);
+        User user = userRepository.findByUserEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
 
         try {
-            var joinMessage = chatRoomInOutService.joinRoom(roomId, token, roomCode);
-            return ResponseEntity.ok(
-                    new ChatRoomJoinResponseDto(roomId, joinMessage.getMessage())
-            );
+            chatRoomInOutService.joinRoom(roomId, user, roomCode);
+
+            // 🔥 입장 메시지는 STOMP로 날아감, REST는 성공 응답만
+            return ResponseEntity.ok(new ChatRoomJoinResponseDto(
+                    roomId,
+                    "입장 성공"
+            ));
+
         } catch (RuntimeException ex) {
             return ResponseEntity.status(401).body(ex.getMessage());
         }
     }
 
-    // 방멤버조회
+    /* ------------------------------------------------------
+     * 방 멤버 조회
+     * ------------------------------------------------------ */
     @GetMapping("/{roomId}/members")
     public ResponseEntity<List<ChatMemberDto>> getRoomMembers(@PathVariable Long roomId) {
-        List<ChatMemberDto> members = chatRoomInOutService.getRoomMembers(roomId);
-        return ResponseEntity.ok(members);
+        return ResponseEntity.ok(
+                chatRoomInOutService.getRoomMembers(roomId)
+        );
     }
-
 }

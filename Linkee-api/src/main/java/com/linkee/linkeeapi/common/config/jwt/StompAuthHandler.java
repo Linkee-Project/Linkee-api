@@ -63,6 +63,8 @@ public class StompAuthHandler implements ChannelInterceptor {
 
     // JWT 토큰 추출
     private String resolveToken(StompHeaderAccessor accessor) {
+
+        // 1) STOMP Header 우선 확인 (Authorization)
         List<String> headers = accessor.getNativeHeader("Authorization");
         if (headers != null && !headers.isEmpty()) {
             String token = headers.get(0);
@@ -70,8 +72,35 @@ public class StompAuthHandler implements ChannelInterceptor {
             return token;
         }
 
+        // 2) 보조 헤더
         List<String> alt = accessor.getNativeHeader("X-ACCESS-TOKEN");
         if (alt != null && !alt.isEmpty()) return alt.get(0);
+
+        // 3) ★ URL QueryString에서 token 읽기
+        if (accessor.getNativeHeader("simpConnectMessage") != null) {
+            Message<?> raw = (Message<?>) accessor.getHeader("simpConnectMessage");
+            StompHeaderAccessor rawAccessor = StompHeaderAccessor.wrap(raw);
+
+            String simpSessionId = rawAccessor.getSessionId();
+        }
+
+        // 4) ★ sessionAttributes 에 저장된 handshake 정보에서 token 읽기 (핵심)
+        if (accessor.getSessionAttributes() != null) {
+            Object tokenObj = accessor.getSessionAttributes().get("token");
+            if (tokenObj != null) return tokenObj.toString();
+        }
+
+        // 5) ★ WebSocket handshake URL에서 직접 꺼내기
+        Object uriObj = accessor.getHeader("simpConnectAckMessage");
+        if (uriObj instanceof Message) {
+            Message<?> m = (Message<?>) uriObj;
+            StompHeaderAccessor ha = StompHeaderAccessor.wrap(m);
+
+            String url = ha.getFirstNativeHeader("nativeUrl");
+            if (url != null && url.contains("token=")) {
+                return url.substring(url.indexOf("token=") + 6);
+            }
+        }
 
         return null;
     }
