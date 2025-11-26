@@ -16,6 +16,8 @@ public class NoticeDetailResponseDto {
     private String noticeContent;
     private Long noticeViews;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String adminName;
+    private String isActive;
 
 }

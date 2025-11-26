@@ -1,15 +1,19 @@
 package com.linkee.linkeeapi.users.command.application.controller;
 
 import com.linkee.linkeeapi.common.model.CustomUser;
-import com.linkee.linkeeapi.users.command.application.dto.request.DeleteUserRequest;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserNickNameRequest;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleRequest;
+import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserStatusRequest;
+import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleAndStatusRequest;
+import com.linkee.linkeeapi.users.command.application.dto.request.ChangePasswordRequest; // Import ChangePasswordRequest
 import com.linkee.linkeeapi.users.command.application.service.UserCommandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid; // Import @Valid for DTO validation
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class UserCommandController {
         return ResponseEntity.ok("닉네임 변경 성공");
     }
 
+// ... imports
     @PatchMapping("/admin/users/user/role")
     public ResponseEntity<?> updateUserRole(
             @RequestBody UpdateUserRoleRequest request
@@ -37,15 +42,30 @@ public class UserCommandController {
         return ResponseEntity.ok("권한 변경 완료");
     }
 
-    @DeleteMapping("/admin/users/user/delete")
-    public ResponseEntity<?> deleteUserAdmin(@RequestBody DeleteUserRequest request
+    @PatchMapping("/admin/users/user/status")
+    public ResponseEntity<?> updateUserStatus(@RequestBody UpdateUserStatusRequest request) {
+        userCommandService.updateUserStatus(request);
+        return ResponseEntity.ok("사용자 상태 변경 완료");
+    }
+
+    @PatchMapping("/admin/users/user/role-status")
+    public ResponseEntity<?> updateUserRoleAndStatus(@RequestBody UpdateUserRoleAndStatusRequest request) {
+        userCommandService.updateUserRoleAndStatus(request);
+        return ResponseEntity.ok("사용자 권한 및 상태 변경 완료");
+    }
+
+    @PostMapping("/users/user/password/change") // New endpoint for changing password
+    public ResponseEntity<String> changePassword(
+            @AuthenticationPrincipal CustomUser customUser,
+            @Valid @RequestBody ChangePasswordRequest request
     ) {
-        userCommandService.deleteUser(request.getUserId());
-        return ResponseEntity.ok("유저 삭제 성공(비활성화)");
+        userCommandService.changePassword(customUser.getUserId(), request);
+        return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 
     @DeleteMapping("/users/user/delete")
     public ResponseEntity<String> deleteUserById(@AuthenticationPrincipal CustomUser customUser){
+// ...
 
         userCommandService.deleteUser(customUser.getUserId());
 

@@ -93,6 +93,46 @@
         </if>
     </select>
 
+    <!-- 현재 유저별 문제 조회 + 옵션(keyword) -->
+    <select id="findByCurrentUserWithKeyword" resultMap="QuestionListResponseMap">
+        SELECT
+        q.question_id,
+        q.question_title,
+        c.category_name,
+        u.user_nickname,
+        q.question_views,
+        q.created_at
+        FROM tb_question q
+        JOIN tb_category c ON q.category_id = c.category_id
+        JOIN tb_user u ON q.user_id = u.user_id
+        WHERE q.user_id = #{userId}
+        AND q.is_deleted = 'N'
+        <if test="keyword != null and keyword != ''">
+            AND (
+            q.question_title    LIKE CONCAT('%', #{keyword}, '%')
+            OR q.question_question LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY q.created_at DESC
+        <if test="limit != null and offset != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!-- 현재 유저별 문제 조회 + 옵션(keyword) 개수 -->
+    <select id="countByCurrentUserWithKeyword" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_question q
+        WHERE q.user_id = #{userId}
+        AND q.is_deleted = 'N'
+        <if test="keyword != null and keyword != ''">
+            AND (
+            q.question_title    LIKE CONCAT('%', #{keyword}, '%')
+            OR q.question_question LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+    </select>
+
     <!-- QuestionDetailResponseDto에 맞춘 매핑 -->
     <resultMap id="QuestionDetailResponseMap" type="com.linkee.linkeeapi.question.query.dto.response.QuestionDetailResponseDto">
         <result property="questionId" column="question_id"/>
@@ -104,6 +144,7 @@
         <result property="viewCount" column="question_views"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="userEmail" column="user_email"/>
     </resultMap>
 
 
@@ -117,6 +158,7 @@
         q.question_answer,
         c.category_name,
         u.user_nickname,
+        u.user_email,
         q.question_views,
         q.created_at,
         q.updated_at

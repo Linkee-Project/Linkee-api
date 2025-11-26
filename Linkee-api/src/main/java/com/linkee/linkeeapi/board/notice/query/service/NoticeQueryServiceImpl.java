@@ -29,14 +29,23 @@ public class NoticeQueryServiceImpl implements NoticeQueryService {
     //공지사항 목록 조회
     //조회수 구현 필요
     @Override
-    public PageResponse<NoticeListResponseDto> getNoticeList(int page, Integer size) {
+    public PageResponse<NoticeListResponseDto> getNoticeList(String active,int page, Integer size) {
         int pageSize = (size != null) ? size : 10;
         int offset = page * pageSize;
 
-        List<NoticeListResponseDto> notices = noticeMapper.findAll(offset, pageSize);
-        int total = noticeMapper.countAll();
+        List<NoticeListResponseDto> list;
+        int total;
 
-        return PageResponse.from(notices, page, pageSize, total);
+        if (active == null) {
+            // 전체 조회(관리자)
+            list = noticeMapper.findAll(offset, pageSize);
+            total = noticeMapper.countAll();
+        } else {
+            // 활성/비활성 필터 조회
+            list = noticeMapper.findByActive(active, offset, pageSize);
+            total = noticeMapper.countByActive(active);
+        }
+        return PageResponse.from(list, page, pageSize, total);
     }
 
     //공지사항 상세 조회
@@ -47,10 +56,7 @@ public class NoticeQueryServiceImpl implements NoticeQueryService {
         }
 
         //조회수 증가
-        int updated = noticeMapper.increaseViewCount(noticeId);
-        if (updated == 0) {
-            throw new BusinessException(ErrorCode.NOTICE_NOT_FOUND);
-        }
+        noticeMapper.increaseViewCount(noticeId);
 
         //Id로 검색해서 상세조회
         NoticeDetailResponseDto notice = noticeMapper.findById(noticeId);

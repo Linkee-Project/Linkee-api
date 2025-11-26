@@ -37,7 +37,7 @@ public class RoomMemberCommandController {
     }
     /*
      * 특정 룸 멤버의 준비 상태를 토글합니다. (Y -> N, N -> Y)
-     * @param roomMemberId 준비 상태를 변경할 룸 멤버의 ID
+            * @param roomMemberId 준비 상태를 변경할 룸 멤버의 ID
      * @return 성공 응답
      */
     @PatchMapping("/{roomMemberId}/ready")

@@ -12,4 +12,5 @@ import lombok.Setter;
 public class UpdateNoticeRequestDto {
     private String noticeTitle;
     private String noticeContent;
+    private String isActive;
 }

@@ -19,6 +19,7 @@ public class CommentListResponseDto {
     private String commentContent;
     private Status isDeleted;
     private LocalDateTime createdAt;
+    private String userEmail;
 
 
     private Integer childCount;       // 대댓글 수

@@ -30,12 +30,16 @@ public class ReportQueryController {
     public ResponseEntity<List<ReportListResponseDto>> getReportList(
             @AuthenticationPrincipal CustomUser customUser,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String status
     ) {
         Long userId = customUser.getUserId();
         ReadReportListRequestDto request = ReadReportListRequestDto.builder()
                 .page(page)
                 .size(size)
+                .type(type)
+                .status(status)
                 .build();
 
         List<ReportListResponseDto> reports = reportService.getReportList(userId, request);

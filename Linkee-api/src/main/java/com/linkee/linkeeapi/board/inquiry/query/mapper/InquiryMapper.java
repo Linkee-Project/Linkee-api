@@ -9,8 +9,11 @@ import java.util.List;
 @Mapper
 public interface InquiryMapper {
 
-    List<InquiryResponseDto> findAll(@Param("offset") int offset,
-                                     @Param("limit") int limit);
+    List<InquiryResponseDto> findAll(
+            @Param("answerStatus") String answerStatus,
+            @Param("offset") int offset,
+            @Param("limit") int limit
+    );
 
     List<InquiryResponseDto> findByUserId(@Param("userId") Long userId,
                                           @Param("offset") int offset,

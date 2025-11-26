@@ -14,6 +14,7 @@
         <result property="commentContent"  column="comment_content"/>
         <result property="isDeleted"       column="is_deleted"/>
         <result property="createdAt"       column="created_at"/>
+        <result property="userEmail"       column="user_email"/>
         <result property="childCount"      column="child_count"/>
     </resultMap>
 
@@ -25,6 +26,7 @@
         c.question_id,
         c.user_id,
         u.user_nickname,
+        u.user_email,
         c.comment_content,
         c.is_deleted,
         c.created_at,
