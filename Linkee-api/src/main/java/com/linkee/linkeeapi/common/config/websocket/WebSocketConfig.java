@@ -22,9 +22,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 프론트에서 ws-chat 또는 ws-stomp 어느 쪽이든 연결 가능하게 허용
-        registry.addEndpoint("/ws-chat", "/ws-stomp")
+        registry.addEndpoint("/ws-stomp")
                 .setAllowedOriginPatterns("*")
                 .addInterceptors(jwtHandshakeInterceptor);
+
 
     }
 

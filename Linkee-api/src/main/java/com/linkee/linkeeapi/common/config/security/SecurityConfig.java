@@ -2,6 +2,7 @@ package com.linkee.linkeeapi.common.config.security;
 
 import com.linkee.linkeeapi.auth.authService.CustomOAuth2UserService;
 import com.linkee.linkeeapi.auth.handler.OAuth2SuccessHandler;
+
 import com.linkee.linkeeapi.common.config.jwt.JwtFilter;
 import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,7 @@ public class SecurityConfig {
                                 "/quiz.html",
                                 "/ws-stomp/**",
                                 "/ws-chat/**",
+                                "/ws-stomp",
                                 "/chat/**",
                                 "/notice/**",
                                 "/ws/**",

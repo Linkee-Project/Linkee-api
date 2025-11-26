@@ -9,11 +9,8 @@ import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomReposito
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
-import com.linkee.linkeeapi.common.config.jwt.JwtTokenProvider;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
-import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,92 +23,69 @@ public class ChatRoomInOutService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMemberRepository chatMemberRepository;
-    private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final SimpMessagingTemplate messagingTemplate;
     private final ChatRoomBroadcastService broadcastService;
 
-    private User getUserFromToken(String token) {
-        if (token.startsWith("Bearer ")) token = token.substring(7);
-
-        if (!jwtTokenProvider.validateToken(token)) {
-            throw new BusinessException(ErrorCode.REPORT_NO_ACCESS, "로그인 정보 없음");
-        }
-
-        String email = jwtTokenProvider.getUsername(token);
-        return userRepository.findByUserEmail(email).orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
-    }
-
-
+    /* ------------------------------------------------------
+     *  방 입장
+     * ------------------------------------------------------ */
     @Transactional
-    public ChatMessageRequestDto joinRoom(Long roomId, String token, Integer inputRoomCode) {
-        User user = getUserFromToken(token);
+    public void joinRoom(Long roomId, User user, Integer inputRoomCode) {
+
         ChatRoom room = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("Room not found"));
 
-        // 비밀방 검증
+        // 비밀방 비밀번호 체크
         if (Status.Y.equals(room.getIsPrivate())) {
             if (room.getRoomCode() == null || !room.getRoomCode().equals(inputRoomCode)) {
-                // WebSocket 메시지 제거
-                // messagingTemplate.convertAndSend("/topic/chatroom/" + roomId, failMsg);
-
-                // 입장 금지
-                throw new RuntimeException("비밀번호가 틀렸습니다."); // REST API에서 401로 전달
+                throw new RuntimeException("비밀번호가 틀렸습니다.");
             }
         }
 
         boolean alreadyJoined = chatMemberRepository.existsByChatRoomAndUser(room, user);
+
         if (alreadyJoined) {
-            ChatMember cm = chatMemberRepository.findByChatRoomAndUser(room, user).orElseThrow();
+            ChatMember cm = chatMemberRepository.findByChatRoomAndUser(room, user)
+                    .orElseThrow();
             cm.setJoinedAt(LocalDateTime.now());
             cm.modifyIsRead();
         } else {
-            ChatMember newMember = ChatMember.builder().chatRoom(room).user(user).build();
-            chatMemberRepository.save(newMember);
+            chatMemberRepository.save(ChatMember.builder()
+                    .chatRoom(room)
+                    .user(user)
+                    .build());
+
             room.increaseJoinedCount();
             chatRoomRepository.save(room);
         }
 
+        // 🔥 실시간 참여자 리스트 갱신
         broadcastService.broadcastMemberList(roomId);
 
-
-
-        return ChatMessageRequestDto.builder()
-                .roomId(roomId)
-                .message(user.getUserNickname() + "님이 입장했습니다.")
-                .senderNickname("SYSTEM")
-                .sentAt(LocalDateTime.now())
-                .build();
+        // 🔥 실시간 입장 메시지 보내기
+        broadcastService.broadcastEnter(roomId, user.getUserNickname());
     }
 
+    /* ------------------------------------------------------
+     *  방 퇴장
+     * ------------------------------------------------------ */
     @Transactional
-    public ChatMessageRequestDto leaveRoom(Long roomId, String token) {
-        User user = getUserFromToken(token);
-        ChatRoom room = chatRoomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found"));
+    public void leaveRoom(Long roomId, User user) {
+
+        ChatRoom room = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new RuntimeException("Room not found"));
 
         boolean isOwner = room.getRoomOwner().getUserId().equals(user.getUserId());
 
-        System.out.println("[leaveRoom] user: " + user.getUserNickname() + ", isOwner: " + isOwner);
-        System.out.println("[leaveRoom] roomId: " + roomId + ", joinedCount: " + room.getJoinedCount());
-
-
-
         if (isOwner) {
-            System.out.println("[leaveRoom] 방장 퇴장 -> 방 삭제 시도");
-            // 방장 퇴장 → 방 + 모든 멤버 + Qna 안전 삭제
             chatRoomRepository.delete(room);
-            chatRoomRepository.flush(); // DB 반영 강제
-            System.out.println("[leaveRoom] 방 삭제 완료");
+            chatRoomRepository.flush();
         } else {
-            // 일반 멤버 퇴장
-            ChatMember member = chatMemberRepository.findByChatRoomAndUser(room, user)
+            ChatMember cm = chatMemberRepository.findByChatRoomAndUser(room, user)
                     .orElseThrow(() -> new RuntimeException("Member not found"));
-            System.out.println("[leaveRoom] 일반 멤버 퇴장 -> 멤버 삭제");
 
-            // Cascade + orphanRemoval로 Qna 자동 삭제
-            chatMemberRepository.delete(member);
-
+            chatMemberRepository.delete(cm);
             room.decreaseJoinedCount();
+
             if (room.getJoinedCount() == 0) {
                 chatRoomRepository.delete(room);
             } else {
@@ -119,21 +93,16 @@ public class ChatRoomInOutService {
             }
         }
 
+        // 🔥 실시간 참여자 리스트 갱신
         broadcastService.broadcastMemberList(roomId);
 
-
-
-        return ChatMessageRequestDto.builder()
-                .roomId(roomId)
-                .message(user.getUserNickname() + "님이 퇴장했습니다.")
-                .senderNickname("SYSTEM")
-                .sentAt(LocalDateTime.now())
-                .build();
+        // 🔥 실시간 퇴장 메시지
+        broadcastService.broadcastLeave(roomId, user.getUserNickname());
     }
 
-
-
-    // 입장 시 참여자 리스트 가져오기
+    /* ------------------------------------------------------
+     *  참여자 리스트 조회
+     * ------------------------------------------------------ */
     @Transactional(readOnly = true)
     public List<ChatMemberDto> getRoomMembers(Long roomId) {
         ChatRoom room = chatRoomRepository.findById(roomId)
@@ -145,11 +114,6 @@ public class ChatRoomInOutService {
                         cm.getUser().getUserId(),
                         cm.getUser().getUserNickname(),
                         cm.getJoinedAt()
-                ))
-                .toList();
+                )).toList();
     }
-
-
-
-
 }

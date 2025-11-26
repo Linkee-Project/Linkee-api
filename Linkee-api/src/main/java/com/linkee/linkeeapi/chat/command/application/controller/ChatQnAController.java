@@ -25,12 +25,13 @@ public class ChatQnAController {
             @RequestHeader("Authorization") String token,
             @RequestBody CreateQnaRequestDto requestDto) {
 
+
+        token = token.replace("Bearer ", "");
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
         // ✅ 토큰에서 이메일 추출
-        token = token.replace("Bearer ", "");
         String userEmail = jwtTokenProvider.getUsername(token);
 
         // ✅ 이메일로 userId 조회
@@ -51,6 +52,7 @@ public class ChatQnAController {
     public ResponseEntity<?> revealAnswer(
             @PathVariable Long roomId,
             @RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
 
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(401).body("Unauthorized");
@@ -65,6 +67,7 @@ public class ChatQnAController {
     public ResponseEntity<?> getCurrentQna(
             @PathVariable Long roomId,
             @RequestHeader("Authorization") String token) {
+        token = token.replace("Bearer ", "");
 
         if (!jwtTokenProvider.validateToken(token)) {
             return ResponseEntity.status(401).body("Unauthorized");

@@ -26,45 +26,36 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     @Override
-    public boolean beforeHandshake(
-            ServerHttpRequest request,
-            ServerHttpResponse response,
-            WebSocketHandler handler,
-            Map<String, Object> attributes
-    ) {
-        String token = extractToken(request);
+    public boolean beforeHandshake(ServerHttpRequest request,
+                                   ServerHttpResponse response,
+                                   WebSocketHandler handler,
+                                   Map<String, Object> attributes) {
 
+        String token = extractToken(request);
         if (token == null) return false;
 
         User user = jwtTokenProvider.validateTokenAndGetUser(token);
-
-        // WebSocket 세션에 저장
         attributes.put("user", user);
+        attributes.put("token", token);
 
         return true;
     }
 
 
     private String extractToken(ServerHttpRequest request) {
-        // 1) QueryString 전체에서 token= 값을 찾아내기
+
+        // 1) URL QueryString 에서 token 읽기 (브라우저용)
         String query = request.getURI().getQuery();
-        if (query != null) {
-            for (String param : query.split("&")) {
-                if (param.startsWith("token=")) {
-                    return param.substring("token=".length());
-                }
-            }
+        if (query != null && query.startsWith("token=")) {
+            return query.substring(6);
         }
 
-        // 2) Header 에서 Authorization 읽기 (WebSocket native)
+        // 2) Header 에서 Authorization 읽기 (서버-서버 연결용)
         HttpHeaders headers = request.getHeaders();
-        List<String> authHeader = headers.get("Authorization");
+        String authHeader = headers.getFirst("Authorization");
 
-        if (authHeader != null && !authHeader.isEmpty()) {
-            String bearer = authHeader.get(0);
-            if (bearer.startsWith("Bearer ")) {
-                return bearer.substring(7);
-            }
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
         }
 
         return null;
