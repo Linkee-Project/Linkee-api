@@ -75,6 +75,7 @@ public enum ErrorCode {
 
     //알림 관련 오류(12000번대 사용)
     ALARM_TEMPLATE_NOT_FOUND("12000", "알림 템플릿을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    DUPLICATE_ALARM_TEMPLATE_CODE("12001", "이미 존재하는 알림 템플릿 코드입니다.", HttpStatus.CONFLICT), // New error code
     CHAT_ROOM_NOT_FOUND("11111","방이존재하지 않습니다." ,HttpStatus.NOT_FOUND ),
     ROOM_IS_FULL("11112","방의 인원이 가득 찼습니다.", HttpStatus.BAD_REQUEST ),
 

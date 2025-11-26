@@ -9,6 +9,7 @@
         SELECT
         template_id AS templateId,
         template_content AS templateContent,
+        template_code AS templateCode,
         created_at AS createdAt,
         updated_at AS updatedAt
         FROM tb_alarm_template
@@ -35,6 +36,7 @@
         SELECT
         template_id AS templateId,
         template_content AS templateContent,
+        template_code AS templateCode,
         created_at AS createdAt,
         updated_at AS updatedAt
         FROM tb_alarm_template
@@ -45,6 +47,7 @@
         SELECT
             template_id AS templateId,
             template_content AS templateContent,
+            template_code AS templateCode,
             created_at AS createdAt,
             updated_at AS updatedAt
         FROM tb_alarm_template

@@ -8,4 +8,5 @@ public interface AlarmTemplateCommandService {
     void createAlarmTemplate(AlarmTemplateCreateRequest request);
     void modifyAlarmTemplateByAlarmTemplateId(Long templateId,AlarmTemplateCreateRequest request);
 
+    void deleteAlarmTemplate(long templateId);
 }
