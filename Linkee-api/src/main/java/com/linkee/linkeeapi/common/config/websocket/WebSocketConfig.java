@@ -2,6 +2,7 @@ package com.linkee.linkeeapi.common.config.websocket;
 
 
 import com.linkee.linkeeapi.common.config.jwt.StompAuthHandler;
+import com.nimbusds.jwt.JWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -16,13 +17,15 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final StompAuthHandler stompAuthHandler;
+    private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 프론트에서 ws-chat 또는 ws-stomp 어느 쪽이든 연결 가능하게 허용
         registry.addEndpoint("/ws-chat", "/ws-stomp")
                 .setAllowedOriginPatterns("*")
-                .withSockJS();
+                .addInterceptors(jwtHandshakeInterceptor);
+
     }
 
     @Override

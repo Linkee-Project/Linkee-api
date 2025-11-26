@@ -1,8 +1,13 @@
 package com.linkee.linkeeapi.common.config.jwt;
 
+import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,10 +26,13 @@ public class JwtTokenProvider {
     private final long accessTokenValidity;
     private final long refreshTokenValidity;
 
+    private final UserRepository userRepository;
+
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secretKeyBase64,
             @Value("${jwt.access-expiration}") long accessTokenValidity,
-            @Value("${jwt.refresh-expiration}") long refreshTokenValidity) {
+            @Value("${jwt.refresh-expiration}") long refreshTokenValidity, UserRepository userRepository) {
+        this.userRepository = userRepository;
 
         byte[] decodedKey = Base64.getDecoder().decode(secretKeyBase64);
         this.key = Keys.hmacShaKeyFor(decodedKey);
@@ -108,6 +116,25 @@ public class JwtTokenProvider {
             return true;
         } catch (JwtException e) {
             return false;
+        }
+    }
+
+
+    public User validateTokenAndGetUser(String token) {
+        try {
+            var claims = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String email = claims.getSubject();   // sub = email
+
+            return userRepository.findByUserEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid Token");
         }
     }
 

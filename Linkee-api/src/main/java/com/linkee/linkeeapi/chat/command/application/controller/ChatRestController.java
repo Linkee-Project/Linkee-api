@@ -112,8 +112,10 @@ public class ChatRestController {
     @GetMapping("/{roomId}/messages")
     public ResponseEntity<?> getRoomMessages(@PathVariable Long roomId,
                                              @RequestHeader("Authorization") String token) {
-        if (!jwtTokenProvider.validateToken(token)) {
-            throw new BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND);
+        String pureToken = token.replace("Bearer ", "").trim();
+
+        if (!jwtTokenProvider.validateToken(pureToken)) {
+            throw new BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND ,"유효하지 않은 토큰입니다");
         }
         return ResponseEntity.ok(chatMessageMongoRepository.findAllByRoomIdOrderBySentAtAsc(roomId));
     }
@@ -156,7 +158,7 @@ public class ChatRestController {
         }
     }
 
-
+    // 방멤버조회
     @GetMapping("/{roomId}/members")
     public ResponseEntity<List<ChatMemberDto>> getRoomMembers(@PathVariable Long roomId) {
         List<ChatMemberDto> members = chatRoomInOutService.getRoomMembers(roomId);
