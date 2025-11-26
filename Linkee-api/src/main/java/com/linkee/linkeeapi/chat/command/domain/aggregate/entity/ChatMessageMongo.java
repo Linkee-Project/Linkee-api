@@ -1,5 +1,6 @@
 package com.linkee.linkeeapi.chat.command.domain.aggregate.entity;
 
+import com.linkee.linkeeapi.common.enums.ChatMessageType;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -20,4 +21,5 @@ public class ChatMessageMongo {
     private String senderNickname;
     private String message;
     private LocalDateTime sentAt;
+    private ChatMessageType type;
 }

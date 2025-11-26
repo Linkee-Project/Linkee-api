@@ -4,6 +4,7 @@ import com.linkee.linkeeapi.chat.command.application.dto.request.ChatMessageRequ
 import com.linkee.linkeeapi.chat.command.application.service.chat_service.ChatRoomInOutService;
 import com.linkee.linkeeapi.chat.command.domain.aggregate.entity.ChatMessageMongo;
 import com.linkee.linkeeapi.chat.command.instructure.repository.ChatMessageMongoRepository;
+import com.linkee.linkeeapi.common.enums.ChatMessageType;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.Header;
@@ -34,6 +35,7 @@ public class ChatWebSocketController {
         dto.setSenderId(sender.getUserId());
         dto.setSenderNickname(sender.getUserNickname());
         dto.setSentAt(LocalDateTime.now());
+        dto.setType(ChatMessageType.MESSAGE);
 
         // Mongo 저장
         chatMessageMongoRepository.save(ChatMessageMongo.builder()
@@ -42,6 +44,7 @@ public class ChatWebSocketController {
                 .senderNickname(sender.getUserNickname())
                 .message(dto.getMessage())
                 .sentAt(dto.getSentAt())
+                .type(ChatMessageType.MESSAGE)
                 .build()
         );
 
