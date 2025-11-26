@@ -129,10 +129,6 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
         }
     }
 
-    /*
-     * 방장이 특정 룸 멤버를 강제로 내보낸 시간을 기록합니다. (강퇴)
-     * @param roomMemberId 강퇴할 룸 멤버의 ID
-     */
     @Transactional
     public void selfLeaveRoom(Long roomMemberId,Long userId) {
         leave(roomMemberId, false); // 자발적 나감
