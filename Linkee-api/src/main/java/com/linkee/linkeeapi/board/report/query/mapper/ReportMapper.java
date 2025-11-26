@@ -31,4 +31,8 @@ public interface ReportMapper {
             @Param("userId") Long userId
     );
 
+    //페이징 안한 전체데이터
+    List<ReportListResponseDto> findAllReportsWithoutPaging();
+    List<ReportListResponseDto> findReportsByUserWithoutPaging(Long userId);
+
 }

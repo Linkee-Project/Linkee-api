@@ -16,27 +16,32 @@
         <result property="answerContent" column="answer_content"/>
         <result property="userId" column="user_id"/>
         <result property="adminId" column="admin_id"/>
-        <result property="userEmail" column="user_email"/> <!-- ✅ 추가 -->
+        <result property="userNickname" column="userNickname"/>
     </resultMap>
 
     <!-- 관리자 전체 조회 -->
     <select id="findAll" resultMap="InquiryResponseMap">
         SELECT
-        i.inquiry_id,
-        i.inquiry_title,
-        i.inquiry_content,
-        i.created_at,
-        i.updated_at,
-        i.answer_status,
-        i.answer_content,
-        i.user_id,
-        i.admin_id,
-        u.user_email
+            i.inquiry_id,
+            i.inquiry_title,
+            i.inquiry_content,
+            i.created_at,
+            i.updated_at,
+            i.answer_status,
+            i.answer_content,
+            i.user_id,
+            i.admin_id,
+            u.user_nickname AS userNickname,
+            a.user_nickname AS adminNickname
         FROM tb_inquiry i
-        JOIN tb_user u ON i.user_id = u.user_id   <!-- ✅ 조인 추가 -->
+                 JOIN tb_user u ON i.user_id = u.user_id
+                 JOIN tb_user a ON i.admin_id = a.user_id
+        WHERE
+            (#{answerStatus} IS NULL OR answer_status = #{answerStatus})
         ORDER BY i.created_at DESC
-        LIMIT #{offset}, #{limit}
+            LIMIT #{offset}, #{limit}
     </select>
+
 
     <!-- 일반 유저 본인 문의 조회 -->
     <select id="findByUserId" resultMap="InquiryResponseMap">
@@ -50,7 +55,7 @@
         i.answer_content,
         i.user_id,
         i.admin_id,
-        u.user_email
+        u.user_nickname As userNickname
         FROM tb_inquiry i
         JOIN tb_user u ON i.user_id = u.user_id   <!-- ✅ 조인 추가 -->
         WHERE i.user_id = #{userId}

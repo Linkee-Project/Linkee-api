@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,11 +25,21 @@ public class InquiryQueryController {
     public ResponseEntity<PageResponse<InquiryResponseDto>> getInquiryList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String answerStatus,
             @AuthenticationPrincipal CustomUser customUser)
     {
         PageResponse<InquiryResponseDto> response =
-                inquiryQueryService.getInquiryList(page, size, customUser);
+                inquiryQueryService.getInquiryList(page, size, answerStatus, customUser);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InquiryResponseDto> getInquiryDetail(
+            @PathVariable("id") Long id,
+            @AuthenticationPrincipal CustomUser customUser
+    ) {
+        InquiryResponseDto response = inquiryQueryService.getInquiryDetail(id, customUser);
         return ResponseEntity.ok(response);
     }
 }
