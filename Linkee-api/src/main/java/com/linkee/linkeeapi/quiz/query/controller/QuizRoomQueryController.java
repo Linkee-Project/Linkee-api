@@ -31,9 +31,11 @@ public class QuizRoomQueryController {
     @GetMapping
     public ApiResponse<PageResponse<QuizRoomListResponseDto>> getRooms(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String keyword
     ) {
-        PageResponse<QuizRoomListResponseDto> rooms = quizRoomService.findAllRooms(page, size);
+        PageResponse<QuizRoomListResponseDto> rooms = quizRoomService.findAllRooms(page, size, categoryId, keyword);
         return ApiResponse.success(rooms);
     }
     //방 목록 상세 조회

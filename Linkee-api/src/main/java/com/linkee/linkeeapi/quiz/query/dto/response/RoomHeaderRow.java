@@ -16,4 +16,8 @@ public class RoomHeaderRow {
     private String roomTitle;    // tb_quiz_room.room_title
     private Long ownerId;        // tb_quiz_room.room_owner
     private String ownerNickname;// tb_user.user_nickname (room_owner 조인)
+
+    private String categoryName;   // 카테고리 이름
+    private Integer roomQuizLimit; // 문제 수
+    private Integer roomCapacity;  // 최대 인원
 }

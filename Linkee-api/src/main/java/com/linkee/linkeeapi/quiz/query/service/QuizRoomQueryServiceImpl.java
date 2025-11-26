@@ -23,10 +23,18 @@ public class QuizRoomQueryServiceImpl implements QuizRoomQueryService {
 
     //  방 목록 조회
     @Override
-    public PageResponse<QuizRoomListResponseDto> findAllRooms(int page, int size) {
+    public PageResponse<QuizRoomListResponseDto> findAllRooms(
+            int page, int size,
+            Long categoryId,
+            String keyword
+    ) {
         int offset = page * size;
-        List<QuizRoomListResponseDto> rooms = quizRoomMapper.findAllRoomsPaginated(size, offset);
-        int total = quizRoomMapper.countAllRooms();
+
+        List<QuizRoomListResponseDto> rooms =
+                quizRoomMapper.findAllRoomsPaginated(size, offset, categoryId, keyword);
+
+        int total = quizRoomMapper.countFilteredRooms(categoryId, keyword);
+
         return PageResponse.from(rooms, offset, size, total);
     }
     @Override
@@ -60,6 +68,9 @@ public class QuizRoomQueryServiceImpl implements QuizRoomQueryService {
                 .ownerNickname(header.getOwnerNickname())
                 .currentUserId(currentUserId)
                 .isOwner(isOwner)
+                .categoryName(header.getCategoryName())
+                .roomQuizLimit(header.getRoomQuizLimit())
+                .roomCapacity(header.getRoomCapacity())
                 .members(members)
                 .build();
     }
