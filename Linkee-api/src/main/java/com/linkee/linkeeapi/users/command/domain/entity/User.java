@@ -95,6 +95,10 @@ public class User extends BaseTimeEntity {
         this.userStatus = Status.N;
     }
 
+    public void updateStatus(Status status) {
+        this.userStatus = status;
+    }
+
     public void changePassword(String encode) {
         this.userPassword = encode;
     }
