@@ -20,6 +20,7 @@ public class QuestionDetailResponseDto {
     private int viewCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String userEmail;
 
     private List<OptionList> options;
 

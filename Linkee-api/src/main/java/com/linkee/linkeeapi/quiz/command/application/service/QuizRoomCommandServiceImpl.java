@@ -82,7 +82,7 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         // 사용자가 존재하지 않으면 예외를 발생시킵니다.
         User roomOwner = userFinder.getById(userId);
 
-        // 2. 요청된 카테고리 ID에 해당하는 카테고리 정보를 조회합니다.
+        // 2. 조회합니 요청된 카테고리 ID에 해당하는 카테고리 정보를다.
         // 카테고리가 존재하지 않으면 예외를 발생시킵니다.
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));

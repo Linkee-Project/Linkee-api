@@ -144,6 +144,7 @@
         <result property="viewCount" column="question_views"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="userEmail" column="user_email"/>
     </resultMap>
 
 
@@ -157,6 +158,7 @@
         q.question_answer,
         c.category_name,
         u.user_nickname,
+        u.user_email,
         q.question_views,
         q.created_at,
         q.updated_at
