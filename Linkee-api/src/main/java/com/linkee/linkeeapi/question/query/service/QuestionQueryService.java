@@ -12,4 +12,6 @@ public interface QuestionQueryService {
     PageResponse<QuestionListResponseDto> getQuestionsListByCategory(int page, Integer size, Long categoryId, String keyword);
 
     QuestionDetailResponseDto getQuestionDetail(Long questionId);
+
+    PageResponse<QuestionListResponseDto> getQuestionsByCurrentUser(Long userId, int page, Integer size, String keyword); // Renamed method
 }

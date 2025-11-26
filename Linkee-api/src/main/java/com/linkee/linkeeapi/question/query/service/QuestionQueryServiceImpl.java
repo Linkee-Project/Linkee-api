@@ -47,9 +47,22 @@ public class QuestionQueryServiceImpl implements QuestionQueryService {
         int total = questionMapper.countByCategoryWithKeyword(categoryId, k);
 
         return PageResponse.from(questions,page,pageSize,total);
-
-
     }
+
+    @Override
+    public PageResponse<QuestionListResponseDto> getQuestionsByCurrentUser(Long userId, int page, Integer size, String keyword) {
+        int pageSize = (size != null) ? size : 10;
+        int offset = page * pageSize;
+
+        String k = (keyword != null && !keyword.trim().isEmpty()) ? keyword.trim() : null;
+
+        List<QuestionListResponseDto> questions =
+                questionMapper.findByCurrentUserWithKeyword(userId, k, offset, pageSize);
+        int total = questionMapper.countByCurrentUserWithKeyword(userId, k);
+
+        return PageResponse.from(questions, page, pageSize, total);
+    }
+
     //문제 상세 조회
     @Override
     @Transactional
