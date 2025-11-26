@@ -24,4 +24,8 @@ public class AlarmTemplate extends BaseTimeEntity {
     public void modifyTemplateContent(String content) {
         this.templateContent = content;
     }
+
+    public void modifyTemplateCode(String code) {
+        this.templateCode = code;
+    }
 }

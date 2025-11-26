@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 public record AlarmTemplateResponse(
         Long templateId,
-        @JsonRawValue
-        String templateContent,
+        String templateContent, // Removed @JsonRawValue
+        String templateCode,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

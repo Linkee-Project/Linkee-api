@@ -5,12 +5,11 @@ import com.linkee.linkeeapi.alarm.command.application.service.AlarmTemplateComma
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/ap1/v1")
+@RequestMapping("/api/v1")
 @Tag(name = "알림", description = "알림 템플릿 및 발송 관리 API")
 public class AlarmTemplateCommandController {
 
@@ -18,8 +17,7 @@ public class AlarmTemplateCommandController {
 
     // create
     @PostMapping("/admin/alarm/templates")
-    public ResponseEntity<String> createAlarmTemplate(@RequestBody String content){
-        AlarmTemplateCreateRequest request = new AlarmTemplateCreateRequest(content);
+    public ResponseEntity<String> createAlarmTemplate(@RequestBody AlarmTemplateCreateRequest request){
         service.createAlarmTemplate(request);
 
         return ResponseEntity.ok("저장 완료");
@@ -27,13 +25,19 @@ public class AlarmTemplateCommandController {
 
 
     // update
-    @Transactional
     @PatchMapping("/admin/alarm/templates/modify/{templateId}")
     public ResponseEntity<String> modifyAlarmTemplate(@PathVariable long templateId , @RequestBody AlarmTemplateCreateRequest request ){
 
         service.modifyAlarmTemplateByAlarmTemplateId(templateId,request);
 
         return ResponseEntity.ok("저장 완료");
+    }
+
+    // delete
+    @DeleteMapping("/admin/alarm/templates/{templateId}")
+    public ResponseEntity<String> deleteAlarmTemplate(@PathVariable long templateId) {
+        service.deleteAlarmTemplate(templateId);
+        return ResponseEntity.ok("삭제 완료");
     }
 
 }
