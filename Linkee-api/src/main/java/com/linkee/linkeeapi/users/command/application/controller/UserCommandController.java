@@ -4,6 +4,7 @@ import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserNickNameRequest;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleRequest;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserStatusRequest;
+import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleAndStatusRequest;
 import com.linkee.linkeeapi.users.command.application.service.UserCommandService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,12 @@ public class UserCommandController {
     public ResponseEntity<?> updateUserStatus(@RequestBody UpdateUserStatusRequest request) {
         userCommandService.updateUserStatus(request);
         return ResponseEntity.ok("사용자 상태 변경 완료");
+    }
+
+    @PatchMapping("/admin/users/user/role-status")
+    public ResponseEntity<?> updateUserRoleAndStatus(@RequestBody UpdateUserRoleAndStatusRequest request) {
+        userCommandService.updateUserRoleAndStatus(request);
+        return ResponseEntity.ok("사용자 권한 및 상태 변경 완료");
     }
 
     @DeleteMapping("/users/user/delete")
