@@ -17,6 +17,7 @@ public enum ErrorCode {
     INVALID_USER_ID("1002", "해당 사용자가 없습니다", HttpStatus.BAD_REQUEST),
     INVALID_ADMIN_ID("1003", "잘못된 관리자 ID입니다.", HttpStatus.BAD_REQUEST),
     INVALID_INCORRECT_FORMAT("1004","잘못된 형식입니다.", HttpStatus.BAD_REQUEST),
+    PASSWORD_NOT_MATCH("1005", "비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST), // Added for password change feature
 
     //공지사항 관련 오류(2000번대 사용)
     NOTICE_NOT_FOUND("2000", "해당 공지사항이 없습니다", HttpStatus.NOT_FOUND),

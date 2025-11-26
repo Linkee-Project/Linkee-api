@@ -5,22 +5,25 @@ import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleRequest;
 import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserStatusRequest;
-import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleAndStatusRequest; // Added import
+import com.linkee.linkeeapi.users.command.application.dto.request.UpdateUserRoleAndStatusRequest;
+import com.linkee.linkeeapi.users.command.application.dto.request.ChangePasswordRequest; // Import ChangePasswordRequest
 import com.linkee.linkeeapi.users.command.infrastructure.repository.RelationRepository;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j; // Added SLF4J import
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder; // Import PasswordEncoder
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j // Added SLF4J annotation
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserCommandServiceImpl implements UserCommandService{
 
     private final UserRepository userRepository;
     private final RelationRepository relationRepository;
+    private final PasswordEncoder passwordEncoder; // Inject PasswordEncoder
 
 
     @Transactional
@@ -71,7 +74,6 @@ public class UserCommandServiceImpl implements UserCommandService{
     @Transactional
     @Override
     public void updateUserRoleAndStatus(UpdateUserRoleAndStatusRequest request) {
-        log.info("updateUserRoleAndStatus called for userId: {} with request: {}", request.getUserId(), request); // Added log statement
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
 
@@ -83,5 +85,18 @@ public class UserCommandServiceImpl implements UserCommandService{
         }
     }
 
+    @Transactional
+    @Override
+    public void changePassword(Long userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
 
+        // Verify old password
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getUserPassword())) {
+            throw new BusinessException(ErrorCode.PASSWORD_NOT_MATCH); // Assuming you have this ErrorCode
+        }
+
+        // Encode and set new password
+        user.changePassword(passwordEncoder.encode(request.getNewPassword()));
+    }
 }
