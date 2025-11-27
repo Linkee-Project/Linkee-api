@@ -2,6 +2,7 @@ package com.linkee.linkeeapi.chat.command.application.controller;
 
 
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomCreateRequestDto;
+import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomInviteRequestDto;
 import com.linkee.linkeeapi.chat.command.application.dto.request.ChatRoomJoinRequestDto;
 import com.linkee.linkeeapi.chat.command.application.dto.response.ChatMemberDto;
 import com.linkee.linkeeapi.chat.command.application.dto.response.ChatRoomJoinResponseDto;
@@ -185,5 +186,22 @@ public class ChatRestController {
         return ResponseEntity.ok(
                 chatRoomInOutService.getRoomMembers(roomId)
         );
+    }
+
+    /*친구 초대*/
+    @PostMapping("/{roomId}/invite")
+    public ResponseEntity<?> inviteUsers(
+            @PathVariable Long roomId,
+            @RequestHeader("Authorization") String token,
+            @RequestBody ChatRoomInviteRequestDto request
+    ) {
+        String pureToken = token.replace("Bearer ", "").trim();
+
+        if (!jwtTokenProvider.validateToken(pureToken)) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        chatRoomInOutService.inviteUsers(roomId, request.getUserIds());
+        return ResponseEntity.ok("초대 성공");
     }
 }
