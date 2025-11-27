@@ -2,12 +2,14 @@ package com.linkee.linkeeapi.question.query.controller;
 
 import com.linkee.linkeeapi.common.model.CustomUser; // Import CustomUser
 import com.linkee.linkeeapi.common.model.PageResponse;
+import com.linkee.linkeeapi.question.query.dto.request.AdminQuestionSearchRequest; // AdminQuestionSearchRequest import
 import com.linkee.linkeeapi.question.query.dto.response.QuestionDetailResponseDto;
 import com.linkee.linkeeapi.question.query.dto.response.QuestionListResponseDto;
 import com.linkee.linkeeapi.question.query.service.QuestionQueryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize; // PreAuthorize import
 import org.springframework.security.core.annotation.AuthenticationPrincipal; // Import AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*;
 
@@ -63,6 +65,16 @@ public class QuestionQueryController {
         QuestionDetailResponseDto detailQuestion = questionService.getQuestionDetail(questionId);
 
         return ResponseEntity.ok(detailQuestion);
+    }
+
+    // 관리자용 문제 목록 조회 (필터링 및 페이지네이션 포함)
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/admin/questions") // 경로 변경에 주의해야 합니다. RequestMapping 하위에 추가됩니다.
+    public ResponseEntity<PageResponse<QuestionListResponseDto>> getAdminQuestionsList(
+            @ModelAttribute AdminQuestionSearchRequest request
+    ) {
+        PageResponse<QuestionListResponseDto> response = questionService.getAdminQuestionList(request);
+        return ResponseEntity.ok(response);
     }
 
 }

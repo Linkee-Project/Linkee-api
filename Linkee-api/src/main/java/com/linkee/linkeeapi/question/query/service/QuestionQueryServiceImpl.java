@@ -3,6 +3,7 @@ package com.linkee.linkeeapi.question.query.service;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.PageResponse;
+import com.linkee.linkeeapi.question.query.dto.request.AdminQuestionSearchRequest; // AdminQuestionSearchRequest import
 import com.linkee.linkeeapi.question.query.mapper.QuestionMapper;
 import com.linkee.linkeeapi.question.query.dto.response.QuestionDetailResponseDto;
 import com.linkee.linkeeapi.question.query.dto.response.QuestionListResponseDto;
@@ -80,6 +81,22 @@ public class QuestionQueryServiceImpl implements QuestionQueryService {
         detail.setOptions(options);
 
         return detail;
+    }
+
+    // 관리자용 문제 목록 조회 구현
+    @Override
+    public PageResponse<QuestionListResponseDto> getAdminQuestionList(AdminQuestionSearchRequest request) {
+        int pageSize = (request.getSize() != null) ? request.getSize() : 10;
+        int offset = (request.getPage() != null ? request.getPage() : 0) * pageSize;
+
+        // AdminQuestionSearchRequest에 offset 설정
+        request.setOffset(offset);
+        request.setSize(pageSize); // Mapper에서 size를 사용하므로 설정
+
+        List<QuestionListResponseDto> questions = questionMapper.findAdminQuestions(request);
+        int total = questionMapper.countAdminQuestions(request);
+
+        return PageResponse.from(questions, request.getPage() != null ? request.getPage() : 0, pageSize, total);
     }
 
 }

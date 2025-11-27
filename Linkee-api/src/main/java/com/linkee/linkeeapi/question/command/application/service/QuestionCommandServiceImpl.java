@@ -1,10 +1,15 @@
 package com.linkee.linkeeapi.question.command.application.service;
 
+import com.linkee.linkeeapi.alarm.command.application.dto.request.AlarmBoxCreateRequest;
+import com.linkee.linkeeapi.alarm.command.application.service.AlarmBoxCommandService;
+import com.linkee.linkeeapi.alarm.query.dto.response.AlarmTemplateResponse;
+import com.linkee.linkeeapi.alarm.query.mapper.AlarmTemplateMapper;
+import com.linkee.linkeeapi.common.enums.AlarmType;
+import com.linkee.linkeeapi.common.sse.service.SseService;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
 import com.linkee.linkeeapi.question.command.infrastructure.repository.JpaCategoryRepository;
 import com.linkee.linkeeapi.common.enums.Role;
 import com.linkee.linkeeapi.common.enums.Status;
-import com.linkee.linkeeapi.common.event.QuestionVerifiedEvent;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.question.command.application.dto.request.CreateQuestionRequestDto;
@@ -16,7 +21,7 @@ import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +31,15 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class QuestionCommandServiceImpl implements QuestionCommandService {
 
     private final JpaQuestionRepository jpaQuestionRepository;
     private final UserFinder userFinder;
     private final JpaCategoryRepository categoryRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final AlarmBoxCommandService alarmBoxCommandService;
+    private final AlarmTemplateMapper alarmTemplateMapper;
+    private final SseService sseService;
 
     //문제 등록
     @Override
@@ -154,9 +162,27 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
         // 4) 상태 검증 & 검증 처리
         q.verifyByAdmin(admin); // 내부에서 이미 검증됨이면 QUESTION_ALREADY_QUALIFIED 던짐
 
-        // 알림 이벤트
-        eventPublisher.publishEvent(new QuestionVerifiedEvent(this, q));
+        // 5) 알림 처리
+        User questionOwner = q.getUser();
+        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectByTemplateCode(AlarmType.QUESTION_VERIFIED.getCode());
+        if (alarmTemplate == null || alarmTemplate.templateContent() == null) {
+            log.error("code: {}, message: {} (templateCode: {})",
+                    ErrorCode.ALARM_TEMPLATE_NOT_FOUND.getCode(),
+                    ErrorCode.ALARM_TEMPLATE_NOT_FOUND.getMessage(),
+                    AlarmType.QUESTION_VERIFIED.getCode());
+            // 알림 템플릿이 없어도 문제 검증은 계속 진행되어야 하므로 return하지 않음.
+        } else {
+            String alarmContent = alarmTemplate.templateContent()
+                    .replace("{questionTitle}", q.getQuestionTitle());
 
+            AlarmBoxCreateRequest alarmBoxCreateRequest = AlarmBoxCreateRequest.builder()
+                    .alarmBoxContent(alarmContent)
+                    .userId(questionOwner.getUserId())
+                    .build();
+            alarmBoxCommandService.createAlarmBox(alarmBoxCreateRequest);
+
+            sseService.send(questionOwner.getUserId(), "questionVerified", alarmContent);
+        }
     }
     /* 관리자 - 문제 삭제 */
     @Override
@@ -180,5 +206,5 @@ public class QuestionCommandServiceImpl implements QuestionCommandService {
 
     }
 
-    }
+}
 
