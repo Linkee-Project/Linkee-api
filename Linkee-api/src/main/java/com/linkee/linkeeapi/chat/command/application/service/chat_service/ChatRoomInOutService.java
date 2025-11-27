@@ -9,7 +9,9 @@ import com.linkee.linkeeapi.chat.command.instructure.repository.ChatRoomReposito
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
+import com.linkee.linkeeapi.users.command.application.service.util.UserFinder;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
+import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ public class ChatRoomInOutService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMemberRepository chatMemberRepository;
     private final ChatRoomBroadcastService broadcastService;
+    private final UserRepository userRepository;
 
     /* ------------------------------------------------------
      *  방 입장
@@ -115,5 +118,37 @@ public class ChatRoomInOutService {
                         cm.getUser().getUserNickname(),
                         cm.getJoinedAt()
                 )).toList();
+    }
+
+    /* ------------------------------------------------------
+     *  방 초대
+     * ------------------------------------------------------ */
+    @Transactional
+    public void inviteUsers(Long roomId, List<Long> userIds) {
+
+        ChatRoom room = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        for (Long userId : userIds) {
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_USER_ID));
+
+            // 이미 있는지 체크
+            boolean exists = chatMemberRepository.existsByChatRoomAndUser(room, user);
+
+            if (!exists) {
+                ChatMember member = ChatMember.builder()
+                        .chatRoom(room)
+                        .user(user)
+                        .build();
+
+                chatMemberRepository.save(member);
+                room.increaseJoinedCount();
+            }
+        }
+
+        chatRoomRepository.save(room);
+        broadcastService.broadcastMemberList(roomId);
     }
 }
