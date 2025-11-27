@@ -19,6 +19,9 @@ public class QuizRoomDetailResponseDto {
     private Long currentUserId;
     private boolean isOwner;
     private List<MemberDto> members;
+    private String categoryName;
+    private Integer roomQuizLimit;
+    private Integer roomCapacity;
 
     @Getter
     @Builder

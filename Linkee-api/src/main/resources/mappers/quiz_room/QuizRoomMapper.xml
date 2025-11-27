@@ -5,19 +5,33 @@
 
 <mapper namespace="com.linkee.linkeeapi.quiz.query.mapper.QuizRoomMapper">
 
-    <!-- 방 목록 조회 (페이징 적용) -->
+    <!-- 방 목록 조회 -->
     <select id="findAllRoomsPaginated" resultType="com.linkee.linkeeapi.quiz.query.dto.response.QuizRoomListResponseDto">
-        SELECT quiz_room_id AS quizRoomId,
-               room_title AS roomTitle,
-               category_id AS categoryId,
-               room_status AS roomStatus,
-               joined_count AS joinedCount,
-               room_capacity AS roomCapacity
-        FROM tb_quiz_room
-        WHERE is_private = 'N'
-          AND room_status = 'W'
-        ORDER BY quiz_room_id DESC
-        LIMIT #{limit} OFFSET #{offset}
+        SELECT
+            qr.quiz_room_id AS quizRoomId,
+            qr.room_title   AS roomTitle,
+            qr.joined_count AS joinedCount,
+            qr.room_capacity AS roomCapacity,
+            qr.room_status  AS roomStatus,
+            qr.is_private   AS isPrivate,
+
+            c.category_id   AS categoryId,
+            c.category_name AS categoryName
+
+        FROM tb_quiz_room qr
+                 JOIN tb_category c ON qr.category_id = c.category_id
+        WHERE qr.is_private = 'N'
+          AND qr.room_status = 'W'
+        <!-- 카테고리 필터 -->
+        <if test="categoryId != null">
+            AND qr.category_id = #{categoryId}
+        </if>
+        <!-- 검색(제목 LIKE) -->
+        <if test="keyword != null and keyword != ''">
+            AND REPLACE(LOWER(qr.room_title), ' ', '') LIKE CONCAT('%', REPLACE(LOWER(#{keyword}), ' ', ''), '%')
+        </if>
+        ORDER BY qr.quiz_room_id DESC
+            LIMIT #{limit} OFFSET #{offset}
     </select>
     <!-- 방 상세 조회 -->
     <select id="findRoomHeader"
@@ -28,9 +42,13 @@
             r.quiz_room_id    AS quizRoomId,
             r.room_title      AS roomTitle,
             r.room_owner      AS ownerId,
-            u.user_nickname   AS ownerNickname
+            u.user_nickname   AS ownerNickname,
+            c.category_name   AS categoryName,
+            r.room_quiz_limit AS roomQuizLimit,
+            r.room_capacity   AS roomCapacity
         FROM tb_quiz_room r
                  JOIN tb_user u ON u.user_id = r.room_owner
+                 JOIN tb_category c ON c.category_id = r.category_id
         WHERE r.quiz_room_id = #{roomId}
     </select>
 
@@ -91,6 +109,21 @@
         GROUP BY u.user_id, u.user_nickname, qr.room_quiz_limit
         ORDER BY correctCount DESC
             LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <!-- 필터링 된 퀴즈방 목록 개수 -->
+    <select id="countFilteredRooms" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_quiz_room qr
+        WHERE qr.is_private = 'N'
+        AND qr.room_status = 'W'
+
+        <if test="categoryId != null">
+            AND qr.category_id = #{categoryId}
+        </if>
+
+        <if test="keyword != null and keyword != ''">
+            AND REPLACE(LOWER(qr.room_title), ' ', '') LIKE CONCAT('%', REPLACE(LOWER(#{keyword}), ' ', ''), '%')
+        </if>
     </select>
 
 </mapper>

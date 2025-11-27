@@ -6,6 +6,7 @@ import com.linkee.linkeeapi.common.exception.BusinessException;
 import com.linkee.linkeeapi.common.exception.ErrorCode;
 import com.linkee.linkeeapi.common.model.CustomUser;
 import com.linkee.linkeeapi.quiz.command.application.dto.request.QuizRoomSubmitAnswerRequestDto;
+import com.linkee.linkeeapi.quiz.command.application.dto.request.RoomMemberCreateRequest;
 import com.linkee.linkeeapi.quiz.command.application.service.QuizRoomCommandService;
 import com.linkee.linkeeapi.quiz.command.domain.aggregate.QuizRoom;
 import com.linkee.linkeeapi.quiz.command.infrastructure.repository.QuizRoomRepository;
@@ -114,7 +115,9 @@ public class QuizRoomWebSocketController {
 
                 roomMemberCommandService.toggleReady(roomMember.getRoomMemberId());
             }
-            case JOIN -> log.info("JOIN received (noop) roomId={}, userId={}", roomId, userId);
+            case JOIN -> {
+                quizRoomSocketService.broadcastMemberList(roomId, false);
+            }
             case LEAVE -> log.info("LEAVE received (noop) roomId={}, userId={}", roomId, userId);
         }
     }

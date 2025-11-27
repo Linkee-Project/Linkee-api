@@ -263,10 +263,13 @@ public class QuizRoomCommandServiceImpl implements QuizRoomCommandService {
         quizCurrentIndexRepository.save(newQuizIndex);
 
         // 첫 번째 문제의 타이머를 스케줄링 합니다.
-        quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 20 * 1000L);
+        //quizGameAdvanceScheduler.scheduleAdvanceQuestion(quizRoomId, 20 * 1000L);
 
         // WS 첫 문제 브로드캐스트 (SocketService에서 QUESTION_STARTED 전송)
-        quizRoomWebSocketService.startQuiz(quizRoomId, userId);
+        //quizRoomWebSocketService.startQuiz(quizRoomId, userId);
+
+        // ✅ 6. 3초 후 첫 번째 문제를 브로드캐스트 + 20초 타이머 스케줄
+        quizGameAdvanceScheduler.scheduleFirstQuestionStart(quizRoomId, 3_000L);
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.util.List;
 public interface QuizRoomQueryService {
 
     //  방 목록 조회
-    PageResponse<QuizRoomListResponseDto> findAllRooms(int page, int size);
+    PageResponse<QuizRoomListResponseDto> findAllRooms(int page, int size,Long categoryId, String keyword);
 
     // 빠른 입장
     QuizRoomResponseDto findAvailableRoom();

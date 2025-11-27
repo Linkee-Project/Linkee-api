@@ -60,9 +60,10 @@ public class CommentCommandController {
         commentCommandService.deleteComment(questionId, commentId, userId);
         return ResponseEntity.ok("댓글 삭제 완료");
     }
+
     /* 관리자 - 댓글 삭제 */
     @DeleteMapping("/admin/question/questions/{questionId}/comments/{commentId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteAdmin(
             @PathVariable Long questionId,
             @PathVariable Long commentId,
