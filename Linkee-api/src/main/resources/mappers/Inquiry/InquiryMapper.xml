@@ -35,7 +35,7 @@
             a.user_nickname AS adminNickname
         FROM tb_inquiry i
                  JOIN tb_user u ON i.user_id = u.user_id
-                 JOIN tb_user a ON i.admin_id = a.user_id
+                 LEFT JOIN tb_user a ON i.admin_id = a.user_id
         WHERE
             (#{answerStatus} IS NULL OR answer_status = #{answerStatus})
         ORDER BY i.created_at DESC
