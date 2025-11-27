@@ -4,9 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class ChatRoomListResponseDto {
 
+    private Long chatRoomId;
     private String chatRoomName;
     private Long ownerId;
     private Integer joinedCount;

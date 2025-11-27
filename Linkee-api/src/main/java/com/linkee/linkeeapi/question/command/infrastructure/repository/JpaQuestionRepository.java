@@ -3,7 +3,9 @@ package com.linkee.linkeeapi.question.command.infrastructure.repository;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Category;
 import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.question.command.domain.aggregate.Question;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,6 +14,7 @@ import java.util.Optional;
 
 public interface JpaQuestionRepository extends JpaRepository<Question,Long> {
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
         select distinct q
         from Question q

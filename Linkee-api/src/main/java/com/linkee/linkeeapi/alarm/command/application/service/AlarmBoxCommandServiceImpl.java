@@ -7,13 +7,16 @@ import com.linkee.linkeeapi.common.enums.Status;
 import com.linkee.linkeeapi.users.command.domain.entity.User;
 import com.linkee.linkeeapi.users.command.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AlarmBoxCommandServiceImpl implements AlarmBoxCommandService {
 
     private final AlarmBoxRepository alarmBoxRepository;
@@ -22,8 +25,15 @@ public class AlarmBoxCommandServiceImpl implements AlarmBoxCommandService {
 
     // alarmBox 생성
     @Override
+    @Transactional
     public void createAlarmBox(AlarmBoxCreateRequest request) {
-        User foundUser = userRepository.findById(request.getUserId()).orElseThrow();
+        Optional<User> foundUserOptional = userRepository.findById(request.getUserId());
+        if (foundUserOptional.isEmpty()) {
+            log.error("알림을 생성하려는 사용자를 찾을 수 없습니다. userId: {}", request.getUserId());
+            return;
+        }
+        User foundUser = foundUserOptional.get();
+
         AlarmBox alarmBox = AlarmBox.builder()
                 .alarmBoxContent(request.getAlarmBoxContent())
                 .user(foundUser)

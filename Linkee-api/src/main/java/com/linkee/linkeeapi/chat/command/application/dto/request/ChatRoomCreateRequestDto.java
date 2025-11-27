@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,5 +28,8 @@ public class ChatRoomCreateRequestDto {
     private Long roomOwnerId;
 
     private Integer roomCapacity; //게임방의 경우 최대인원 5명
+
+    //유한세가 추가함 NotNull아니여서 상관 무..?!
+    private List<Long> invitedUserIds;
 
 }
