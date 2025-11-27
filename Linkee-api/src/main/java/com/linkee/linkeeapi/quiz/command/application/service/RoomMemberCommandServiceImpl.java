@@ -127,6 +127,9 @@ public class RoomMemberCommandServiceImpl implements RoomMemberCommandService {
         } else {
             roomMember.setIsReady(Status.Y);
         }
+
+        Long roomId = quizRoom.getQuizRoomId();
+        quizRoomWebSocketService.broadcastMemberList(roomId, false);
     }
 
     @Transactional

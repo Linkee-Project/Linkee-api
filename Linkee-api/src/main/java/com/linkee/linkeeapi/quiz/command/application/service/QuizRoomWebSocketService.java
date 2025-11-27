@@ -55,8 +55,8 @@ public class QuizRoomWebSocketService {
      * quizCommandService_startGame()에서 호출됨)
      */
     @Transactional(readOnly = true)
-    public void startQuiz(Long roomId, Long userId) {
-        log.info("Starting quiz for roomId={} by userId={}", roomId, userId);
+    public void startQuiz(Long roomId) {
+        log.info("Starting quiz for roomId={} ", roomId);
 
         QuizRoom room = quizRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("QuizRoom not found: " + roomId));

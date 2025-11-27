@@ -38,6 +38,22 @@ public class QuizGameAdvanceScheduler {
         this.quizRoomRepository = quizRoomRepository;
         this.quizCurrentIndexRepository = quizCurrentIndexRepository;
     }
+    @Async
+    public void scheduleFirstQuestionStart(Long quizRoomId, long delayMillis) {
+        quizRoomTaskScheduler.schedule(() -> {
+            try {
+                // ✅ 1번 문제 시작 브로드캐스트
+                quizRoomWebSocketService.startQuiz(quizRoomId);
+
+                // ✅ 첫 문제 제한시간 20초 후 결과 처리 예약
+                scheduleAdvanceQuestion(quizRoomId, 20_000L);
+
+            } catch (Exception e) {
+                log.error("첫 문제 시작 스케줄 실패: roomId={}", quizRoomId, e);
+            }
+        }, Instant.now().plusMillis(delayMillis));
+    }
+
 
     @Async
     public void scheduleAdvanceQuestion(Long quizRoomId, long delayMillis) {
