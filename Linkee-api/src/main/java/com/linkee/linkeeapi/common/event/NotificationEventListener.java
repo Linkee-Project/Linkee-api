@@ -67,24 +67,6 @@ public class NotificationEventListener {
         sseService.send(inquirer.getUserId(), "inquiryAnswered", alarmContent);
     }
 
-    // 4. 문제 검증 완료 알림
-    @EventListener
-    public void handleQuestionVerifiedEvent(QuestionVerifiedEvent event) {
-        Question question = event.getQuestion();
-        User questionOwner = question.getUser();
-
-        AlarmTemplateResponse alarmTemplate = alarmTemplateMapper.selectByTemplateCode(AlarmType.QUESTION_VERIFIED.getCode());
-        String alarmContent = alarmTemplate.templateContent()
-                .replace("{questionTitle}", question.getQuestionTitle());
-
-        AlarmBoxCreateRequest alarmBoxCreateRequest = AlarmBoxCreateRequest.builder()
-                .alarmBoxContent(alarmContent)
-                .userId(questionOwner.getUserId())
-                .build();
-        alarmBoxCommandService.createAlarmBox(alarmBoxCreateRequest);
-
-        sseService.send(questionOwner.getUserId(), "questionVerified", alarmContent);
-    }
 
     // 5. 댓글 생성 알림
     @EventListener

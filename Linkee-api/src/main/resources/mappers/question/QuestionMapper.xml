@@ -1,11 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.linkee.linkeeapi.question.query.mapper.QuestionMapper">
-
-    <!-- QuestionListResponseDto에 맞춘 매핑 -->
     <resultMap id="QuestionListResponseMap" type="com.linkee.linkeeapi.question.query.dto.response.QuestionListResponseDto">
         <result property="questionId" column="question_id"/>
         <result property="questionTitle" column="question_title"/>
@@ -13,6 +8,8 @@
         <result property="userNickname" column="user_nickname"/>
         <result property="viewCount" column="question_views"/>
         <result property="createdAt" column="created_at"/>
+        <result property="verified" column="is_qualified"/> <!-- verified 필드 추가 -->
+        <result property="isDeleted" column="is_deleted"/>   <!-- isDeleted 필드 추가 -->
     </resultMap>
 
     <!-- 전체 문제 조회 + 옵션 (keyword) -->
@@ -23,7 +20,9 @@
         c.category_name,
         u.user_nickname,
         q.question_views,
-        q.created_at
+        q.created_at,
+        q.is_qualified, <!-- verified 필드 추가 -->
+        q.is_deleted    <!-- isDeleted 필드 추가 -->
         FROM tb_question q
         JOIN tb_category c ON q.category_id = c.category_id
         JOIN tb_user u ON q.user_id = u.user_id
@@ -61,7 +60,9 @@
         c.category_name,
         u.user_nickname,
         q.question_views,
-        q.created_at
+        q.created_at,
+        q.is_qualified, <!-- verified 필드 추가 -->
+        q.is_deleted    <!-- isDeleted 필드 추가 -->
         FROM tb_question q
         JOIN tb_category c ON q.category_id = c.category_id
         JOIN tb_user u ON q.user_id = u.user_id
@@ -101,7 +102,9 @@
         c.category_name,
         u.user_nickname,
         q.question_views,
-        q.created_at
+        q.created_at,
+        q.is_qualified, <!-- verified 필드 추가 -->
+        q.is_deleted    <!-- isDeleted 필드 추가 -->
         FROM tb_question q
         JOIN tb_category c ON q.category_id = c.category_id
         JOIN tb_user u ON q.user_id = u.user_id
@@ -189,5 +192,56 @@
         WHERE question_id = #{questionId}
     </update>
 
+    <!-- 관리자용 문제 목록 조회 -->
+    <select id="findAdminQuestions" resultMap="QuestionListResponseMap">
+        SELECT
+            q.question_id,
+            q.question_title,
+            c.category_name,
+            u.user_nickname,
+            q.question_views,
+            q.created_at,
+            q.is_qualified,
+            q.is_deleted
+        FROM tb_question q
+        JOIN tb_category c ON q.category_id = c.category_id
+        JOIN tb_user u ON q.user_id = u.user_id
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (
+            q.question_title    LIKE CONCAT('%', #{keyword}, '%')
+            OR q.question_question LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test="verified != null and verified.name() != 'ALL'">
+            AND q.is_qualified = #{verified.name()}
+        </if>
+        <if test="deleted != null and deleted.name() != 'ALL'">
+            AND q.is_deleted = #{deleted.name()}
+        </if>
+        ORDER BY q.created_at DESC
+        <if test="size != null and offset != null">
+            LIMIT #{size} OFFSET #{offset}
+        </if>
+    </select>
+
+    <!-- 관리자용 문제 목록 개수 조회 -->
+    <select id="countAdminQuestions" resultType="int">
+        SELECT COUNT(*)
+        FROM tb_question q
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (
+            q.question_title    LIKE CONCAT('%', #{keyword}, '%')
+            OR q.question_question LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        <if test="verified != null and verified.name() != 'ALL'">
+            AND q.is_qualified = #{verified.name()}
+        </if>
+        <if test="deleted != null and deleted.name() != 'ALL'">
+            AND q.is_deleted = #{deleted.name()}
+        </if>
+    </select>
 
 </mapper>
