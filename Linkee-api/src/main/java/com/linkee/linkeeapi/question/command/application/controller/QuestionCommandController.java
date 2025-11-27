@@ -61,15 +61,17 @@ public class QuestionCommandController {
         questionCommandService.verifyQuestion(questionId, adminId);
         return ResponseEntity.ok("문제 검증 완료");
     }
-    /* 관리자 - 문제 삭제 */
-    @DeleteMapping("/admin/question/questions/{questionId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> adminDelete(@PathVariable Long questionId,
-                                              @AuthenticationPrincipal CustomUser admin) {
 
+    // 관리자용: 문제 소프트 삭제
+    @PatchMapping("/admin/question/questions/{questionId}/delete") // PATCH 매핑으로 변경
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<String> adminSoftDeleteQuestion( // 메서드 이름 변경
+            @PathVariable Long questionId,
+            @AuthenticationPrincipal CustomUser admin
+    ) {
         Long adminId = admin.getUserId();
-        questionCommandService.adminDeleteQuestion(questionId, adminId);
-        return ResponseEntity.ok("문제 삭제 완료(관리자)");
+        questionCommandService.adminDeleteQuestion(questionId, adminId); // 기존의 소프트 삭제 메서드 호출
+        return ResponseEntity.ok("문제 소프트 삭제 완료");
     }
 
 }

@@ -16,6 +16,8 @@ public class QuestionListResponseDto {
     private String userNickname;
     private Integer viewCount;
     private LocalDateTime createdAt;
+    private String verified; // 검증상태 (Y/N)
+    private String isDeleted; // 삭제 여부 (Y/N)
 
 
 
