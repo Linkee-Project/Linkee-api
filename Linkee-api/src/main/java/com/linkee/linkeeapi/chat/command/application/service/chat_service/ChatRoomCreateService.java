@@ -32,6 +32,19 @@ public class ChatRoomCreateService {
                 .build();
         chatMemberCommandService.createChatMember(memberRequest);
 
+        //초대한 친구 추가
+        Long roomId = createdRoom.getChatRoomId();
+
+        if (request.getInvitedUserIds() != null) {
+            for (Long friendId : request.getInvitedUserIds()) {
+                chatMemberCommandService.createChatMember(
+                        ChatMemberCreateRequest.builder()
+                                .chatRoomId(roomId)
+                                .userId(friendId)
+                                .build()
+                );
+            }
+        }
         // ✅ 응답 JSON 구성
         Map<String, Object> response = new HashMap<>();
         response.put("chatRoomId", createdRoom.getChatRoomId());
