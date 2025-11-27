@@ -186,4 +186,28 @@ public class ChatRestController {
                 chatRoomInOutService.getRoomMembers(roomId)
         );
     }
+
+
+    /* ------------------------------------------------------
+     * 방 퇴장
+     * ------------------------------------------------------ */
+    @PostMapping("/{roomId}/leave")
+    public ResponseEntity<?> leaveRoom(
+            @PathVariable Long roomId,
+            @RequestHeader("Authorization") String token
+    ) {
+        String pureToken = token.replace("Bearer ", "").trim();
+
+        if (!jwtTokenProvider.validateToken(pureToken)) {
+            throw new RuntimeException("Invalid token");
+        }
+
+        String email = jwtTokenProvider.getUsername(pureToken);
+        User user = userRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        chatRoomInOutService.leaveRoom(roomId, user);
+
+        return ResponseEntity.ok("퇴장 완료");
+    }
 }
